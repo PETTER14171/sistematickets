@@ -1,0 +1,27 @@
+@use 'sass:color';
+@use '../base/variables' as var;
+
+/** Media Queries **/
+@mixin telefono {
+    @media (min-width: #{var.$telefono}) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: #{var.$tablet}) {
+        @content;
+    }
+}
+  
+@mixin desktop {
+    @media (min-width: #{var.$desktop}) {
+        @content;
+    }
+}
+@mixin grid($columnas, $espaciado) {
+    display: grid;
+    gap: $espaciado;
+    grid-template-columns: repeat($columnas, 1fr);
+}
+
