@@ -61,7 +61,6 @@ if ($_SESSION['rol'] !== 'tecnico') {
 
     <div class="opciones">
         <a href="admin_tickets.php">📋 Ver y administrar todos los tickets</a>
-        <a href="responder_ticket.php">📝 Responder a tickets asignados</a>
         <a href="fallas_comunes_admin.php">📚 Subir y editar guías de fallas comunes</a>
         <a href="crear_usuario.php">👥 Crear nuevos usuarios</a>
         <a href="resetear_contraseña.php">🔐 Resetear contraseñas de usuarios</a>
