@@ -22,6 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("sss", $like, $like, $like);
     $stmt->execute();
     $resultados = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}else {
+    // Si no hay búsqueda, mostrar todas
+    $query = "SELECT * FROM fallas_comunes ORDER BY id DESC";
+    $resultados = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
 }
 ?>
 
