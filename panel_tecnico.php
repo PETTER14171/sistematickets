@@ -90,13 +90,56 @@ if ($_SESSION['rol'] !== 'tecnico') {
     <?php endif; ?>
 
     <div class="opciones">
-        <a href="notificaciones.php">🔔 Ver notificaciones</a>
+                <!-- Agrega este botón donde quieras mostrarlo -->
+        <a href="#" onclick="abrirModalNotificaciones()" style="background:#28a745" class="btn-notificaciones">🔔 Ver notificaciones</a>
+        <!-- Modal -->
+        <div id="modalNotificaciones" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#00000066; z-index:9999; justify-content:center; align-items:center;">
+            <div style="background:#fff; width:90%; max-width:800px; padding:20px; border-radius:8px; position:relative;">
+                <button onclick="cerrarModal()" style="position:absolute; top:10px; right:15px; background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:4px;">Cerrar ✖</button>
+                <div id="contenidoNotificaciones">Cargando notificaciones...</div>
+            </div>
+        </div>
+
         <a href="admin_tickets.php">📋 Ver y administrar todos los tickets</a>
         <a href="fallas_comunes_admin.php">📚 Subir y editar guías de fallas comunes</a>
         <a href="crear_usuario.php">👥 Crear nuevos usuarios</a>
         <a href="resetear_contraseña.php">🔐 Resetear contraseñas de usuarios</a>
         <a href="logout.php" class="logout">🚪 Cerrar sesión</a>
     </div>
+
+<script>
+    function abrirModalNotificaciones() {
+        const modal = document.getElementById("modalNotificaciones");
+        const contenido = document.getElementById("contenidoNotificaciones");
+        modal.style.display = "flex";
+
+        fetch("notificaciones.php")
+            .then(response => response.text())
+            .then(html => {
+                contenido.innerHTML = html;
+            })
+            .catch(error => {
+                contenido.innerHTML = "<p>Error al cargar las notificaciones.</p>";
+                console.error(error);
+            });
+    }
+
+    function cerrarModal() {
+        document.getElementById("modalNotificaciones").style.display = "none";
+    }
+
+    function marcarNotificacionesLeidas() {
+        fetch("notificaciones.php?marcar=1")
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    abrirModalNotificaciones(); // Recargar el contenido del modal
+                    location.reload(); // Refresca alerta superior si es necesario
+                }
+            });
+    }
+</script>
+
 
 </body>
 </html>
