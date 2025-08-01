@@ -1,109 +1,98 @@
-<?php 
-require 'includes/funciones.php';
-incluirTemplate('header', $inicio = true);
-?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TalkHub - Sistema de Tickets</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primario: #115bf0;
+            --secundario: #eaf3ff;
+            --texto: #1f1f1f;
+            --boton: #4cd964;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <main class="contenedor seccion">
-        <h1>Más Sobre Nosotros</h1>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--secundario);
+            color: var(--texto);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-        <div class="iconos-nosotros">
-            <div class="icono">
-                <img src="/build/img/icono1.svg" alt="Icono Seguridad" loading="lazy">
-                <h3>Seguridad</h3>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea dolorem doloribus esse ex quam eveniet architecto doloremque, ratione quae ullam, aperiam nihil labore! Quaerat minus fugit voluptate blanditiis, totam optio!</p>
-            </div>
+        header {
+            background-color: var(--primario);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
 
-            <div class="icono">
-                <img src="/build/img/icono2.svg" alt="Icono Precio" loading="lazy">
-                <h3>Precio</h3>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea dolorem doloribus esse ex quam eveniet architecto doloremque, ratione quae ullam, aperiam nihil labore! Quaerat minus fugit voluptate blanditiis, totam optio!</p>
-            </div>
+        main {
+            flex: 1;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
 
-            <div class="icono">
-                <img src="/build/img/icono3.svg" alt="Icono Tiempo" loading="lazy">
-                <h3>Tiempo</h3>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea dolorem doloribus esse ex quam eveniet architecto doloremque, ratione quae ullam, aperiam nihil labore! Quaerat minus fugit voluptate blanditiis, totam optio!</p>
-            </div>
-        </div>
-    </main>
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
 
-    <section class="seccion contenedor">
-        <h1>Casas Y Departamentos en Venta</h1>
+        p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
 
-            <?php 
-                $limit = 3;
-                include 'includes/templates/anuncios.php';
-            ?>
+        .btn-login {
+            background-color: var(--boton);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
 
-        <div class="alinear-derecha">
-            <a href="anuncios.php" class="boton-verde">Ver Todas</a>
-        </div>
-    </section>
+        .btn-login:hover {
+            background-color: #267d46;
+        }
 
-    <section class="imagen-contacto">
-        <h2>Encuentra la casa de tus sueños</h2>
-        <p>Llena el formulario de contacto y un asesorse pondra en contacto contigo a la brevedad</p>
-        <a href="contacto.php" class="boton-amarillo">Contactános</a>
-    </section>
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #ddd;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
 
-    <div class="contenedor seccion seccion-inferior">
-        <section class="blog">
-            <h3>Nuestro Blog</h3>
+<header>
+    <h1>TalkHub</h1>
+    <p>Soluciones inteligentes para soporte técnico</p>
+</header>
 
-            <article class="entrada-blog">
-                <div class="imagen">
-                    <picture>
-                        <source srcset="build/img/blog1.webp" type="image/webp">
-                        <source srcset="build/img/blog1.jpg" type="image/jpeg">
-                        <img loading="lazy" src="build/img/blog1.jpg" alt="Entrada Blog">
-                    </picture>
-                </div>
+<main>
+    <h2>Bienvenido al Sistema de Gestión de Tickets</h2>
+    <p>Accede al portal de atención para agentes, técnicos y administradores. Gestiona reportes, consulta guías de solución o da seguimiento a tus incidencias con eficiencia y rapidez.</p>
+    <a href="login.php" class="btn-login">Iniciar sesión</a>
+</main>
 
-                <div class="texto-entrada">
-                    <a href="entrada.php">
-                        <h4>Terraza en el techo de tu casa</h4>
-                        <p class="informacion-meta">Escrito el: <span>17/01/2025</span> por: <span>Admin</span></p>
-                        <p>
-                            Consejos para construir una terraza en el techo de tu casa con los mejores materiales y ahorrando dinero
-                        </p>
-                    </a>                    
-                </div>
-            </article>
+<footer>
+    &copy; <?= date('Y') ?> TalkHub. Todos los derechos reservados.
+</footer>
 
-            <article class="entrada-blog">
-                <div class="imagen">
-                    <picture>
-                        <source srcset="build/img/blog2.webp" type="image/webp">
-                        <source srcset="build/img/blog2.jpg" type="image/jpeg">
-                        <img loading="lazy" src="build/img/blog2.jpg" alt="Entrada Blog">
-                    </picture>
-                </div>
-
-                <div class="texto-entrada">
-                    <a href="entrada.php">
-                        <h4>Guía para la decoracion de tu hogar</h4>
-                        <p class="informacion-meta">Escrito el: <span>17/01/2025</span> por: <span>Admin</span></p>
-                        <p>
-                            Maximiza el espacio de tu hogar con esta guia, aprende a combinar muebles y colores para darle vida a tu espacio
-                        </p>
-                    </a>                    
-                </div>
-            </article>
-        </section>
-
-        <section class="testimoniales">
-            <h3>Testimoniales</h3>
-                
-                <div class="testimonial">
-                    <blockquote>
-                        El personal se comportó de una excelente forma, muy buena atención y la casa que me ofrecieron cumple con todas mis expectativas. 
-                    </blockquote>
-                    <p>- Pedro Colin</p>
-                </div>
-        </section>
-    </div>
-    
-<?php 
-incluirTemplate('footer');
-?>
+</body>
+</html>
