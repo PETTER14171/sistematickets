@@ -99,8 +99,15 @@ $fallas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             <?php endforeach; ?>
         </tbody>
     </table>
+    
 <?php else: ?>
     <p>No hay guías registradas aún.</p>
+<?php endif; ?>
+
+<?php if (isset($_GET['msg']) && $_GET['msg'] === 'eliminado'): ?>
+    <div class="mensaje" style="background:#f8d7da;color:#721c24;padding:10px;border:1px solid #f5c6cb;margin-bottom:15px;">
+        ✅ Guía eliminada correctamente.
+    </div>
 <?php endif; ?>
 
 </body>
