@@ -68,6 +68,9 @@ if ($_SESSION['rol'] !== 'tecnico') {
     
     <h2>🔧 Bienvenido, <?= htmlspecialchars($_SESSION['nombre']) ?> (Área de TI)</h2>
 
+    <!-- Alerta dinámica -->
+    <div id="alertaDinamica"></div>
+
     <?php if ($alerta): ?>
         <div style="
             background-color: <?= $alerta['prioridad'] === 'alta' ? '#f8d7da' : ($alerta['prioridad'] === 'media' ? '#fff3cd' : '#d1ecf1') ?>;
@@ -139,6 +142,59 @@ if ($_SESSION['rol'] !== 'tecnico') {
             });
     }
 </script>
+
+<script>
+function mostrarAlerta(mensaje, prioridad) {
+    const colorFondo = {
+        alta: '#f8d7da',
+        media: '#fff3cd',
+        baja: '#d1ecf1'
+    }[prioridad] || '#e2e3e5';
+
+    const colorBorde = {
+        alta: '#dc3545',
+        media: '#ffc107',
+        baja: '#17a2b8'
+    }[prioridad] || '#6c757d';
+
+    document.getElementById("alertaDinamica").innerHTML = `
+        <div style="
+            background-color: ${colorFondo};
+            color: #000;
+            padding: 12px;
+            border-left: 5px solid ${colorBorde};
+            margin-bottom: 20px;
+            border-radius: 4px;
+            animation: parpadeo ${prioridad === 'alta' ? '2s' : (prioridad === 'media' ? '6s' : '10s')} infinite;
+        ">
+            ⚠️ ${mensaje} (${prioridad.charAt(0).toUpperCase() + prioridad.slice(1)})
+        </div>
+    `;
+}
+
+function verificarNuevaNotificacion() {
+    fetch("notificaciones_alerta.php")
+        .then(res => res.json())
+        .then(data => {
+            if (data) {
+                mostrarAlerta(data.mensaje, data.prioridad);
+            } else {
+                document.getElementById("alertaDinamica").innerHTML = "";
+            }
+        })
+        .catch(err => console.error("Error al consultar notificaciones:", err));
+}
+
+setInterval(verificarNuevaNotificacion, 5000); // cada 5 segundos
+verificarNuevaNotificacion(); // ejecuta al cargar
+</script>
+
+<style>
+@keyframes parpadeo {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+</style>
 
 
 </body>
