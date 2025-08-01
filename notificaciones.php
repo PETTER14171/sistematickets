@@ -1,6 +1,6 @@
 <?php
-include 'verificar_sesion.php';
-include 'includes/config/conexion.php';
+include __DIR__ . '/includes/config/verificar_sesion.php';
+include __DIR__ . '/includes/config/conexion.php';
 
 if ($_SESSION['rol'] !== 'tecnico') {
     header("Location: login.php");

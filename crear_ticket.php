@@ -2,7 +2,6 @@
 include __DIR__ . '/includes/config/verificar_sesion.php';
 include __DIR__ . '/includes/config/conexion.php';
 
-
 if ($_SESSION['rol'] !== 'agente') {
     header("Location: login.php?error=Acceso denegado");
     exit;
@@ -12,7 +11,7 @@ $titulo = $descripcion = $categoria = $prioridad = "";
 $referencia_falla = isset($_GET['referencia']) ? intval($_GET['referencia']) : null;
 $mensaje = "";
 
-// Si se envió el formulario
+// ✅ Si se envió el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titulo = trim($_POST['titulo']);
     $descripcion = trim($_POST['descripcion']);
@@ -21,28 +20,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $referencia_falla = !empty($_POST['referencia_falla']) ? intval($_POST['referencia_falla']) : null;
 
     if ($titulo && $descripcion && $categoria && $prioridad) {
-        $ticket_id = $conn->insert_id; // Obtener ID del ticket recién creado
-        $mensaje_notif = "Nuevo ticket creado: $titulo";
-        $stmt = $conn->prepare("INSERT INTO notificaciones (ticket_id, mensaje, prioridad) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $ticket_id, $mensaje_notif, $prioridad);
-        $stmt->execute();
         $stmt = $conn->prepare("
             INSERT INTO tickets (id_usuario, titulo, descripcion, categoria, prioridad, estado, referencia_falla) 
             VALUES (?, ?, ?, ?, ?, 'abierto', ?)
         ");
         $stmt->bind_param("issssi", $_SESSION['usuario_id'], $titulo, $descripcion, $categoria, $prioridad, $referencia_falla);
+
         if ($stmt->execute()) {
+            $ticket_id = $conn->insert_id;
+            $mensaje_notif = "Nuevo ticket creado: $titulo";
+
+            $stmt->close();
+
+            $stmt = $conn->prepare("INSERT INTO notificaciones (ticket_id, mensaje, prioridad) VALUES (?, ?, ?)");
+            $stmt->bind_param("iss", $ticket_id, $mensaje_notif, $prioridad);
+            $stmt->execute();
+            $stmt->close();
+
             $mensaje = "✅ Ticket creado correctamente.";
             $titulo = $descripcion = $categoria = $prioridad = "";
         } else {
             $mensaje = "❌ Error al crear el ticket.";
+            $stmt->close();
         }
-        $stmt->close();
     } else {
-        $mensaje = "Todos los campos son obligatorios.";
+        $mensaje = "⚠️ Todos los campos son obligatorios.";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
