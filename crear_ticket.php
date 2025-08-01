@@ -21,6 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $referencia_falla = !empty($_POST['referencia_falla']) ? intval($_POST['referencia_falla']) : null;
 
     if ($titulo && $descripcion && $categoria && $prioridad) {
+        $ticket_id = $conn->insert_id; // Obtener ID del ticket recién creado
+        $mensaje_notif = "Nuevo ticket creado: $titulo";
+        $stmt = $conn->prepare("INSERT INTO notificaciones (ticket_id, mensaje, prioridad) VALUES (?, ?, ?)");
+        $stmt->bind_param("iss", $ticket_id, $mensaje_notif, $prioridad);
+        $stmt->execute();
         $stmt = $conn->prepare("
             INSERT INTO tickets (id_usuario, titulo, descripcion, categoria, prioridad, estado, referencia_falla) 
             VALUES (?, ?, ?, ?, ?, 'abierto', ?)

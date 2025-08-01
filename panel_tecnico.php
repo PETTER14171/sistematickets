@@ -56,10 +56,41 @@ if ($_SESSION['rol'] !== 'tecnico') {
     </style>
 </head>
 <body>
-
+    <?php
+        $alerta = $conn->query("
+            SELECT prioridad, mensaje, creado_en 
+            FROM notificaciones 
+            WHERE leido = FALSE 
+            ORDER BY creado_en DESC 
+            LIMIT 1
+        ")->fetch_assoc();
+    ?>
+    
     <h2>🔧 Bienvenido, <?= htmlspecialchars($_SESSION['nombre']) ?> (Área de TI)</h2>
 
+    <?php if ($alerta): ?>
+        <div style="
+            background-color: <?= $alerta['prioridad'] === 'alta' ? '#f8d7da' : ($alerta['prioridad'] === 'media' ? '#fff3cd' : '#d1ecf1') ?>;
+            color: #000;
+            padding: 12px;
+            border-left: 5px solid <?= $alerta['prioridad'] === 'alta' ? '#dc3545' : ($alerta['prioridad'] === 'media' ? '#ffc107' : '#17a2b8') ?>;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            animation: parpadeo <?= $alerta['prioridad'] === 'alta' ? '2s' : ($alerta['prioridad'] === 'media' ? '6s' : '10s') ?> infinite;
+        ">
+            ⚠️ <?= htmlspecialchars($alerta['mensaje']) ?> (<?= ucfirst($alerta['prioridad']) ?>)
+        </div>
+
+        <style>
+            @keyframes parpadeo {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.3; }
+            }
+        </style>
+    <?php endif; ?>
+
     <div class="opciones">
+        <a href="notificaciones.php">🔔 Ver notificaciones</a>
         <a href="admin_tickets.php">📋 Ver y administrar todos los tickets</a>
         <a href="fallas_comunes_admin.php">📚 Subir y editar guías de fallas comunes</a>
         <a href="crear_usuario.php">👥 Crear nuevos usuarios</a>
