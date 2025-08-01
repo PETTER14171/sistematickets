@@ -185,7 +185,7 @@ function verificarNuevaNotificacion() {
         .catch(err => console.error("Error al consultar notificaciones:", err));
 }
 
-setInterval(verificarNuevaNotificacion, 5000); // cada 5 segundos
+setInterval(verificarNuevaNotificacion, 2000); // cada 5 segundos
 verificarNuevaNotificacion(); // ejecuta al cargar
 </script>
 
@@ -195,7 +195,6 @@ verificarNuevaNotificacion(); // ejecuta al cargar
     50% { opacity: 0.3; }
 }
 </style>
-
 
 </body>
 </html>
