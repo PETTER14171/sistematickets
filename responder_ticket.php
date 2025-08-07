@@ -29,43 +29,47 @@ if (!$ticket) {
 }
 
 // Procesar nueva respuesta
-$respuesta = trim($_POST['respuesta']);
-$nuevo_estado = $_POST['estado'];
+// Procesar nueva respuesta
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $respuesta = isset($_POST['respuesta']) ? trim($_POST['respuesta']) : '';
+    $nuevo_estado = isset($_POST['estado']) ? $_POST['estado'] : '';
 
-if ($respuesta && $nuevo_estado) {
-    $archivo = null;
+    if ($respuesta && $nuevo_estado) {
+        $archivo = null;
 
-    if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
-        $archivo_nombre = basename($_FILES['archivo']['name']);
-        $archivo_ruta = "adjuntos/" . uniqid() . "_" . $archivo_nombre;
-        move_uploaded_file($_FILES['archivo']['tmp_name'], $archivo_ruta);
-        $archivo = $archivo_ruta;
+        if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
+            $archivo_nombre = basename($_FILES['archivo']['name']);
+            $archivo_ruta = "adjuntos/" . uniqid() . "_" . $archivo_nombre;
+            move_uploaded_file($_FILES['archivo']['tmp_name'], $archivo_ruta);
+            $archivo = $archivo_ruta;
+        }
+
+        // Guardar respuesta
+        $stmt = $conn->prepare("
+            INSERT INTO respuestas_ticket (ticket_id, usuario_id, mensaje, archivo_adjunto)
+            VALUES (?, ?, ?, ?)
+        ");
+        $stmt->bind_param("iiss", $ticket_id, $_SESSION['usuario_id'], $respuesta, $archivo);
+        $stmt->execute();
+
+        // Actualizar estado del ticket
+        $stmt = $conn->prepare("UPDATE tickets SET estado = ? WHERE id = ?");
+        $stmt->bind_param("si", $nuevo_estado, $ticket_id);
+        $stmt->execute();
+
+        // Marcar notificaciones relacionadas como leídas
+        $stmt = $conn->prepare("UPDATE notificaciones SET leido = TRUE WHERE ticket_id = ?");
+        $stmt->bind_param("i", $ticket_id);
+        $stmt->execute();
+
+        // Redireccionar con mensaje de éxito
+        header("Location: admin_tickets.php?exito=1");
+        exit;
+    } else {
+        $mensaje = "⚠️ Debes escribir una respuesta y elegir un estado.";
     }
-
-    // Guardar respuesta
-    $stmt = $conn->prepare("
-        INSERT INTO respuestas_ticket (ticket_id, usuario_id, mensaje, archivo_adjunto)
-        VALUES (?, ?, ?, ?)
-    ");
-    $stmt->bind_param("iiss", $ticket_id, $_SESSION['usuario_id'], $respuesta, $archivo);
-    $stmt->execute();
-
-    // Actualizar estado del ticket
-    $stmt = $conn->prepare("UPDATE tickets SET estado = ? WHERE id = ?");
-    $stmt->bind_param("si", $nuevo_estado, $ticket_id);
-    $stmt->execute();
-
-    // Marcar notificaciones relacionadas como leídas
-    $stmt = $conn->prepare("UPDATE notificaciones SET leido = TRUE WHERE ticket_id = ?");
-    $stmt->bind_param("i", $ticket_id);
-    $stmt->execute();
-
-    // Redireccionar con mensaje de éxito
-    header("Location: admin_tickets.php?exito=1");
-    exit;
-} else {
-    $mensaje = "⚠️ Debes escribir una respuesta y elegir un estado.";
 }
+
 
 // Obtener historial de respuestas
 $stmt = $conn->prepare("
