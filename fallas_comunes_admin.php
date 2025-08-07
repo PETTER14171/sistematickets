@@ -50,6 +50,8 @@ $fallas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         th { background-color: #e8f1ff; }
 
         .acciones a {
+            display: flex;
+            flex-direction: column;
             margin-right: 10px;
             text-decoration: none;
             padding: 6px 10px;
@@ -57,13 +59,29 @@ $fallas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             color: white;
         }
 
-        .editar { background-color: #007bff; }
+        .editar { 
+            background-color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+
         .eliminar { background-color: #dc3545; }
+
+                .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
 
-<h2>📚 Gestión de Fallas Comunes</h2>
+<h2>📚 Gestión de Fallas Comunes</h2><a href="/panel_tecnico.php" class="boton_volver">Volver</a>
 
 <a href="crear_falla.php" class="crear-btn">➕ Nueva Falla Común</a>
 
@@ -92,8 +110,8 @@ $fallas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                     <td><?= htmlspecialchars($f['autor']) ?></td>
                     <td><?= date('d/m/Y H:i', strtotime($f['creado_en'])) ?></td>
                     <td class="acciones">
-                        <a href="editar_falla.php?id=<?= $f['id'] ?>" class="editar">✏️ Editar</a>
-                        <a href="eliminar_falla.php?id=<?= $f['id'] ?>" class="eliminar" onclick="return confirm('¿Eliminar esta guía?')">🗑 Eliminar</a>
+                        <a href="editar_falla.php?id=<?= $f['id'] ?>" class="editar">Editar</a>
+                        <a href="eliminar_falla.php?id=<?= $f['id'] ?>" class="eliminar" onclick="return confirm('¿Eliminar esta guía?')">Eliminar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

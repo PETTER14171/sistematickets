@@ -60,11 +60,23 @@ $tickets = $result->fetch_all(MYSQLI_ASSOC);
         .boton:hover {
             background-color: #0056b3;
         }
+
+        .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
 
-<h2>📋 Administración de Tickets</h2>
+<h2>📋 Administración de Tickets</h2><a href="/panel_tecnico.php" class="boton_volver">Volver</a>
 
 <?php if (count($tickets) > 0): ?>
     <table>
@@ -99,6 +111,7 @@ $tickets = $result->fetch_all(MYSQLI_ASSOC);
             <?php endforeach; ?>
         </tbody>
     </table>
+
 <?php else: ?>
     <p>No hay tickets registrados aún.</p>
 <?php endif; ?>
