@@ -98,7 +98,7 @@ if ($_SESSION['rol'] !== 'tecnico') {
         <!-- Modal -->
         <div id="modalNotificaciones" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#00000066; z-index:9999; justify-content:center; align-items:center;">
             <div style="background:#fff; width:90%; max-width:800px; padding:20px; border-radius:8px; position:relative;">
-                <button onclick="cerrarModal()" style="position:absolute; top:10px; right:15px; background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:4px;">Cerrar ✖</button>
+                <button onclick="cerrarModal()" style="cursor: pointer; position:absolute; top:10px; right:15px; background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:4px;">Cerrar ✖</button>
                 <div id="contenidoNotificaciones">Cargando notificaciones...</div>
             </div>
         </div>

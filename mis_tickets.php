@@ -47,11 +47,24 @@ $tickets = $result->fetch_all(MYSQLI_ASSOC);
         .estado-en_proceso { color: orange; font-weight: bold; }
         .estado-resuelto { color: blue; font-weight: bold; }
         .estado-cerrado { color: gray; font-weight: bold; }
+        
+        .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 17px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
 
-<h2>📋 Mis tickets generados</h2>
+<h2>📋 Mis tickets generados <a href="/fallas_comunes_admin.php" class="boton_volver">Volver</a></h2>
 
 <?php if (count($tickets) > 0): ?>
     <table>

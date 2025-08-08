@@ -58,11 +58,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .crear-ticket:hover {
             background: #e0a800;
         }
+
+        .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 17px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
 
-<h2>🔍 Buscar solución a una falla común</h2>
+<h2>🔍 Buscar solución a una falla común <a href="/fallas_comunes_admin.php" class="boton_volver">Volver</a></h2>
 
 <form method="POST">
     <input type="text" name="busqueda" placeholder="Ej: impresora, VPN, Outlook..." value="<?= htmlspecialchars($busqueda) ?>" required>
@@ -75,11 +88,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="falla">
             <h3><?= htmlspecialchars($falla['titulo']) ?></h3>
             <strong>Categoría:</strong> <?= htmlspecialchars($falla['categoria']) ?><br><br>
+            
             <strong>Descripción:</strong>
             <p><?= nl2br(htmlspecialchars($falla['descripcion'])) ?></p>
 
             <strong>Pasos para solucionarlo:</strong>
             <p><?= nl2br(htmlspecialchars($falla['pasos_solucion'])) ?></p>
+
+            <?php if (!empty($falla['multimedia'])): ?>
+                <?php
+                    $archivo = $falla['multimedia'];
+                    $extension = strtolower(pathinfo($archivo, PATHINFO_EXTENSION));
+                    $ruta = 'fallamultimedia/' . $archivo;
+                ?>
+                <div style="margin-top: 10px;">
+                    <?php if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])): ?>
+                        <img src="<?= $ruta ?>" alt="Multimedia de la falla" style="max-width: 100%; border-radius: 5px; margin-top: 10px;">
+                    <?php elseif (in_array($extension, ['mp4', 'webm', 'ogg'])): ?>
+                        <video controls style="width: 100%; border-radius: 5px; margin-top: 10px;">
+                            <source src="<?= $ruta ?>" type="video/<?= $extension ?>">
+                            Tu navegador no soporta videos HTML5.
+                        </video>
+                    <?php else: ?>
+                        <p>🔗 <a href="<?= $ruta ?>" target="_blank">Ver archivo adjunto</a></p>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
 
             <a href="crear_ticket.php?referencia=<?= $falla['id'] ?>" class="crear-ticket">🛠 No resolvió mi problema</a>
         </div>

@@ -10,6 +10,8 @@ if ($_SESSION['rol'] !== 'tecnico') {
 $mensaje = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+
     $titulo = trim($_POST['titulo']);
     $descripcion = trim($_POST['descripcion']);
     $pasos = trim($_POST['pasos_solucion']);
@@ -17,25 +19,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $palabras_clave = trim($_POST['palabras_clave']);
     $archivo_nombre = null;
 
-    // Subida de archivo multimedia
-    if (!empty($_FILES['multimedia']['name'])) {
+    if (isset($_FILES['multimedia']) && $_FILES['multimedia']['error'] === UPLOAD_ERR_OK) {
         $nombre_original = $_FILES['multimedia']['name'];
-        $ext = pathinfo($nombre_original, PATHINFO_EXTENSION);
-        $nombre_unico = uniqid('media_') . '.' . $ext;
-        $ruta_destino = __DIR__ . '/../fallamultimedia/' . $nombre_unico;
-
-        // Validar tipo de archivo (solo imagen/video)
+        $ext = strtolower(pathinfo($nombre_original, PATHINFO_EXTENSION));
         $tipos_permitidos = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'webm', 'mov'];
-        if (!in_array(strtolower($ext), $tipos_permitidos)) {
-            $mensaje = "⚠️ Tipo de archivo no permitido.";
+
+        if (!in_array($ext, $tipos_permitidos)) {
+            $mensaje = "⚠️ Tipo de archivo no permitido ($ext).";
         } else {
+            $nombre_unico = uniqid('media_') . '.' . $ext;
+            $ruta_destino = __DIR__ . '/fallamultimedia/' . $nombre_unico;
+
+            if (!is_dir(dirname($ruta_destino))) {
+                mkdir(dirname($ruta_destino), 0755, true); // intenta crear si no existe
+            }
+
             if (move_uploaded_file($_FILES['multimedia']['tmp_name'], $ruta_destino)) {
                 $archivo_nombre = $nombre_unico;
             } else {
-                $mensaje = "⚠️ Error al subir el archivo.";
+                $mensaje = "❌ No se pudo mover el archivo al destino: $ruta_destino";
             }
         }
+    } elseif (isset($_FILES['multimedia']) && $_FILES['multimedia']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $mensaje = "❌ Error al subir archivo: código " . $_FILES['multimedia']['error'];
     }
+
 
     if ($mensaje === "" && $titulo && $descripcion && $pasos && $categoria && $palabras_clave) {
         $stmt = $conn->prepare("

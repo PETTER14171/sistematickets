@@ -18,7 +18,7 @@ $notifs = $conn->query("SELECT * FROM notificaciones ORDER BY creado_en DESC")->
 ?>
 
 <h2>🔔 Historial de notificaciones</h2>
-<button onclick="marcarNotificacionesLeidas()" style="background:#ffc107; border:none; padding:6px 10px; border-radius:4px; margin-bottom:10px;">✅ Marcar todas como leídas</button>
+<button onclick="marcarNotificacionesLeidas()" style="background:#ffc107; border:none; padding:6px 10px; border-radius:4px; margin-bottom:10px; cursor: pointer;">✅ Marcar todas como leídas</button>
 
 <table style="width:100%; border-collapse:collapse;">
     <thead>

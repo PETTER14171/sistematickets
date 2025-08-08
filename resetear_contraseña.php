@@ -74,12 +74,36 @@ $usuarios = $conn->query("SELECT id, nombre, correo, rol, activo FROM usuarios O
         .form-label {
             font-weight: bold;
         }
+        
+        .boton {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .boton:hover {
+            background-color: #0056b3;
+        }
+
+        .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 17px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
 
-<h2>🔐 Resetear contraseña de usuario</h2>
-
+<h2>🔐 Resetear contraseña de usuario<a href="/panel_tecnico.php" class="boton_volver">Volver</a></h2>
 <?php if ($mensaje): ?>
     <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
 <?php endif; ?>
@@ -100,6 +124,5 @@ $usuarios = $conn->query("SELECT id, nombre, correo, rol, activo FROM usuarios O
 
     <button type="submit">Actualizar contraseña</button>
 </form>
-
 </body>
 </html>

@@ -1,3 +1,5 @@
+crear_ticket.php
+
 <?php
 include __DIR__ . '/includes/config/verificar_sesion.php';
 include __DIR__ . '/includes/config/conexion.php';
@@ -82,11 +84,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 10px;
             border-radius: 5px;
         }
+
+        .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 17px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
 
-<h2>📝 Generar nuevo ticket</h2>
+<h2>📝 Generar nuevo ticket <a href="/fallas_comunes_admin.php" class="boton_volver">Volver</a></h2>
 
 <?php if ($mensaje): ?>
     <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>

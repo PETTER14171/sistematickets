@@ -38,6 +38,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
+        h2 { color: #333; }
+        .boton {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .boton:hover {
+            background-color: #0056b3;
+        }
+
+        .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 17px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
+    </style>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -45,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Crear Usuario</title>
 </head>
 <body>
-    <h2>Crear nuevo usuario</h2>
+    <h2>Crear nuevo usuario<a href="/panel_tecnico.php" class="boton_volver">Volver</a></h2>
 
     <?php if ($mensaje): ?>
         <p><?= htmlspecialchars($mensaje) ?></p>
