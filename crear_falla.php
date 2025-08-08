@@ -54,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sssssis", $titulo, $descripcion, $pasos, $categoria, $palabras_clave, $_SESSION['usuario_id'], $archivo_nombre);
 
         if ($stmt->execute()) {
-            $mensaje = "✅ Falla común registrada exitosamente.";
+            header("Location: fallas_comunes_admin.php?exito=1");
         } else {
             $mensaje = "❌ Error al registrar la falla.";
         }
     } elseif ($mensaje === "") {
-        $mensaje = "⚠️ Todos los campos son obligatorios (excepto multimedia).";
+        $mensaje = "⚠️ Todos los campos son obligatorios (esxcepto multimedia).";
     }
 }
 ?>
@@ -92,6 +92,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #2d662d;
             border-radius: 5px;
         }
+        .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 17px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -123,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <button type="submit">Guardar guía</button>
 </form>
-
+</br>
+<a href="/fallas_comunes_admin.php" class="boton_volver">Volver</a>
 </body>
 </html>

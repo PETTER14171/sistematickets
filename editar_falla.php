@@ -41,20 +41,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensaje = "⚠️ Tipo de archivo no permitido.";
         } else {
             $nombre_unico = uniqid('media_') . '.' . $ext;
-            $ruta_destino = __DIR__ . '/../fallamultimedia/' . $nombre_unico;
+            $ruta_destino = __DIR__ . '/fallamultimedia/' . $nombre_unico; // RUTA CORRECTA ✅
+
+            if (!is_dir(dirname($ruta_destino))) {
+                mkdir(dirname($ruta_destino), 0755, true);
+            }
 
             if (move_uploaded_file($_FILES['multimedia']['tmp_name'], $ruta_destino)) {
                 $nuevo_archivo = $nombre_unico;
 
                 // Eliminar archivo anterior si existía
-                if ($multimedia_actual && file_exists(__DIR__ . '/../fallamultimedia/' . $multimedia_actual)) {
-                    unlink(__DIR__ . '/../fallamultimedia/' . $multimedia_actual);
+                $ruta_anterior = __DIR__ . '/fallamultimedia/' . $multimedia_actual;
+                if ($multimedia_actual && file_exists($ruta_anterior)) {
+                    unlink($ruta_anterior);
                 }
             } else {
                 $mensaje = "⚠️ Error al subir el nuevo archivo.";
             }
         }
     }
+
 
     if ($mensaje === "" && $titulo && $descripcion && $pasos && $categoria && $palabras_clave) {
         $stmt = $conn->prepare("
@@ -65,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("ssssssi", $titulo, $descripcion, $pasos, $categoria, $palabras_clave, $nuevo_archivo, $id_falla);
 
         if ($stmt->execute()) {
-            $mensaje = "✅ Guía actualizada correctamente.";
+            header("Location: fallas_comunes_admin.php?editado=1");
             // Refrescar datos actualizados
             $falla = [
                 'titulo' => $titulo,
