@@ -4,11 +4,14 @@ $mensaje = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre']);
+    $campana = trim($_POST['campana']);
+    $puesto = trim($_POST['puesto']);
+    $estacion = trim($_POST['estacion']);
     $correo = trim($_POST['correo']);
     $password = $_POST['password'];
     $rol = $_POST['rol'];
 
-    if (empty($nombre) || empty($correo) || empty($password) || empty($rol)) {
+    if (empty($nombre) || empty($correo) || empty($password) || empty($rol) || empty($campana) || empty($puesto) || empty($puesto)) {
         $mensaje = "Todos los campos son obligatorios.";
     } else {
         $stmt = $conn->prepare("SELECT id FROM usuarios WHERE correo = ?");
@@ -22,10 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $password_segura = password_hash($password, PASSWORD_DEFAULT);
 
             $stmt = $conn->prepare("
-                INSERT INTO usuarios (nombre, correo, contraseña, rol, activo) 
-                VALUES (?, ?, ?, ?, 1)
+                INSERT INTO usuarios (nombre, correo, campana, puesto, estacion, contraseña, rol, activo) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
             ");
-            $stmt->bind_param("ssss", $nombre, $correo, $password_segura, $rol);
+            $stmt->bind_param("sssssss", $nombre, $campana, $puesto, $estacion, $correo, $password_segura, $rol);
 
             if ($stmt->execute()) {
                 $mensaje = "✅ Usuario creado exitosamente.";
@@ -84,6 +87,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="" method="POST">
         <label>Nombre:</label><br>
         <input type="text" name="nombre" required><br><br>
+       
+        <label>Campaña:</label><br>
+        <input type="text" name="campana" required><br><br>
+      
+        <label>Pusto:</label><br>
+        <input type="text" name="puesto" required><br><br>
+        
+        <label>Estacion:</label><br>
+        <input type="text" name="estacion" required><br><br>
 
         <label>Correo:</label><br>
         <input type="email" name="correo" required><br><br>
