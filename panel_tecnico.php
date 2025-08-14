@@ -106,7 +106,8 @@ if ($_SESSION['rol'] !== 'tecnico') {
         <a href="admin_tickets.php">📋 Ver y administrar todos los tickets</a>
         <a href="fallas_comunes_admin.php">📚 Subir y editar guías de fallas comunes</a>
         <a href="crear_usuario.php">👥 Crear nuevos usuarios</a>
-        <a href="resetear_contraseña.php">👥 usuarios</a>
+        <a href="usuarios.php">👥 Usuarios</a>
+        <a href="resetear_contraseña.php">🔓 Cambiar contraseña</a>
         <a href="logout.php" class="logout">🚪 Cerrar sesión</a>
     </div>
 
