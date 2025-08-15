@@ -1,8 +1,8 @@
 <?php
-include __DIR__ . '/includes/config/verificar_sesion.php';
-include __DIR__ . '/includes/config/conexion.php';
-
+require 'includes/funciones.php';
+incluirTemplate ('header');
 ?>
+
 <main>
     <h2>Bienvenido al Sistema de Gestión de Tickets</h2>
     <p>Accede al portal de atención para agentes, técnicos y administradores. Gestiona reportes, consulta guías de solución o da seguimiento a tus incidencias con eficiencia y rapidez.</p>

@@ -1,0 +1,47 @@
+@use '../base/variables' as var;
+@use '../base/mixins' as mix;
+@use 'sass:color';
+
+.header {
+    background-color: var.$fondo;
+    padding: 1rem 0 3rem 0;
+}
+
+.contenido-header {
+
+    .barra {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 3rem;
+    }
+
+    .logo {
+        a {
+            display: inline-block;
+        }
+
+        img {
+            width: 300px;
+            height: auto;
+        }
+    }
+
+    .derecha {
+        .navegacion {
+            display: flex;
+            gap: 2rem;
+
+            a {
+                text-decoration: none;
+                color: var.$secundario;
+                font-weight: 600;
+                margin-top: 30px;
+            }
+            a:hover {
+            // background-color: var.$fondo-hover;
+            color: var.$blanco;
+            }
+        }
+}
+}
