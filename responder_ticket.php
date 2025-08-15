@@ -124,6 +124,18 @@ $respuestas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             margin-top: 10px;
             padding-top: 10px;
         }
+
+        .boton_volver {
+            background-color: #0056b3;
+            color: white;
+            padding: 6px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .boton_volver:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -182,6 +194,8 @@ $respuestas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         <button type="submit">Enviar respuesta</button>
     </form>
 </div>
+</br>
+<a href="/panel_tecnico.php" class="boton_volver">Volver</a>
 
 </body>
 </html>
