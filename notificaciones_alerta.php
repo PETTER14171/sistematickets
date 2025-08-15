@@ -6,20 +6,24 @@ if ($_SESSION['rol'] !== 'tecnico') {
     exit;
 }
 
-$alerta = $conn->query("
+$resultado = $conn->query("
     SELECT prioridad, mensaje, creado_en 
     FROM notificaciones 
     WHERE leido = FALSE 
-    ORDER BY creado_en DESC 
-    LIMIT 1
-")->fetch_assoc();
+    ORDER BY creado_en DESC
+");
 
-if ($alerta) {
-    echo json_encode([
-        'mensaje' => $alerta['mensaje'],
-        'prioridad' => $alerta['prioridad'],
-        'creado_en' => $alerta['creado_en']
-    ]);
-} else {
-    echo json_encode(null);
+$alertas = [];
+
+if ($resultado && $resultado->num_rows > 0) {
+    while ($fila = $resultado->fetch_assoc()) {
+        $alertas[] = [
+            'mensaje' => $fila['mensaje'],
+            'prioridad' => $fila['prioridad'],
+            'creado_en' => $fila['creado_en']
+        ];
+    }
 }
+
+header('Content-Type: application/json');
+echo json_encode($alertas);

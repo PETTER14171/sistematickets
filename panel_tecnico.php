@@ -61,8 +61,7 @@ if ($_SESSION['rol'] !== 'tecnico') {
             SELECT prioridad, mensaje, creado_en 
             FROM notificaciones 
             WHERE leido = FALSE 
-            ORDER BY creado_en DESC 
-            LIMIT 1
+            ORDER BY creado_en DESC
         ")->fetch_assoc();
     ?>
     
@@ -70,27 +69,6 @@ if ($_SESSION['rol'] !== 'tecnico') {
 
     <!-- Alerta dinámica -->
     <div id="alertaDinamica"></div>
-
-    <?php if ($alerta): ?>
-        <div style="
-            background-color: <?= $alerta['prioridad'] === 'alta' ? '#f8d7da' : ($alerta['prioridad'] === 'media' ? '#fff3cd' : '#d1ecf1') ?>;
-            color: #000;
-            padding: 12px;
-            border-left: 5px solid <?= $alerta['prioridad'] === 'alta' ? '#dc3545' : ($alerta['prioridad'] === 'media' ? '#ffc107' : '#17a2b8') ?>;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            animation: parpadeo <?= $alerta['prioridad'] === 'alta' ? '2s' : ($alerta['prioridad'] === 'media' ? '6s' : '10s') ?> infinite;
-        ">
-            ⚠️ <?= htmlspecialchars($alerta['mensaje']) ?> (<?= ucfirst($alerta['prioridad']) ?>)
-        </div>
-
-        <style>
-            @keyframes parpadeo {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.3; }
-            }
-        </style>
-    <?php endif; ?>
 
     <div class="opciones">
                 <!-- Agrega este botón donde quieras mostrarlo -->
@@ -158,7 +136,7 @@ function mostrarAlerta(mensaje, prioridad) {
         baja: '#17a2b8'
     }[prioridad] || '#6c757d';
 
-    document.getElementById("alertaDinamica").innerHTML = `
+    return `
         <div style="
             background-color: ${colorFondo};
             color: #000;
@@ -177,14 +155,18 @@ function verificarNuevaNotificacion() {
     fetch("notificaciones_alerta.php")
         .then(res => res.json())
         .then(data => {
-            if (data) {
-                mostrarAlerta(data.mensaje, data.prioridad);
+            const contenedor = document.getElementById("alertaDinamica");
+            if (Array.isArray(data) && data.length > 0) {
+                contenedor.innerHTML = data.map(alerta => 
+                    mostrarAlerta(alerta.mensaje, alerta.prioridad)
+                ).join("");
             } else {
-                document.getElementById("alertaDinamica").innerHTML = "";
+                contenedor.innerHTML = "";
             }
         })
         .catch(err => console.error("Error al consultar notificaciones:", err));
 }
+
 
 setInterval(verificarNuevaNotificacion, 2000); // cada 5 segundos
 verificarNuevaNotificacion(); // ejecuta al cargar
