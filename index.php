@@ -13,9 +13,7 @@ incluirTemplate ('header');
 
 </main>
 
-<footer>
-    &copy; <?= date('Y') ?> TalkHub. Todos los derechos reservados.
-</footer>
 
-</body>
-</html>
+<?php 
+incluirTemplate('footer');
+?>
