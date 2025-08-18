@@ -1,0 +1,11 @@
+@use '../base/variables' as var;
+@use '../base/mixins' as mix;
+@use 'sass:color';
+
+
+.contenido-1{
+    h2{
+        color: var.$secundario;
+    }
+
+}

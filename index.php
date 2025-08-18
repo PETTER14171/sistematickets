@@ -4,11 +4,13 @@ incluirTemplate ('header');
 ?>
 
 <main class="contenedor">
-    <div class="contenido-bloque contenido-1">
+
+    <section class="contenido-bloque contenido-1">
         <h2>Bienvenido al Sistema de Gestión de Tickets</h2>
         <p>Accede al portal de atención para agentes, técnicos y administradores. Gestiona reportes, consulta guías de solución o da seguimiento a tus incidencias con eficiencia y rapidez.</p>
-        <a href="login.php" class="btn-login">Iniciar sesión</a>
-    </div>
+        <div><a href="login.php" class="btn-login">Iniciar sesión</a></div>
+    </section>
+
 </main>
 
 <footer>
