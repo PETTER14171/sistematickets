@@ -41,77 +41,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
 
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
-        h2 { color: #333; }
-        .boton {
-            background-color: #007bff;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
 
-        .boton:hover {
-            background-color: #0056b3;
-        }
-
-        .boton_volver {
-            background-color: #0056b3;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 17px;
-        }
-
-        .boton_volver:hover {
-            background-color: #dc3545;
-        }
-    </style>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Usuario</title>
-</head>
-<body>
-    <h2>Crear nuevo usuario<a href="/panel_tecnico.php" class="boton_volver">Volver</a></h2>
-
+<h2>Crear nuevo usuario</h2>
     <?php if ($mensaje): ?>
         <p><?= htmlspecialchars($mensaje) ?></p>
     <?php endif; ?>
 
+<section class="login seccion">
     <form action="" method="POST">
-        <label>Nombre:</label><br>
-        <input type="text" name="nombre" required><br><br>
-       
-        <label>Campaña:</label><br>
-        <input type="text" name="campana" required><br><br>
-      
-        <label>Pusto:</label><br>
-        <input type="text" name="puesto" required><br><br>
-        
-        <label>Estacion:</label><br>
-        <input type="text" name="estacion" required><br><br>
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required>
 
-        <label>Correo:</label><br>
-        <input type="email" name="correo" required><br><br>
+        <label>Campaña:</label>
+        <input type="text" name="campana" required>
 
-        <label>Contraseña:</label><br>
-        <input type="password" name="password" required><br><br>
+        <label>Puesto:</label>
+        <input type="text" name="puesto" required>
 
-        <label>Rol:</label><br>
+        <label>Estacion:</label>
+        <input type="text" name="estacion" required>
+
+        <label>Correo:</label>
+        <input type="email" name="correo" required>
+
+        <label>Contraseña:</label>
+        <input type="password" name="password" required>
+
+        <label>Rol:</label>
         <select name="rol" required>
             <option value="">Seleccionar rol</option>
             <option value="agente">Agente</option>
             <option value="tecnico">Técnico</option>
             <option value="admin">Administrador</option>
-        </select><br><br>
+        </select>
 
         <button type="submit">Crear Usuario</button>
     </form>
-</body>
-</html>
+</section>
+<a href="/panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
+<?php 
+incluirTemplate('footer');
+?>

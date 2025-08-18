@@ -1,5 +1,11 @@
 @use '../base/variables' as var;
 
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
 html {
     font-size: 62.5%;
     box-sizing: border-box;
@@ -11,6 +17,7 @@ body {
     font-family: var.$fuente_principal;
     font-size: 1.6rem;
     line-height: 1.8;
+    min-height: 100vh;
 }
 p {
     font-size: 1.8rem;
@@ -47,4 +54,8 @@ h3 {
 }
 h4 {
     font-size: 2.6rem;
+}
+
+main {
+    flex: 1; 
 }
