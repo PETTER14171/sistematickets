@@ -1,5 +1,12 @@
 @use '../base/variables' as var;
 
+.contenedor {
+    width: 95%;
+    max-width: 120rem;
+    margin: 0 auto;
+}
+
+
 .seccion {
     margin-top: calc(var.$separacion / 2);
     margin-bottom: calc(var.$separacion / 2);
