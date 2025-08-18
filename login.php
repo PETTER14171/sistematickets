@@ -17,27 +17,30 @@ if (isset($_SESSION['rol'])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Iniciar Sesión</title>
-</head>
-<body>
-    <h2>Iniciar Sesión</h2>
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
 
     <?php if (isset($_GET['error'])): ?>
         <p style="color:red;"><?= htmlspecialchars($_GET['error']) ?></p>
     <?php endif; ?>
 
-    <form action="procesar_login.php" method="POST">
-        <label>Correo:</label><br>
-        <input type="email" name="correo" required><br><br>
+    <h2>Iniciar Sesión</h2>
 
-        <label>Contraseña:</label><br>
-        <input type="password" name="password" required><br><br>
+    <section class="login seccion">
+        <form action="procesar_login.php" method="POST">
+            <label>Correo:</label>
+            <input type="email" name="correo" required>
 
-        <button type="submit">Iniciar sesión</button>
-    </form>
-</body>
-</html>
+            <label>Contraseña:</label>
+            <input type="password" name="password" required>
+
+            <button type="submit">Iniciar sesión</button>
+        </form>
+    </section>
+
+
+<?php 
+incluirTemplate('footer');
+?>
