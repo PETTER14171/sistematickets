@@ -1,3 +1,37 @@
 @use '../base/variables' as var;
 @use '../base/mixins' as mix;
 @use 'sass:color';
+
+.btn-1{
+    background-clip: padding-box;
+    background-color: var.$secundario;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    box-shadow: var.$difuminado_botones;
+    box-sizing: border-box;
+    color: var.$blanco;
+    display: block;
+    margin: 1rem auto 0 auto;
+    min-height: 3rem;
+    padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+    position: relative;
+    transition: all 250ms;
+    user-select: none;
+    width: fit-content;
+}
+
+.btn-1:hover,
+.btn-1:focus {
+  background-color: #fb8332;
+  box-shadow: var.$difuminado;
+}
+
+.btn-1:hover {
+  transform: translateY(-1px);
+}
+
+.btn-1 {
+  background-color: #c85000;
+  box-shadow: rgba(0, 0, 0, .06) 0 2px 4px;
+  transform: translateY(0);
+}
