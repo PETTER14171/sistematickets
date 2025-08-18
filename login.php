@@ -26,6 +26,7 @@ incluirTemplate ('header');
         <p style="color:red;"><?= htmlspecialchars($_GET['error']) ?></p>
     <?php endif; ?>
 
+<main>
     <h2>Iniciar Sesión</h2>
 
     <section class="login seccion">
@@ -39,7 +40,7 @@ incluirTemplate ('header');
             <button type="submit">Iniciar sesión</button>
         </form>
     </section>
-
+</main>
 
 <?php 
 incluirTemplate('footer');

@@ -42,3 +42,41 @@
     margin: 1rem 0 2rem 2rem; // separa del contenido y lo alinea a la izquierda
     display: inline-block;
 }
+
+.btn-opcion {
+  background-color: var.$secundario;
+  color: #fff;
+  text-decoration: none;
+  padding: 1.5rem 1rem;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: color.scale(var.$secundario, $lightness: -10%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.btn-opcion.verde {
+  background-color: #28a745;
+
+  &:hover {
+    background-color: color.scale(#28a745, $lightness: -10%);
+  }
+}
+
+.btn-opcion.rojo {
+  background-color: #dc3545;
+
+  &:hover {
+    background-color: color.scale(#dc3545, $lightness: -10%);
+  }
+}

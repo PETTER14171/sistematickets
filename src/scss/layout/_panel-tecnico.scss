@@ -1,0 +1,19 @@
+@use '../base/variables' as var;
+@use '../base/mixins' as mix;
+@use 'sass:color';
+
+
+.panel-opciones {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(350px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    a{
+        font-size: 2.5rem;
+    }
+
+}
+
