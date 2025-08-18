@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700,900');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
 
 // Fuentes
 $fuente_principal: 'Lato', sans-serif;
@@ -11,15 +11,18 @@ $desktop: 1024px;
 // Colores
 $grisOscuro: rgb(49, 45, 45);
 $blanco:#fff;
+$seccion:#f9f9f9; 
 $secundario: #f05112;
 $fondo: #1b2a4e;
 $fondo-hover: #0f1627;
-
-
-$separacion: 5rem;
+$difuminado: 0 4px 12px rgba(0, 0, 0, 0.1);
 
 // Fuentes
 $delgada: 300;
 $regular : 400;
 $bold: 700;
-$black: 900
+$black: 900;
+
+// otros
+$separacion: 5rem;
+$margen: 2.5rem 2.5rem;

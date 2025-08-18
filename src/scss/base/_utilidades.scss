@@ -6,7 +6,6 @@
     margin: 0 auto;
 }
 
-
 .seccion {
     margin-top: calc(var.$separacion / 2);
     margin-bottom: calc(var.$separacion / 2);
@@ -22,4 +21,12 @@
 
 .w-100{
     width: 100%;
+}
+
+.contenido-bloque{
+    background-color: var.$seccion;
+    box-shadow: var.$difuminado;
+    border-radius: 8px;
+    padding: 2rem;
+    margin: var.$margen;
 }
