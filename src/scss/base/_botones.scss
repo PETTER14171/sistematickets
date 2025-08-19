@@ -38,7 +38,7 @@
 
 
 .btn-volver {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
     margin: 1rem 0 2rem 2rem; // separa del contenido y lo alinea a la izquierda
     display: inline-block;
 }
@@ -123,4 +123,15 @@
 .button-input:focus {
   box-shadow: rgba(131, 192, 253, 0.5) 0 0 0 3px;
   outline: none;
+}
+
+.button-enviar {
+    background: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+}
+.button-enviar:hover {
+    background: #218838;
 }

@@ -83,85 +83,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Ticket</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        form { max-width: 600px; }
-        label { font-weight: bold; }
-        textarea, input, select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 12px;
-        }
-        button {
-            background: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #218838;
-        }
-        .mensaje {
-            margin-bottom: 15px;
-            color: #155724;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            padding: 10px;
-            border-radius: 5px;
-        }
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
 
-        .boton_volver {
-            background-color: #0056b3;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 17px;
-        }
+<main>
+    <section class="contenido-bloque">
+        <h1>📝 Generar nuevo ticket</h1>
 
-        .boton_volver:hover {
-            background-color: #dc3545;
-        }
-    </style>
-</head>
-<body>
+        <?php if ($mensaje): ?>
+            <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
+        <?php endif; ?>
 
-<h2>📝 Generar nuevo ticket <a href="/fallas_comunes_admin.php" class="boton_volver">Volver</a></h2>
+        <form class="formulario-ticket" method="POST">
+            <label for="titulo">Título del problema:</label>
+            <input type="text" name="titulo" id="titulo" value="<?= htmlspecialchars($titulo) ?>" required>
 
-<?php if ($mensaje): ?>
-    <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
-<?php endif; ?>
+            <label for="descripcion">Descripción detallada:</label>
+            <textarea name="descripcion" id="descripcion" rows="5" required><?= htmlspecialchars($descripcion) ?></textarea>
 
-<form method="POST">
-    <label for="titulo">Título del problema:</label>
-    <input type="text" name="titulo" id="titulo" value="<?= htmlspecialchars($titulo) ?>" required>
+            <label for="categoria">Categoría:</label>
+            <select name="categoria" id="categoria" required>
+                <option value="">Selecciona una categoría</option>
+                <?php foreach ($categorias_disponibles as $cat): ?>
+                    <option value="<?= htmlspecialchars($cat) ?>" <?= $cat === $categoria ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($cat) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
 
-    <label for="descripcion">Descripción detallada:</label>
-    <textarea name="descripcion" id="descripcion" rows="5" required><?= htmlspecialchars($descripcion) ?></textarea>
+            <?php if ($referencia_falla): ?>
+                <input type="hidden" name="referencia_falla" value="<?= $referencia_falla ?>">
+                <p><em>Este ticket está relacionado con la falla común ID #<?= $referencia_falla ?></em></p>
+            <?php endif; ?>
 
-    <label for="categoria">Categoría:</label>
-    <select name="categoria" id="categoria" required>
-        <option value="">Selecciona una categoría</option>
-        <?php foreach ($categorias_disponibles as $cat): ?>
-            <option value="<?= htmlspecialchars($cat) ?>" <?= $cat === $categoria ? 'selected' : '' ?>>
-                <?= htmlspecialchars($cat) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+            <button class="button-enviar" type="submit">Enviar Ticket</button>
+        </form>
+    </section>
+     <a href="/fallas_comunes_admin.php" class="btn-volver btn-1">Volver</a>
+</main>
 
-    <?php if ($referencia_falla): ?>
-        <input type="hidden" name="referencia_falla" value="<?= $referencia_falla ?>">
-        <p><em>Este ticket está relacionado con la falla común ID #<?= $referencia_falla ?></em></p>
-    <?php endif; ?>
-
-    <button type="submit">Enviar Ticket</button>
-</form>
-
-</body>
-</html>
+<?php 
+incluirTemplate('footer');
+?>
