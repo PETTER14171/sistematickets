@@ -1,0 +1,20 @@
+@use '../base/variables' as var;
+@use '../base/mixins' as mix;
+@use 'sass:color';
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+th, td {
+    border: 1px solid var.$bordes;
+    padding: 10px;
+    text-align: left;
+}
+th { background-color: var.$secundario; color:var.$blanco; border: 1px solid var.$secundario; text-align: center;}
+.estado-abierto { color: green; font-weight: bold; }
+.estado-en_proceso { color: orange; font-weight: bold; }
+.estado-resuelto { color: blue; font-weight: bold; }
+.estado-cerrado { color: gray; font-weight: bold; }
+
