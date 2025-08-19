@@ -29,98 +29,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Centro de Autoservicio</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h2 { color: #333; }
-        form { margin-bottom: 20px; }
-        .falla {
-            border: 1px solid #ccc;
-            background: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-        }
-        .falla h3 { margin-top: 0; }
-        .crear-ticket {
-            display: inline-block;
-            margin-top: 10px;
-            background: #ffc107;
-            color: #000;
-            padding: 5px 10px;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-        .crear-ticket:hover {
-            background: #e0a800;
-        }
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
 
-        .boton_volver {
-            background-color: #0056b3;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 17px;
-        }
+<main>
+    <h3>Buscar solución a una falla común </h3>
+    <form method="POST" class="form-control">
+        <input class="form-control-input" type="text" name="busqueda" placeholder="Ej: impresora, VPN, Outlook..." value="<?= htmlspecialchars($busqueda) ?>" required>
+        <button class="button-input" type="submit">Buscar</button>
+    </form>
 
-        .boton_volver:hover {
-            background-color: #dc3545;
-        }
-    </style>
-</head>
-<body>
+    <?php if ($resultados): ?>
+        <h1>Resultados encontrados:</h1>
+            <div class="grid-fallas">
+                <?php foreach ($resultados as $falla): ?>
+                    <?php
+                        $archivo = $falla['multimedia'];
+                        $extension = strtolower(pathinfo($archivo, PATHINFO_EXTENSION));
+                        $ruta = 'fallamultimedia/' . $archivo;
+                    ?>
+                    <div class="falla" onclick="abrirModalFalla(<?= $falla['id'] ?>)">
+                        <h3><?= htmlspecialchars($falla['titulo']) ?></h3>
 
-<h2>🔍 Buscar solución a una falla común <a href="/fallas_comunes_admin.php" class="boton_volver">Volver</a></h2>
+                        <?php if (!empty($archivo)): ?>
+                            <?php if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])): ?>
+                                <div class="media-wrapper">
+                                    <img src="<?= $ruta ?>" alt="Multimedia de la falla">
+                                </div>
+                            <?php elseif (in_array($extension, ['mp4', 'webm', 'ogg'])): ?>
+                                <div class="media-wrapper">
+                                    <video muted autoplay loop>
+                                        <source src="<?= $ruta ?>" type="video/<?= $extension ?>">
+                                    </video>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
 
-<form method="POST">
-    <input type="text" name="busqueda" placeholder="Ej: impresora, VPN, Outlook..." value="<?= htmlspecialchars($busqueda) ?>" required>
-    <button type="submit">Buscar</button>
-</form>
+                    <!-- Modal -->
+                    <div id="modal-falla-<?= $falla['id'] ?>" class="modal-falla">
+                        <div class="modal-contenido">
+                            <button class="cerrar-modal" onclick="cerrarModalFalla(<?= $falla['id'] ?>)">✖</button>
 
-<?php if ($resultados): ?>
-    <h3>Resultados encontrados:</h3>
-    <?php foreach ($resultados as $falla): ?>
-        <div class="falla">
-            <h3><?= htmlspecialchars($falla['titulo']) ?></h3>
-            <strong>Categoría:</strong> <?= htmlspecialchars($falla['categoria']) ?><br><br>
-            
-            <strong>Descripción:</strong>
-            <p><?= nl2br(htmlspecialchars($falla['descripcion'])) ?></p>
+                            <?php if (!empty($archivo)): ?>
+                                <?php if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])): ?>
+                                    <div class="media-modal">
+                                        <img src="<?= $ruta ?>" alt="Imagen de la falla">
+                                    </div>
+                                <?php elseif (in_array($extension, ['mp4', 'webm', 'ogg'])): ?>
+                                    <div class="media-modal">
+                                        <video controls>
+                                            <source src="<?= $ruta ?>" type="video/<?= $extension ?>">
+                                        </video>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
 
-            <strong>Pasos para solucionarlo:</strong>
-            <p><?= nl2br(htmlspecialchars($falla['pasos_solucion'])) ?></p>
+                            <h3><?= htmlspecialchars($falla['titulo']) ?></h3>
+                            <p><strong>Categoría:</strong> <?= htmlspecialchars($falla['categoria']) ?></p>
+                            <p><strong>Descripción:</strong> <?= nl2br(htmlspecialchars($falla['descripcion'])) ?></p>
+                            <p><strong>Pasos:</strong> <?= nl2br(htmlspecialchars($falla['pasos_solucion'])) ?></p>
+                            <a href="crear_ticket.php?referencia=<?= $falla['id'] ?>" class="crear-ticket">🛠 No resolvió mi problema</a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
-            <?php if (!empty($falla['multimedia'])): ?>
-                <?php
-                    $archivo = $falla['multimedia'];
-                    $extension = strtolower(pathinfo($archivo, PATHINFO_EXTENSION));
-                    $ruta = 'fallamultimedia/' . $archivo;
-                ?>
-                <div style="margin-top: 10px;">
-                    <?php if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])): ?>
-                        <img src="<?= $ruta ?>" alt="Multimedia de la falla" style="max-width: 100%; border-radius: 5px; margin-top: 10px;">
-                    <?php elseif (in_array($extension, ['mp4', 'webm', 'ogg'])): ?>
-                        <video controls style="width: 100%; border-radius: 5px; margin-top: 10px;">
-                            <source src="<?= $ruta ?>" type="video/<?= $extension ?>">
-                            Tu navegador no soporta videos HTML5.
-                        </video>
-                    <?php else: ?>
-                        <p>🔗 <a href="<?= $ruta ?>" target="_blank">Ver archivo adjunto</a></p>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
+    <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
+        <p>No se encontraron coincidencias. Puedes <a href="crear_ticket.php">crear un ticket</a>.</p>
+    <?php endif; ?>
 
-            <a href="crear_ticket.php?referencia=<?= $falla['id'] ?>" class="crear-ticket">🛠 No resolvió mi problema</a>
-        </div>
-    <?php endforeach; ?>
-<?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
-    <p>No se encontraron coincidencias. Puedes <a href="crear_ticket.php">crear un ticket</a>.</p>
-<?php endif; ?>
+    <a href="/fallas_comunes_admin.php" class="btn-1 btn-volver">← Volver</a>
+</main>
 
-</body>
-</html>
+<?php 
+incluirTemplate('footer');
+?>
