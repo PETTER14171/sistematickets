@@ -23,7 +23,7 @@ incluirTemplate ('header');
 ?>
 
 <main>
-    <h2>📚 Gestión de Fallas Comunes<a href="/panel_tecnico.php" class="btn-1 btn-volver">Volver</a></h2>
+    <h2>📚 Gestión de Fallas Comunes <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
 
     <a href="crear_falla.php" class="crear-btn">➕ Nueva Falla Común</a>
 

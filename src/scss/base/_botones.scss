@@ -149,9 +149,7 @@
 }
 
 .acciones a {
-  display: flex;
-  flex-direction: column;
-  margin-right: 10px;
+  margin-right: 4px;
   text-decoration: none;
   padding: 6px 10px;
   border-radius: 4px;
@@ -174,4 +172,32 @@
   text-decoration: none;
   border-radius: 4px;
 }
+
+.volver {
+  background: #343a40;
+  color: #fff;
+  padding: 6px 12px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 1.5rem;
+}
+
+.volver:hover {
+  background-color: #000;
+}
+
+.toggle {
+  background-color: #17a2b8;
+}
+
+.activo {
+  color: green;
+  font-weight: bold;
+}
+
+.inactivo {
+  color: red;
+  font-weight: bold;
+}
+
 
