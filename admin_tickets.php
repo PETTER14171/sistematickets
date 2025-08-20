@@ -19,102 +19,52 @@ $result = $stmt->get_result();
 $tickets = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Administrar Tickets</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
-        h2 { color: #333; }
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #fff;
-        }
+<main>
+    <h2>📋 Administración de Tickets<a href="/panel_tecnico.php" class="btn-1 btn-volver">Volver</a></h2>
 
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: left;
-        }
-
-        th { background-color: #e8f1ff; }
-        tr:hover { background-color: #f1f1f1; }
-
-        .estado-abierto { color: green; font-weight: bold; }
-        .estado-en_proceso { color: orange; font-weight: bold; }
-        .estado-resuelto { color: blue; font-weight: bold; }
-        .estado-cerrado { color: gray; font-weight: bold; }
-
-        .boton {
-            background-color: #007bff;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .boton:hover {
-            background-color: #0056b3;
-        }
-
-        .boton_volver {
-            background-color: #0056b3;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .boton_volver:hover {
-            background-color: #dc3545;
-        }
-    </style>
-</head>
-<body>
-
-<h2>📋 Administración de Tickets</h2><a href="/panel_tecnico.php" class="boton_volver">Volver</a>
-
-<?php if (count($tickets) > 0): ?>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Título</th>
-                <th>Agente</th>
-                <th>Categoría</th>
-                <th>Prioridad</th>
-                <th>Estado</th>
-                <th>Falla relacionada</th>
-                <th>Creado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($tickets as $t): ?>
+    <?php if (count($tickets) > 0): ?>
+        <table>
+            <thead>
                 <tr>
-                    <td>#<?= $t['id'] ?></td>
-                    <td><?= htmlspecialchars($t['titulo']) ?></td>
-                    <td><?= htmlspecialchars($t['nombre_agente']) ?></td>
-                    <td><?= htmlspecialchars($t['categoria']) ?></td>
-                    <td><?= ucfirst($t['prioridad']) ?></td>
-                    <td class="estado-<?= $t['estado'] ?>"><?= ucfirst(str_replace('_', ' ', $t['estado'])) ?></td>
-                    <td><?= $t['titulo_falla'] ? htmlspecialchars($t['titulo_falla']) : '-' ?></td>
-                    <td><?= date('d/m/Y H:i', strtotime($t['creado_en'])) ?></td>
-                    <td>
-                        <a href="responder_ticket.php?id=<?= $t['id'] ?>" class="boton">Responder</a>
-                    </td>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Agente</th>
+                    <th>Categoría</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                    <th>Falla relacionada</th>
+                    <th>Creado</th>
+                    <th>Acciones</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($tickets as $t): ?>
+                    <tr>
+                        <td>#<?= $t['id'] ?></td>
+                        <td><?= htmlspecialchars($t['titulo']) ?></td>
+                        <td><?= htmlspecialchars($t['nombre_agente']) ?></td>
+                        <td><?= htmlspecialchars($t['categoria']) ?></td>
+                        <td><?= ucfirst($t['prioridad']) ?></td>
+                        <td class="estado-<?= $t['estado'] ?>"><?= ucfirst(str_replace('_', ' ', $t['estado'])) ?></td>
+                        <td><?= $t['titulo_falla'] ? htmlspecialchars($t['titulo_falla']) : '-' ?></td>
+                        <td><?= date('d/m/Y H:i', strtotime($t['creado_en'])) ?></td>
+                        <td>
+                            <a href="responder_ticket.php?id=<?= $t['id'] ?>" class="boton-responder">Responder</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
 
-<?php else: ?>
-    <p>No hay tickets registrados aún.</p>
-<?php endif; ?>
-
-</body>
-</html>
+    <?php else: ?>
+        <p>No hay tickets registrados aún.</p>
+    <?php endif; ?>
+</main>
+<?php 
+incluirTemplate('footer');
+?>
