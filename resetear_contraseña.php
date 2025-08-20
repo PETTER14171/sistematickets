@@ -34,95 +34,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $usuarios = $conn->query("SELECT id, nombre, correo, rol, activo FROM usuarios ORDER BY nombre ASC")->fetch_all(MYSQLI_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Resetear Contraseña de Usuario</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 30px; }
-        h2 { margin-bottom: 20px; }
-        form {
-            max-width: 500px;
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-        select, input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-        }
-        button {
-            background: #ffc107;
-            color: #000;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .mensaje {
-            margin-bottom: 15px;
-            background: #e2f7e2;
-            color: #155724;
-            padding: 10px;
-            border: 1px solid #c3e6cb;
-            border-left: 5px solid #28a745;
-            border-radius: 5px;
-        }
-        .form-label {
-            font-weight: bold;
-        }
-        
-        .boton {
-            background-color: #007bff;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
+<main>
+    <h2>🔐 Resetear contraseña de usuario <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
+    <?php if ($mensaje): ?>
+        <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
+    <?php endif; ?>
+    <section class="seccion  bloque-resetear">
+        <form class="form-resetear" method="POST">
+            <label class="form-label">Seleccionar usuario:</label>
+            <select class="select-resetear" name="usuario_id" required>
+                <option value="">-- Selecciona un usuario --</option>
+                <?php foreach ($usuarios as $u): ?>
+                    <option value="<?= $u['id'] ?>">
+                        <?= htmlspecialchars($u['nombre']) ?> (<?= $u['correo'] ?>) - <?= ucfirst($u['rol']) ?> <?= $u['activo'] ? '' : '[Inactivo]' ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
 
-        .boton:hover {
-            background-color: #0056b3;
-        }
+            <label class="form-label">Nueva contraseña:</label>
+            <input class="input-resetear" type="password" name="nueva_contraseña" required>
 
-        .boton_volver {
-            background-color: #0056b3;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 17px;
-        }
-
-        .boton_volver:hover {
-            background-color: #dc3545;
-        }
-    </style>
-</head>
-<body>
-
-<h2>🔐 Resetear contraseña de usuario<a href="/panel_tecnico.php" class="boton_volver">Volver</a></h2>
-<?php if ($mensaje): ?>
-    <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
-<?php endif; ?>
-
-<form method="POST">
-    <label class="form-label">Seleccionar usuario:</label>
-    <select name="usuario_id" required>
-        <option value="">-- Selecciona un usuario --</option>
-        <?php foreach ($usuarios as $u): ?>
-            <option value="<?= $u['id'] ?>">
-                <?= htmlspecialchars($u['nombre']) ?> (<?= $u['correo'] ?>) - <?= ucfirst($u['rol']) ?> <?= $u['activo'] ? '' : '[Inactivo]' ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-
-    <label class="form-label">Nueva contraseña:</label>
-    <input type="password" name="nueva_contraseña" required>
-
-    <button type="submit">Actualizar contraseña</button>
-</form>
-</body>
-</html>
+            <button class="button-resetear" type="submit">Actualizar contraseña</button>
+        </form>
+    </section>
+</main>
+<?php 
+incluirTemplate('footer');
+?>
