@@ -145,5 +145,33 @@
 }
 
 .boton-responder:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
+
+.acciones a {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  color: white;
+}
+
+.editar { 
+  background-color: #007bff;
+  margin-bottom: 0.5rem;
+}
+
+.eliminar { background-color: #dc3545; }
+
+.crear-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 10px 16px;
+  background-color: #28a745;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
