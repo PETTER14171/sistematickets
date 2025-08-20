@@ -25,7 +25,7 @@ incluirTemplate ('header');
 ?>
 
 <main>
-    <h2>📋 Administración de Tickets<a href="/panel_tecnico.php" class="btn-1 btn-volver">Volver</a></h2>
+    <h2>📋 Administración de Tickets <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
 
     <?php if (count($tickets) > 0): ?>
         <table>

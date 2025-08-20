@@ -47,7 +47,7 @@ incluirTemplate ('header');
 ?>
 
 
-<h2>Crear nuevo usuario</h2>
+<h2>Crear nuevo usuario <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
     <?php if ($mensaje): ?>
         <p><?= htmlspecialchars($mensaje) ?></p>
     <?php endif; ?>
@@ -83,7 +83,7 @@ incluirTemplate ('header');
         <button type="submit">Crear Usuario</button>
     </form>
 </section>
-<a href="/panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
+
 <?php 
 incluirTemplate('footer');
 ?>
