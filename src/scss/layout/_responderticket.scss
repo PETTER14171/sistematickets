@@ -8,3 +8,143 @@
     gap: 1.5rem;
     padding: 2rem;
 }
+
+.editor-holder{
+    width: 800px;
+    height: 300px;
+    border-radius: 3px;
+    position: relative;
+    top: 0;
+    margin-left: -400px;
+    left: 50%;
+    background: #1f1f1f !important;
+    overflow: auto;
+    box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.4);
+    transition: all 0.5s ease-in-out;
+
+    &.fullscreen{
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        left: 0;
+    }
+    textarea, code{
+        width: 100%;
+        height: auto;
+        min-height: 250px;
+        font-size: 14px;
+        border: 0;
+        margin: 0;
+        top: 4px;
+        left: 0;
+        padding: 20px !important;
+        line-height: 21px;
+        position: absolute;
+        font-family: Consolas,Liberation Mono,Courier,monospace;
+        overflow: visible;
+        transition: all 0.5s ease-in-out;
+    }
+
+    textarea{
+        background: transparent !important;
+        z-index: 2;
+        height: auto;
+        resize: none;
+        color: #fff;
+        text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+
+        &::-webkit-input-placeholder{
+            color: rgba(255, 255, 255, 1);
+        }
+
+        &:focus{
+            outline: 0;
+            border: 0;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            box-shadow: none;
+        }
+    }
+
+    code{
+        z-index: 1;
+    }
+}
+
+.envio-respuesta{
+    margin-top: 5rem;
+    text-align: center;
+}
+
+
+////////////////
+/// 
+/// ////////////
+
+.file-select {
+    position: relative;
+    display: inline-block;
+}
+
+.file-select::before {
+    background-color: #0A66C2;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    content: 'Seleccionar'; /* testo por defecto */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.file-select input[type="file"] {
+    opacity: 0;
+    width: 100px;
+    height: 32px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+#src-file1::before {
+  content: 'Archivo';
+}
+
+///////////////
+/// ///////////
+.select-estado {
+    appearance: none; // quita el estilo por defecto del navegador (opcional)
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    width: 100%;
+    max-width: 400px;
+    padding: 0.75rem 1rem;
+    font-size: 1.5rem;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+    background-image: url("data:image/svg+xml,%3Csvg width='14' height='10' viewBox='0 0 14 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23666' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.select-estado:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+.label-estado {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+}

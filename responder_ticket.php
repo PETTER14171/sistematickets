@@ -131,21 +131,34 @@ incluirTemplate ('header');
         <div class="respuesta-form">
             <h1>📝 Escribir nueva respuesta</h1>
             <form method="POST" enctype="multipart/form-data">
-                <label>Respuesta:</label>
-                <textarea name="respuesta" rows="5" required></textarea>
+                <div class="editor-holder">
+                    <div class="scroller">
+                        <textarea class="editor allow-tabs" name="respuesta" rows="5" required></textarea>
+                        <pre><code class="syntax-highight html"></code></pre>
+                    </div>
+                </div>
 
-                <label>Adjuntar archivo (opcional):</label>
-                <input type="file" name="archivo">
+                <div class="envio-respuesta">
+                    
+                
+                    <label for="estado" class="label-estado">Adjuntar archivo (opcional)</label>
+                    <div class="file-select" id="src-file1">
+                        <input type="file" name="archivo">
+                    </div>
 
-                <label>Cambiar estado del ticket:</label>
-                <select name="estado" required>
-                    <option value="">Seleccionar estado</option>
-                    <option value="en_proceso">En proceso</option>
-                    <option value="resuelto">Resuelto</option>
-                    <option value="cerrado">Cerrado</option>
-                </select>
+                    <label for="estado" class="label-estado">Cambiar estado del ticket</label>
+                        <select name="estado" id="estado" class="select-estado"  required>
+                            <option value="">Seleccionar estado</option>
+                            <option value="en_proceso">En proceso</option>
+                            <option value="resuelto">Resuelto</option>
+                            <option value="cerrado">Cerrado</option>
+                        </select>
+                    </br>
+                    </br>
+                    <button class="button-18" type="submit">Enviar</button>
+                </div>
 
-                <button type="submit">Enviar respuesta</button>
+
             </form>
         </div>
     </section>
