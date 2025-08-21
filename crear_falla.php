@@ -64,78 +64,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registrar Falla Común</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 25px; }
-        form { max-width: 700px; background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ccc; }
-        textarea, input, select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-        }
-        button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 4px;
-        }
-        .mensaje {
-            padding: 10px;
-            background: #e2f7e2;
-            border: 1px solid #a0d6a0;
-            margin-bottom: 15px;
-            color: #2d662d;
-            border-radius: 5px;
-        }
-        .boton_volver {
-            background-color: #0056b3;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 17px;
-        }
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
 
-        .boton_volver:hover {
-            background-color: #dc3545;
-        }
-    </style>
-</head>
-<body>
+<main>
+    <h2>➕ Registrar nueva guía de falla común <a href="/fallas_comunes_admin.php" class="volver">Volver</a></h2>
 
-<h2>➕ Registrar nueva guía de falla común</h2>
+    <?php if ($mensaje): ?>
+        <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
+    <?php endif; ?>
 
-<?php if ($mensaje): ?>
-    <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
-<?php endif; ?>
+    <section class="contenido-bloque">
+        <form method="POST" enctype="multipart/form-data">
+            <label>Título:</label>
+            <input type="text" name="titulo" required>
 
-<form method="POST" enctype="multipart/form-data">
-    <label>Título:</label>
-    <input type="text" name="titulo" required>
+            <label>Descripción del problema:</label>
+            <textarea name="descripcion" rows="4" required></textarea>
 
-    <label>Descripción del problema:</label>
-    <textarea name="descripcion" rows="4" required></textarea>
+            <label>Pasos para solucionarlo:</label>
+            <textarea name="pasos_solucion" rows="5" required></textarea>
 
-    <label>Pasos para solucionarlo:</label>
-    <textarea name="pasos_solucion" rows="5" required></textarea>
+            <label>Categoría:</label>
+            <input type="text" name="categoria" required>
 
-    <label>Categoría:</label>
-    <input type="text" name="categoria" required>
+            <label>Palabras clave (separadas por coma):</label>
+            <input type="text" name="palabras_clave" required>
 
-    <label>Palabras clave (separadas por coma):</label>
-    <input type="text" name="palabras_clave" required>
+            <label>Archivo multimedia (imagen o video):</label>
+            <input type="file" name="multimedia" accept="image/*,video/*">
 
-    <label>Archivo multimedia (imagen o video):</label>
-    <input type="file" name="multimedia" accept="image/*,video/*">
+            <button type="submit">Guardar guía</button>
+        </form>
+    </section>
+</main>
 
-    <button type="submit">Guardar guía</button>
-</form>
-</br>
-<a href="/fallas_comunes_admin.php" class="boton_volver">Volver</a>
-</body>
-</html>
+<?php 
+incluirTemplate('footer');
+?>
