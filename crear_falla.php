@@ -76,29 +76,34 @@ incluirTemplate ('header');
         <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>
 
-    <section class="contenido-bloque">
-        <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data">
+        <section class="contenido-bloque titulo-falla">
             <label>Título:</label>
             <input type="text" name="titulo" required>
+        </section>
 
+        <section class="contenido-bloque descripcion-falla">
             <label>Descripción del problema:</label>
             <textarea name="descripcion" rows="4" required></textarea>
-
+        </section>        
+        <section class="contenido-bloque  solucion-falla">
             <label>Pasos para solucionarlo:</label>
             <textarea name="pasos_solucion" rows="5" required></textarea>
-
+        </section>
+        <section class="contenido-bloque ">
             <label>Categoría:</label>
             <input type="text" name="categoria" required>
-
+        </section>
+        <section class="contenido-bloque">
             <label>Palabras clave (separadas por coma):</label>
             <input type="text" name="palabras_clave" required>
-
+        </section>
+        <section class="contenido-bloque">
             <label>Archivo multimedia (imagen o video):</label>
             <input type="file" name="multimedia" accept="image/*,video/*">
-
-            <button type="submit">Guardar guía</button>
-        </form>
-    </section>
+        </section>
+        <button class="button-18" type="submit">Guardar</button>
+    </form>
 </main>
 
 <?php 
