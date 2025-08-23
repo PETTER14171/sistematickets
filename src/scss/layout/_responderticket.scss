@@ -2,3 +2,174 @@
 @use '../base/mixins' as mix;
 @use 'sass:color';
 
+/* ====== LAYOUT ====== */
+.ticket-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin: 8px 0 14px; gap: 10px;
+}
+.ticket-title { font-size: 2.5rem; font-weight: 800; color: var(--text); }
+.btn-ghost {
+  padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border);
+  color: var(--text); text-decoration: none; background: #0f141b;
+  transition: background .2s ease, border-color .2s ease;
+}
+.btn-ghost:hover { background: #141b24; border-color: #2a394e; }
+
+.ticket-grid {
+  display: grid; gap: clamp(20px,2vw,20px);
+  align-items: stretch;
+}
+@media (min-width: 1080px) {
+  .ticket-grid { grid-template-columns: 1fr 1fr; align-items: start; align-items: stretch;}
+}
+
+/* ====== DETALLES ====== */
+.section-title { margin: 0 0 10px; font-size: 2rem; color: var(--text); font-weight: 700; }
+.muted { color: var(--muted); }
+
+.detalle-kv {
+  display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px 14px;
+}
+.detalle-kv .full { grid-column: 1 / -1; }
+.detalle-kv span { color: var(--muted); font-size: 1.45rem; display:block; }
+.detalle-kv strong { color: var(--text); font-weight: 700; }
+
+.detalle-desc { margin-top: 12px; }
+.detalle-desc label { color: var(--muted); font-size: .9rem; margin-bottom: 6px; display:inline-block; }
+.desc-box {
+  background: #10151c; border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 14px; color: var(--text);
+}
+
+/* ====== CHIPS ====== */
+.chip {
+  display:inline-flex; align-items:center; gap:6px;
+  padding: 4px 10px; border-radius: 999px; font-size: .82rem; font-weight: 700;
+  border: 1px solid var(--border); background: #0f141b; color: var(--text);
+}
+.chip--prio-alta  { background:#2a1518; border-color:#6b1d1d; color:#ffb9b9; }
+.chip--prio-media { background:#262012; border-color:#68531b; color:#ffe2a3; }
+.chip--prio-baja  { background:#132418; border-color:#1d4630; color:#bcf6d2; }
+
+.chip--estado-en_proceso { background:#10151c; border-color:#2a394e; color:#a9bed6; }
+.chip--estado-resuelto   { background:rgba(var(--primary-rgb), .15); border-color:rgba(var(--primary-rgb), .6); color:#e9fff0; }
+.chip--estado-cerrado    { background:#191919; border-color:#3b3b3b; color:#d6d6d6; }
+
+/* ====== HISTORIAL (chat/burbujas) ====== */
+.chat { list-style:none; margin:0; padding:0; display:grid; gap:12px; }
+.chat__msg { display:flex; }
+.chat__msg.is-agent { justify-content:flex-start; }
+.chat__msg.is-tech  { justify-content:flex-end; }
+
+.chat__bubble {
+  max-width: 88%;
+  background:#10151c; border:1px solid var(--border); border-radius: 14px;
+  padding: 10px 12px; color: var(--text);
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
+}
+.chat__msg.is-tech .chat__bubble {
+  background: #0f1722; border-color: #2a394e;
+}
+.chat__meta {
+  display:flex; justify-content:space-between; align-items:center; gap:8px;
+  margin-bottom: 6px;
+}
+.chat__author { color: var(--text); font-weight: 700; }
+.chat__time { color: var(--muted); font-size: .8rem; }
+.chat__text { white-space: pre-wrap; line-height: 1.45; }
+.chat__attach { display:inline-block; margin-top:6px; text-decoration: underline; color: var(--text); }
+
+/* ====== COMPOSER ====== */
+.composer-falla { position: relative; }
+.composer {
+  display:grid; gap: 14px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1024px) {
+  .composer { grid-template-columns: 1.2fr .8fr; align-items:start; }
+}
+.composer__right { display:grid; gap:12px; }
+.composer__actions { display:flex; justify-content:flex-end; }
+
+/* Corrige contraste en inputs/textarea y alto mínimo del editor */
+.field__input { color: #e9eef6; background:#0f141b; }
+.field__input::placeholder { color: transparent; }
+.field__textarea_2 { min-height: 40rem; }
+
+/* ====== SELECT: color visible + capa clickeable + label flotante ====== */
+.field__select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%),
+    linear-gradient(to right, transparent, transparent);
+  background-position:
+    calc(100% - 22px) calc(50% - 3px),
+    calc(100% - 16px) calc(50% - 3px),
+    100% 0;
+  background-size: 6px 6px, 6px 6px, 2.5rem 100%;
+  background-repeat: no-repeat;
+  color: #e9eef6; /* <<< importante */
+  z-index: 1; /* sobre label */
+}
+.field__select option { color: #fff; } /* lista desplegada, fondo claro del sistema */
+
+.field select.field__input + .field__label {
+  transform: translateY(-12px) scale(.88);
+  color: var(--muted);
+  background: var(--card);
+}
+.field select.field__input:focus + .field__label { color: var(--primary); }
+
+/* ====== UPLOADER: no tapar otros elementos ====== */
+.uploader { position: relative; overflow: hidden; }
+.uploader__input {
+  position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2; /* por encima del label */
+}
+.uploader__label { position: relative; z-index: 1;}
+
+/* ====== MISC ====== */
+.contenido-bloque { color: var(--text); } /* asegura texto visible en paneles */
+
+/* ambos paneles se comportan como “cards” con contenido en columna */
+.detalle-falla,
+.historial-falla{
+  display: flex;
+  flex-direction: column;
+  /* opcional: asegura un mínimo agradable, ajusta a tu gusto */
+  min-height: 340px;
+}
+
+/* en el panel de Detalles tu wrapper interno ya se llama .detalle */
+.detalle-falla .detalle{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;       /* ocupa todo el alto disponible */
+  min-height: 0; /* <- clave para que no rompa el scroll del hermano */
+}
+
+/* estructura: .historial-falla > .historial > .chat */
+.historial-falla .historial{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;       /* ocupa todo el alto del panel */
+  min-height: 0; /* permite que su hijo pueda scrollear */
+}
+
+/* la lista de mensajes es la que scrollea */
+.historial-falla .chat{
+  flex: 1;
+  min-height: 0;        /* IMPORTANTE en flexbox para habilitar overflow */
+  overflow: auto;
+  padding-right: 8px;   /* deja espacio para el scroll */
+  scroll-behavior: smooth;
+}
+
+/* opcional: estiliza la barra para que combine con el tema */
+.historial-falla .chat::-webkit-scrollbar{ width: 10px; }
+.historial-falla .chat::-webkit-scrollbar-track{ background: #0f141b; border-radius: 10px; }
+.historial-falla .chat::-webkit-scrollbar-thumb{
+  background: #243042; border-radius: 10px; border: 2px solid #0f141b;
+}

@@ -46,44 +46,44 @@ require 'includes/funciones.php';
 incluirTemplate ('header');
 ?>
 
+<main>
+    <h2>Crear nuevo usuario <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
+        <?php if ($mensaje): ?>
+            <p><?= htmlspecialchars($mensaje) ?></p>
+        <?php endif; ?>
 
-<h2>Crear nuevo usuario <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
-    <?php if ($mensaje): ?>
-        <p><?= htmlspecialchars($mensaje) ?></p>
-    <?php endif; ?>
+    <section class="login seccion">
+        <form action="" method="POST">
+            <label>Nombre:</label>
+            <input type="text" name="nombre" required>
 
-<section class="login seccion">
-    <form action="" method="POST">
-        <label>Nombre:</label>
-        <input type="text" name="nombre" required>
+            <label>Campaña:</label>
+            <input type="text" name="campana" required>
 
-        <label>Campaña:</label>
-        <input type="text" name="campana" required>
+            <label>Puesto:</label>
+            <input type="text" name="puesto" required>
 
-        <label>Puesto:</label>
-        <input type="text" name="puesto" required>
+            <label>Estacion:</label>
+            <input type="text" name="estacion" required>
 
-        <label>Estacion:</label>
-        <input type="text" name="estacion" required>
+            <label>Correo:</label>
+            <input type="email" name="correo" required>
 
-        <label>Correo:</label>
-        <input type="email" name="correo" required>
+            <label>Contraseña:</label>
+            <input type="password" name="password" required>
 
-        <label>Contraseña:</label>
-        <input type="password" name="password" required>
+            <label>Rol:</label>
+            <select name="rol" required>
+                <option value="">Seleccionar rol</option>
+                <option value="agente">Agente</option>
+                <option value="tecnico">Técnico</option>
+                <option value="admin">Administrador</option>
+            </select>
 
-        <label>Rol:</label>
-        <select name="rol" required>
-            <option value="">Seleccionar rol</option>
-            <option value="agente">Agente</option>
-            <option value="tecnico">Técnico</option>
-            <option value="admin">Administrador</option>
-        </select>
-
-        <button type="submit">Crear Usuario</button>
-    </form>
-</section>
-
+            <button type="submit">Crear Usuario</button>
+        </form>
+    </section>
+</main>
 <?php 
 incluirTemplate('footer');
 ?>

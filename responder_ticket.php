@@ -95,73 +95,96 @@ incluirTemplate ('header');
     <?php if ($mensaje): ?>
         <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>
-    <div class="grid-respuesta">
-        <section class="contenido-bloque">
-            <div class="detalle">
-                <h1>Detalles del ticket</h1>
-                <p><strong>Agente:</strong> <?= htmlspecialchars($ticket['nombre_agente']) ?></p>
-                <p><strong>Categoría:</strong> <?= htmlspecialchars($ticket['categoria']) ?></p>
-                <p><strong>Prioridad:</strong> <?= ucfirst($ticket['prioridad']) ?></p>
-                <p><strong>Estado actual:</strong> <?= ucfirst(str_replace('_', ' ', $ticket['estado'])) ?></p>
-                <p><strong>Falla común asociada:</strong> <?= $ticket['titulo_falla'] ?: '-' ?></p>
-                <p><strong>Descripción:</strong><br><?= nl2br(htmlspecialchars($ticket['descripcion'])) ?></p>
-            </div>
-        </section>
-        <section class="contenido-bloque">
-            <div class="historial">
-                <h1>💬 Historial de respuestas</h1>
-                <?php if ($respuestas): ?>
-                    <?php foreach ($respuestas as $r): ?>
-                        <div class="respuesta">
-                            <strong><?= htmlspecialchars($r['nombre_usuario']) ?>:</strong>
-                            <p><?= nl2br(htmlspecialchars($r['mensaje'])) ?></p>
-                            <?php if ($r['archivo_adjunto']): ?>
-                                <a href="<?= htmlspecialchars($r['archivo_adjunto']) ?>" target="_blank">📎 Ver archivo adjunto</a>
-                            <?php endif; ?>
-                            <p style="font-size: small; color: gray;"><?= date('d/m/Y H:i', strtotime($r['creado_en'])) ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p>No hay respuestas registradas.</p>
-                <?php endif; ?>
-            </div>
-        </section>
+<div class="ticket-grid">
+  <!-- Columna izquierda: Detalles -->
+  <section class="contenido-bloque detalle-falla">
+    <h2 class="section-title">Detalles del ticket</h2>
+
+    <div class="detalle-kv">
+      <div><span>Agente</span><strong><?= htmlspecialchars($ticket['nombre_agente']) ?></strong></div>
+      <div><span>Categoría</span><strong><?= htmlspecialchars($ticket['categoria']) ?></strong></div>
+      <div><span>Prioridad</span>
+        <span class="chip chip--prio-<?= strtolower($ticket['prioridad']) ?>"><?= ucfirst($ticket['prioridad']) ?></span>
+      </div>
+      <div><span>Estado</span>
+        <span class="chip chip--estado-<?= strtolower($ticket['estado']) ?>"><?= ucfirst(str_replace('_',' ',$ticket['estado'])) ?></span>
+      </div>
+      <div class="full"><span>Falla común</span><strong><?= $ticket['titulo_falla'] ?: '-' ?></strong></div>
     </div>
-    <section class="contenido-bloque">
-        <div class="respuesta-form">
-            <h1>📝 Escribir nueva respuesta</h1>
-            <form method="POST" enctype="multipart/form-data">
-                <div class="editor-holder">
-                    <div class="scroller">
-                        <textarea class="editor allow-tabs" name="respuesta" rows="5" required></textarea>
-                        <pre><code class="syntax-highight html"></code></pre>
-                    </div>
-                </div>
 
-                <div class="envio-respuesta">
-                    
-                
-                    <label for="estado" class="label-estado">Adjuntar archivo (opcional)</label>
-                    <div class="file-select" id="src-file1">
-                        <input type="file" name="archivo">
-                    </div>
+    <div class="detalle-desc">
+      <label>Descripción</label>
+      <div class="desc-box"><?= nl2br(htmlspecialchars($ticket['descripcion'])) ?></div>
+    </div>
+  </section>
 
-                    <label for="estado" class="label-estado">Cambiar estado del ticket</label>
-                        <select name="estado" id="estado" class="select-estado"  required>
-                            <option value="">Seleccionar estado</option>
-                            <option value="en_proceso">En proceso</option>
-                            <option value="resuelto">Resuelto</option>
-                            <option value="cerrado">Cerrado</option>
-                        </select>
-                    </br>
-                    </br>
-                    <button class="button-18" type="submit">Enviar</button>
-                </div>
+  <!-- Columna derecha: Historial -->
+  <section class="contenido-bloque historial-falla">
+    <h2 class="section-title">💬 Historial de respuestas</h2>
+
+    <?php if ($respuestas): ?>
+      <ul class="chat">
+        <?php foreach ($respuestas as $r): ?>
+          <li class="chat__msg <?= strtolower($r['nombre_usuario']) === strtolower($ticket['nombre_agente']) ? 'is-agent' : 'is-tech' ?>">
+            <div class="chat__bubble">
+              <div class="chat__meta">
+                <strong class="chat__author"><?= htmlspecialchars($r['nombre_usuario']) ?></strong>
+                <time class="chat__time"><?= date('d/m/Y H:i', strtotime($r['creado_en'])) ?></time>
+              </div>
+              <div class="chat__text"><?= nl2br(htmlspecialchars($r['mensaje'])) ?></div>
+
+              <?php if ($r['archivo_adjunto']): ?>
+                <a class="chat__attach" href="<?= htmlspecialchars($r['archivo_adjunto']) ?>" target="_blank">📎 Ver archivo adjunto</a>
+              <?php endif; ?>
+            </div>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    <?php else: ?>
+      <p class="muted">No hay respuestas registradas.</p>
+    <?php endif; ?>
+  </section>
+</div>
+
+<!-- Composer -->
+<section class="contenido-bloque composer-falla">
+  <h2 class="section-title">📝 Escribir nueva respuesta</h2>
+
+  <form class="composer" method="POST" enctype="multipart/form-data">
+    <div class="composer__left">
+      <div class="field">
+        <textarea id="respuesta" class="field__input field__textarea_2 allow-tabs" name="respuesta" rows="4" placeholder=" " required></textarea>
+        <label for="respuesta" class="field__label">Mensaje</label>
+      </div>
+    </div>
+
+    <div class="composer__right">
+      <div class="uploader">
+        <input id="archivo" class="uploader__input" type="file" name="archivo" />
+        <label for="archivo" class="uploader__label">
+          <span class="uploader__title">Adjuntar archivo (opcional)</span>
+          <span class="uploader__hint">Imagen / video / PDF</span>
+        </label>
+      </div>
+
+      <div class="field">
+        <select id="estado" name="estado" class="field__input field__select" required>
+          <option value="" disabled selected>Seleccionar estado</option>
+          <option value="en_proceso">En proceso</option>
+          <option value="resuelto">Resuelto</option>
+          <option value="cerrado">Cerrado</option>
+        </select>
+        <label for="estado" class="field__label">Cambiar estado del ticket</label>
+      </div>
+
+      <div class="composer__actions">
+        <button class="btn-primary" type="submit">Enviar</button>
+      </div>
+    </div>
+  </form>
+</section>
 
 
-            </form>
-        </div>
-    </section>
 </main>
 <?php 
 incluirTemplate('footer');
