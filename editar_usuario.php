@@ -65,98 +65,136 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Usuario</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 25px;
-        }
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
 
-        form {
-            max-width: 600px;
-            margin-top: 20px;
-            background: #f9f9f9;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-        }
-
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-        }
-
-        .mensaje {
-            padding: 10px;
-            background: #e2f7e2;
-            border: 1px solid #a0d6a0;
-            margin-bottom: 15px;
-            color: #2d662d;
-            border-radius: 5px;
-        }
-
-        .volver {
-            background-color: #343a40;
-            color: white;
-            padding: 6px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .volver:hover {
-            background-color: #000;
-        }
-    </style>
-</head>
-<body>
-
-<h2>✏️ Editar Usuario</h2>
-<a href="usuarios.php" class="volver">← Volver a Usuarios</a>
+<h2>✏️ Editar Usuario  <a href="/usuarios.php" class="volver">Volver</a></h2>
 
 <?php if ($mensaje): ?>
     <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
 <?php endif; ?>
 
-<form method="POST">
-    <label>Nombre:</label>
-    <input type="text" name="nombre" value="<?= htmlspecialchars($usuario['nombre']) ?>" required>
+<form class="form-falla" method="POST">
+  <!-- Nombre -->
+  <section class="contenido-bloque nombre-falla">
+    <div class="field">
+      <input
+        id="nombre"
+        class="field__input"
+        type="text"
+        name="nombre"
+        placeholder=" "
+        value="<?= htmlspecialchars($usuario['nombre'] ?? '') ?>"
+        required
+      >
+      <label for="nombre" class="field__label">Nombre</label>
+    </div>
+  </section>
 
-    <label>Correo electrónico:</label>
-    <input type="email" name="correo" value="<?= htmlspecialchars($usuario['correo']) ?>" required>
+  <!-- Correo -->
+  <section class="contenido-bloque correo-falla">
+    <div class="field">
+      <input
+        id="correo"
+        class="field__input"
+        type="email"
+        name="correo"
+        placeholder=" "
+        value="<?= htmlspecialchars($usuario['correo'] ?? '') ?>"
+        required
+      >
+      <label for="correo" class="field__label">Correo electrónico</label>
+    </div>
+  </section>
 
-    <label>Rol:</label>
-    <select name="rol" required>
-        <option value="agente" <?= $usuario['rol'] === 'agente' ? 'selected' : '' ?>>Agente</option>
-        <option value="tecnico" <?= $usuario['rol'] === 'tecnico' ? 'selected' : '' ?>>Técnico</option>
-        <option value="admin" <?= $usuario['rol'] === 'admin' ? 'selected' : '' ?>>Administrador</option>
-    </select>
+  <!-- Rol -->
+  <section class="contenido-bloque rol-falla">
+    <div class="field">
+      <select
+        id="rol"
+        class="field__input field__select"
+        name="rol"
+        required
+      >
+        <option value="" disabled>Selecciona un rol</option>
+        <option value="agente"  <?= ($usuario['rol'] ?? '') === 'agente'  ? 'selected' : '' ?>>Agente</option>
+        <option value="tecnico" <?= ($usuario['rol'] ?? '') === 'tecnico' ? 'selected' : '' ?>>Técnico</option>
+        <option value="admin"   <?= ($usuario['rol'] ?? '') === 'admin'   ? 'selected' : '' ?>>Administrador</option>
+      </select>
+      <label for="rol" class="field__label">Rol</label>
+    </div>
+  </section>
 
-    <label>Campaña:</label>
-    <input type="text" name="campana" value="<?= htmlspecialchars($usuario['campana']) ?>">
+  <!-- Campaña -->
+  <section class="contenido-bloque campana-falla">
+    <div class="field">
+      <input
+        id="campana"
+        class="field__input"
+        type="text"
+        name="campana"
+        placeholder=" "
+        value="<?= htmlspecialchars($usuario['campana'] ?? '') ?>"
+      >
+      <label for="campana" class="field__label">Campaña</label>
+    </div>
+  </section>
 
-    <label>Puesto:</label>
-    <input type="text" name="puesto" value="<?= htmlspecialchars($usuario['puesto']) ?>">
+  <!-- Puesto -->
+  <section class="contenido-bloque puesto-falla">
+    <div class="field">
+      <input
+        id="puesto"
+        class="field__input"
+        type="text"
+        name="puesto"
+        placeholder=" "
+        value="<?= htmlspecialchars($usuario['puesto'] ?? '') ?>"
+      >
+      <label for="puesto" class="field__label">Puesto</label>
+    </div>
+  </section>
 
-    <label>Estación:</label>
-    <input type="text" name="estacion" value="<?= htmlspecialchars($usuario['estacion']) ?>">
+  <!-- Estación -->
+  <section class="contenido-bloque estacion-falla">
+    <div class="field">
+      <input
+        id="estacion"
+        class="field__input"
+        type="text"
+        name="estacion"
+        placeholder=" "
+        value="<?= htmlspecialchars($usuario['estacion'] ?? '') ?>"
+      >
+      <label for="estacion" class="field__label">Estación</label>
+    </div>
+  </section>
 
-    <label><input type="checkbox" name="activo" <?= $usuario['activo'] ? 'checked' : '' ?>> Usuario activo</label><br><br>
+  <!-- Usuario activo (switch) -->
+  <section class="contenido-bloque activo-falla">
+    <div class="switch">
+      <input
+        id="activo"
+        class="switch__input"
+        type="checkbox"
+        name="activo"
+        <?= !empty($usuario['activo']) ? 'checked' : '' ?>
+      >
+      <label for="activo" class="switch__label">
+        <span class="switch__title">Usuario activo</span>
+      </label>
+    </div>
+  </section>
 
-    <button type="submit">Guardar cambios</button>
+  <!-- Botón -->
+  <div class="form-falla__actions">
+    <button class="btn-primary" type="submit">Guardar cambios</button>
+  </div>
 </form>
 
-</body>
-</html>
+
+<?php 
+incluirTemplate('footer');
+?>
