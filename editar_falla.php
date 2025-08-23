@@ -90,92 +90,144 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Falla Común</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 25px; }
-        form { max-width: 700px; background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ccc; }
-        textarea, input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-        }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 4px;
-        }
-        .mensaje {
-            padding: 10px;
-            background: #e2f7e2;
-            border: 1px solid #a0d6a0;
-            margin-bottom: 15px;
-            color: #2d662d;
-            border-radius: 5px;
-        }
+<?php
+require 'includes/funciones.php';
+incluirTemplate ('header');
+?>
 
-        .boton_volver {
-            background-color: #0056b3;
-            color: white;
-            padding: 6px 10px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 17px;
-        }
 
-        .boton_volver:hover {
-            background-color: #dc3545;
-        }
-    </style>
-</head>
-<body>
-
-<h2>✏️ Editar Guía de Falla Común</h2>
+<h2>✏️ Editar Guía de Falla Común  <a href="/fallas_comunes_admin.php" class="volver">Volver</a></h2>
 
 <?php if ($mensaje): ?>
     <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
 <?php endif; ?>
 
-<form method="POST" enctype="multipart/form-data">
-    <label>Título:</label>
-    <input type="text" name="titulo" value="<?= htmlspecialchars($falla['titulo']) ?>" required>
+<form class="form-falla" method="POST" enctype="multipart/form-data">
+  <!-- Título -->
+  <section class="contenido-bloque titulo-falla">
+    <div class="field">
+      <input
+        id="titulo"
+        class="field__input"
+        type="text"
+        name="titulo"
+        placeholder=" "
+        value="<?= htmlspecialchars($falla['titulo'] ?? '') ?>"
+        required
+      >
+      <label for="titulo" class="field__label">Título</label>
+    </div>
+  </section>
 
-    <label>Descripción:</label>
-    <textarea name="descripcion" rows="4" required><?= htmlspecialchars($falla['descripcion']) ?></textarea>
+  <!-- Descripción -->
+  <section class="contenido-bloque descripcion-falla">
+    <div class="field">
+      <textarea
+        id="descripcion"
+        class="field__input field__textarea"
+        name="descripcion"
+        rows="4"
+        placeholder=" "
+        required
+      ><?= htmlspecialchars($falla['descripcion'] ?? '') ?></textarea>
+      <label for="descripcion" class="field__label">Descripción</label>
+    </div>
+  </section>
 
-    <label>Pasos para solucionarlo:</label>
-    <textarea name="pasos_solucion" rows="5" required><?= htmlspecialchars($falla['pasos_solucion']) ?></textarea>
+  <!-- Pasos para solucionarlo -->
+  <section class="contenido-bloque solucion-falla">
+    <div class="field">
+      <textarea
+        id="pasos_solucion"
+        class="field__input field__textarea"
+        name="pasos_solucion"
+        rows="5"
+        placeholder=" "
+        required
+      ><?= htmlspecialchars($falla['pasos_solucion'] ?? '') ?></textarea>
+      <label for="pasos_solucion" class="field__label">Pasos para solucionarlo</label>
+    </div>
+  </section>
 
-    <label>Categoría:</label>
-    <input type="text" name="categoria" value="<?= htmlspecialchars($falla['categoria']) ?>" required>
+  <!-- Categoría -->
+  <section class="contenido-bloque categoria-falla">
+    <div class="field">
+      <input
+        id="categoria"
+        class="field__input"
+        type="text"
+        name="categoria"
+        placeholder=" "
+        value="<?= htmlspecialchars($falla['categoria'] ?? '') ?>"
+        required
+      >
+      <label for="categoria" class="field__label">Categoría</label>
+    </div>
+  </section>
 
-    <label>Palabras clave:</label>
-    <input type="text" name="palabras_clave" value="<?= htmlspecialchars($falla['palabras_clave']) ?>" required>
+  <!-- Palabras clave -->
+  <section class="contenido-bloque palabraclave-falla">
+    <div class="field">
+      <input
+        id="palabras_clave"
+        class="field__input"
+        type="text"
+        name="palabras_clave"
+        placeholder=" "
+        value="<?= htmlspecialchars($falla['palabras_clave'] ?? '') ?>"
+        required
+      >
+      <label for="palabras_clave" class="field__label">Palabras clave (separadas por coma)</label>
+    </div>
+  </section>
 
-    <?php if ($falla['multimedia']): ?>
-        <p>Archivo actual: <strong><?= htmlspecialchars($falla['multimedia']) ?></strong></p>
-        <?php
-        $ext = pathinfo($falla['multimedia'], PATHINFO_EXTENSION);
-        $isVideo = in_array(strtolower($ext), ['mp4', 'webm', 'mov']);
-        ?>
-        <?php if ($isVideo): ?>
-            <video src="../fallamultimedia/<?= $falla['multimedia'] ?>" controls width="320"></video>
-        <?php else: ?>
-            <img src="../fallamultimedia/<?= $falla['multimedia'] ?>" width="200" alt="Media actual">
-        <?php endif; ?>
-    <?php endif; ?>
+  <!-- Vista del archivo actual (si existe) -->
+  <?php if (!empty($falla['multimedia'])): ?>
+    <?php
+      $ext = strtolower(pathinfo($falla['multimedia'], PATHINFO_EXTENSION));
+      $isVideo = in_array($ext, ['mp4', 'webm', 'mov']);
+      $src = "../fallamultimedia/" . $falla['multimedia'];
+    ?>
+    <section class="contenido-bloque multimedia-falla">
+      <div class="media-card" style="display:grid;gap:.5rem">
+        <div class="media-card__title" style="color:var(--text);font-weight:600">Archivo actual</div>
+        <div class="media-card__preview" style="border:1px solid var(--border);border-radius:12px;padding:12px;background:#10151c">
+          <?php if ($isVideo): ?>
+            <video src="<?= htmlspecialchars($src) ?>" controls style="max-width:100%;border-radius:10px"></video>
+          <?php else: ?>
+            <img src="<?= htmlspecialchars($src) ?>" alt="Media actual" style="max-width:100%;border-radius:10px;display:block">
+          <?php endif; ?>
+        </div>
+        <div class="media-card__name" style="color:var(--muted);font-size:.9rem">
+          <strong><?= htmlspecialchars($falla['multimedia']) ?></strong>
+        </div>
+      </div>
+    </section>
+  <?php endif; ?>
 
-    <label>Reemplazar multimedia (opcional):</label>
-    <input type="file" name="multimedia" accept="image/*,video/*">
+  <!-- Reemplazar multimedia -->
+  <section class="contenido-bloque multimedia-falla">
+    <div class="uploader">
+      <input
+        id="multimedia"
+        class="uploader__input"
+        type="file"
+        name="multimedia"
+        accept="image/*,video/*"
+      >
+      <label for="multimedia" class="uploader__label">
+        <span class="uploader__title">Reemplazar multimedia (opcional)</span>
+        <span class="uploader__hint">Imagen o video (arrastrar y soltar / clic para seleccionar)</span>
+      </label>
+    </div>
+  </section>
 
-    <button type="submit">Guardar cambios</button>
+  <!-- Botón -->
+  <div class="form-falla__actions">
+    <button class="btn-primary" type="submit">Guardar cambios</button>
+  </div>
 </form>
-</br>
-<a href="/fallas_comunes_admin.php" class="boton_volver">Volver</a>
-</body>
-</html>
+
+<?php 
+incluirTemplate('footer');
+?>

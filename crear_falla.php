@@ -76,33 +76,55 @@ incluirTemplate ('header');
         <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>
 
-    <form method="POST" enctype="multipart/form-data">
+    <form class="form-falla" method="POST" enctype="multipart/form-data">
         <section class="contenido-bloque titulo-falla">
-            <label>Título:</label>
-            <input type="text" name="titulo" required>
+            <div class="field">
+            <input id="titulo" class="field__input" type="text" name="titulo" placeholder=" " required>
+            <label for="titulo" class="field__label">Título</label>
+            </div>
         </section>
 
         <section class="contenido-bloque descripcion-falla">
-            <label>Descripción del problema:</label>
-            <textarea name="descripcion" rows="4" required></textarea>
-        </section>        
-        <section class="contenido-bloque  solucion-falla">
-            <label>Pasos para solucionarlo:</label>
-            <textarea name="pasos_solucion" rows="5" required></textarea>
+            <div class="field">
+            <textarea id="descripcion" class="field__input field__textarea" name="descripcion" rows="4" placeholder=" " required></textarea>
+            <label for="descripcion" class="field__label">Descripción del problema</label>
+            </div>
         </section>
-        <section class="contenido-bloque ">
-            <label>Categoría:</label>
-            <input type="text" name="categoria" required>
+
+        <section class="contenido-bloque solucion-falla">
+            <div class="field">
+            <textarea id="pasos_solucion" class="field__input field__textarea" name="pasos_solucion" rows="5" placeholder=" " required></textarea>
+            <label for="pasos_solucion" class="field__label">Pasos para solucionarlo</label>
+            </div>
         </section>
-        <section class="contenido-bloque">
-            <label>Palabras clave (separadas por coma):</label>
-            <input type="text" name="palabras_clave" required>
+
+        <section class="contenido-bloque categoria-falla">
+            <div class="field">
+            <input id="categoria" class="field__input" type="text" name="categoria" placeholder=" " required>
+            <label for="categoria" class="field__label">Categoría</label>
+            </div>
         </section>
-        <section class="contenido-bloque">
-            <label>Archivo multimedia (imagen o video):</label>
-            <input type="file" name="multimedia" accept="image/*,video/*">
+
+        <section class="contenido-bloque palabraclave-falla">
+            <div class="field">
+            <input id="palabras_clave" class="field__input" type="text" name="palabras_clave" placeholder=" " required>
+            <label for="palabras_clave" class="field__label">Palabras clave (separadas por coma)</label>
+            </div>
         </section>
-        <button class="button-18" type="submit">Guardar</button>
+
+        <section class="contenido-bloque multimedia-falla">
+            <div class="uploader" data-text="Suelta aquí tu archivo o haz clic para seleccionarlo">
+            <input id="multimedia" class="uploader__input" type="file" name="multimedia" accept="image/*,video/*">
+            <label for="multimedia" class="uploader__label">
+                <span class="uploader__title">Archivo multimedia</span>
+                <span class="uploader__hint">Imagen o video (arrastrar y soltar / clic)</span>
+            </label>
+            </div>
+        </section>
+
+        <div class="form-falla__actions">
+            <button class="btn-primary" type="submit">Guardar</button>
+        </div>
     </form>
 </main>
 

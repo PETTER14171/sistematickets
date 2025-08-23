@@ -1,3 +1,194 @@
 @use '../base/variables' as var;
 @use '../base/mixins' as mix;
 @use 'sass:color';
+
+/* -----------------------------
+   Paleta base (ajústala a tu branding)
+--------------------------------*/
+:root {
+  --bg: #0f1115;
+  --card: #151a22;
+  --card-2: #171d26;
+  --text: #e8eef6;
+  --muted: #93a1b5;
+  --border: #243042;
+  --primary: #4cd964;           /* verde acento por defecto */
+  --primary-rgb: 76, 217, 100;  /* para el focus ring */
+}
+
+/* Contenedor general del formulario */
+.form-falla {
+  width: 100%;
+  max-width: 880px;
+  margin-inline: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: clamp(20px, 3vw, 32px);
+  display: grid;
+  gap: clamp(14px, 2vw, 20px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.35);
+  margin-bottom: 5rem;
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+}
+
+/* Cada bloque/sección del formulario que termine con -falla */
+.contenido-bloque {
+  background: linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: clamp(12px, 2vw, 18px);
+  transition: border-color .25s ease, box-shadow .25s ease;
+
+  &:focus-within {
+    border-color: rgba(var(--primary-rgb), .55);
+    box-shadow: 0 0 0 6px rgba(var(--primary-rgb), .08) inset;
+  }
+
+  /* Aplica a todos tus bloques que terminan con -falla */
+  &[class$="-falla"] { }
+}
+
+/* Campo con etiqueta flotante */
+.field {
+  position: relative;
+
+  &__input {
+    width: 100%;
+    color: var(--text);
+    background: #10151c;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 16px 14px 16px;
+    line-height: 1.3;
+    outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+
+    &::placeholder { color: transparent; }
+
+    &:hover {
+      border-color: #2a394e;
+    }
+
+    &:focus-visible {
+      border-color: rgba(var(--primary-rgb), .8);
+      box-shadow: 0 0 0 4px rgba(var(--primary-rgb), .15);
+    }
+
+    /* Textarea variante */
+    &.field__textarea {
+      min-height: 120px;
+      resize: vertical;
+      padding-top: 22px;
+    }
+  }
+
+  &__label {
+    position: absolute;
+    inset: 0 auto auto 12px;
+    top: 4px;
+    transform-origin: left top;
+    pointer-events: none;
+    color: var(--muted);
+    background: transparent;
+    padding: 0 6px;
+    transition: transform .15s ease, color .15s ease, background .15s ease;
+    border-radius: 6px;
+  }
+
+  /* Estado flotante (cuando hay valor o focus) */
+  &__input:not(:placeholder-shown) + .field__label,
+  &__input:focus + .field__label {
+    transform: translateY(-12px) scale(.88);
+    color: var(--primary);
+    background: var(--card);
+  }
+}
+
+/* Subir archivo – zona drag & drop */
+.uploader {
+  position: relative;
+  border: 1.5px dashed #2a394e;
+  background: #10151c;
+  border-radius: 14px;
+  padding: 18px;
+  display: grid;
+  gap: 4px;
+  transition: border-color .2s ease, box-shadow .2s ease;
+
+  &:hover { border-color: #345074; }
+
+  &:focus-within {
+    border-color: rgba(var(--primary-rgb), .8);
+    box-shadow: 0 0 0 4px rgba(var(--primary-rgb), .15);
+  }
+
+  &__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &__label {
+    display: grid;
+    gap: 2px;
+    pointer-events: none; /* El click lo capta el input invisble */
+  }
+
+  &__title {
+    color: var(--text);
+    font-weight: 600;
+    font-size: .975rem;
+  }
+
+  &__hint {
+    color: var(--muted);
+    font-size: .88rem;
+  }
+}
+
+/* Botón primario */
+.btn-primary {
+  --btn-bg: var(--primary);
+  --btn-fg: #0b1016;
+
+  appearance: none;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 700;
+  font-size: .98rem;
+  background: linear-gradient(180deg, var(--btn-bg), color-mix(in srgb, var(--btn-bg) 85%, #0b0b0b));
+  color: var(--btn-fg);
+  cursor: pointer;
+  transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
+  box-shadow: 0 10px 24px rgba(var(--primary-rgb), .18);
+
+  &:hover { filter: brightness(.98); }
+  &:active { transform: translateY(1px); }
+
+  &:focus-visible {
+    outline: 2px solid rgba(var(--primary-rgb), .9);
+    outline-offset: 2px;
+  }
+}
+
+/* Responsivo suave */
+@media (min-width: 760px) {
+  .form-falla {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .descripcion-falla,
+  .solucion-falla,
+  .palabraclave-falla,
+  .multimedia-falla {
+    grid-column: 1 / -1;
+  }
+}
