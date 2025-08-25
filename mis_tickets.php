@@ -58,69 +58,71 @@ incluirTemplate('header');
     </h2>
 
     <?php if (count($tickets) > 0): ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Título</th>
-                    <th>Categoría</th>
-                    <th>Prioridad</th>
-                    <th>Estado</th>
-                    <th>Última respuesta</th>
-                    <th>Evidencia</th>
-                    <th>Creado en</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($tickets as $t): ?>
+        <div class="margin-table"> 
+            <table>
+                <thead>
                     <tr>
-                        <td><?= htmlspecialchars($t['titulo']) ?></td>
-                        <td><?= htmlspecialchars($t['categoria']) ?></td>
-                        <td><?= ucfirst($t['prioridad']) ?></td>
-                        <td class="estado-<?= htmlspecialchars($t['estado']) ?>">
-                            <?= ucfirst(str_replace('_', ' ', $t['estado'])) ?>
-                        </td>
-
-                        <!-- Última respuesta (mensaje + fecha si existe) -->
-                        <td>
-                            <?php if (!empty($t['ultima_respuesta'])): ?>
-                                <div class="ultima-respuesta">
-                                    <div class="ultima-respuesta__msg">
-                                        <?= nl2br(htmlspecialchars($t['ultima_respuesta'])) ?>
-                                    </div>
-                                    <div class="ultima-respuesta__fecha muted">
-                                        <?= date('d/m/Y H:i', strtotime($t['ultima_respuesta_fecha'])) ?>
-                                    </div>
-                                </div>
-                            <?php else: ?>
-                                <span class="muted">Sin respuestas</span>
-                            <?php endif; ?>
-                        </td>
-
-                        <!-- Evidencia: botón de descarga si hay archivo; si no, alerta -->
-                        <td>
-                            <?php
-                                $file = $t['evidencia'] ?? '';
-                                // Seguridad: evita rutas arbitrarias
-                                $fileSafe = $file !== '' ? basename($file) : '';
-                                $ruta = '/adjuntos/' . rawurlencode($fileSafe);
-                            ?>
-                            <?php if ($fileSafe !== ''): ?>
-                                <a class="btn-1 btn-descargar" href="<?= htmlspecialchars($ruta) ?>" download>
-                                    Descargar
-                                </a>
-                            <?php else: ?>
-                                <button class="btn-1 btn-descargar is-disabled" type="button"
-                                    onclick="alert('No hay evidencia adjunta');">
-                                    Descargar
-                                </button>
-                            <?php endif; ?>
-                        </td>
-
-                        <td><?= date('d/m/Y H:i', strtotime($t['creado_en'])) ?></td>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Última respuesta</th>
+                        <th>Evidencia</th>
+                        <th>Creado en</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($tickets as $t): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($t['titulo']) ?></td>
+                            <td><?= htmlspecialchars($t['categoria']) ?></td>
+                            <td><?= ucfirst($t['prioridad']) ?></td>
+                            <td class="estado-<?= htmlspecialchars($t['estado']) ?>">
+                                <?= ucfirst(str_replace('_', ' ', $t['estado'])) ?>
+                            </td>
+
+                            <!-- Última respuesta (mensaje + fecha si existe) -->
+                            <td>
+                                <?php if (!empty($t['ultima_respuesta'])): ?>
+                                    <div class="ultima-respuesta">
+                                        <div class="ultima-respuesta__msg">
+                                            <?= nl2br(htmlspecialchars($t['ultima_respuesta'])) ?>
+                                        </div>
+                                        <div class="ultima-respuesta__fecha muted">
+                                            <?= date('d/m/Y H:i', strtotime($t['ultima_respuesta_fecha'])) ?>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <span class="muted">Sin respuestas</span>
+                                <?php endif; ?>
+                            </td>
+
+                            <!-- Evidencia: botón de descarga si hay archivo; si no, alerta -->
+                            <td>
+                                <?php
+                                    $file = $t['evidencia'] ?? '';
+                                    // Seguridad: evita rutas arbitrarias
+                                    $fileSafe = $file !== '' ? basename($file) : '';
+                                    $ruta = '/adjuntos/' . rawurlencode($fileSafe);
+                                ?>
+                                <?php if ($fileSafe !== ''): ?>
+                                    <a class="btn-1 btn-descargar" href="<?= htmlspecialchars($ruta) ?>" download>
+                                        Descargar
+                                    </a>
+                                <?php else: ?>
+                                    <button class="btn-1 btn-descargar is-disabled" type="button"
+                                        onclick="alert('No hay evidencia adjunta');">
+                                        Descargar
+                                    </button>
+                                <?php endif; ?>
+                            </td>
+
+                            <td><?= date('d/m/Y H:i', strtotime($t['creado_en'])) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     <?php else: ?>
         <p>No has generado ningún ticket aún.</p>
     <?php endif; ?>

@@ -89,37 +89,39 @@ incluirTemplate ('header');
 ?>
 
 <main>
-    <section class="contenido-bloque">
+    <section class="">
         <h1>📝 Generar nuevo ticket</h1>
 
         <?php if ($mensaje): ?>
             <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
         <?php endif; ?>
+        
+        <div class="margin-contenido">
+            <form class="formulario-ticket contenido-bloque" method="POST">
+                <label for="titulo">Título del problema:</label>
+                <input type="text" name="titulo" id="titulo" value="<?= htmlspecialchars($titulo) ?>" required>
 
-        <form class="formulario-ticket" method="POST">
-            <label for="titulo">Título del problema:</label>
-            <input type="text" name="titulo" id="titulo" value="<?= htmlspecialchars($titulo) ?>" required>
+                <label for="descripcion">Descripción detallada:</label>
+                <textarea name="descripcion" id="descripcion" rows="5" required><?= htmlspecialchars($descripcion) ?></textarea>
 
-            <label for="descripcion">Descripción detallada:</label>
-            <textarea name="descripcion" id="descripcion" rows="5" required><?= htmlspecialchars($descripcion) ?></textarea>
+                <label for="categoria">Categoría:</label>
+                <select name="categoria" id="categoria" required>
+                    <option value="">Selecciona una categoría</option>
+                    <?php foreach ($categorias_disponibles as $cat): ?>
+                        <option value="<?= htmlspecialchars($cat) ?>" <?= $cat === $categoria ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($cat) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
 
-            <label for="categoria">Categoría:</label>
-            <select name="categoria" id="categoria" required>
-                <option value="">Selecciona una categoría</option>
-                <?php foreach ($categorias_disponibles as $cat): ?>
-                    <option value="<?= htmlspecialchars($cat) ?>" <?= $cat === $categoria ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($cat) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+                <?php if ($referencia_falla): ?>
+                    <input type="hidden" name="referencia_falla" value="<?= $referencia_falla ?>">
+                    <p><em>Este ticket está relacionado con la falla común ID #<?= $referencia_falla ?></em></p>
+                <?php endif; ?>
 
-            <?php if ($referencia_falla): ?>
-                <input type="hidden" name="referencia_falla" value="<?= $referencia_falla ?>">
-                <p><em>Este ticket está relacionado con la falla común ID #<?= $referencia_falla ?></em></p>
-            <?php endif; ?>
-
-            <button class="button-enviar" type="submit">Enviar Ticket</button>
-        </form>
+                <button class="button-enviar" type="submit">Enviar Ticket</button>
+            </form>
+        </div>
     </section>
      <a href="/fallas_comunes_admin.php" class="btn-volver btn-1">Volver</a>
 </main>
