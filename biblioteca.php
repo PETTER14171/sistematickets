@@ -71,37 +71,35 @@ $result = $stmt->get_result();
 $libros = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
-<main class="biblioteca">
-  <header class="biblioteca__header">
-    <h1 class="ticket-title">📚 Biblioteca</h1>
+<main >
+  <header>
+        <h1 >📚 Biblioteca</h1>
+        <!-- Filtros -->
+        <form class="margin-contenido biblioteca__filters" method="GET" action="">
+            <section class=" filtro-busqueda-falla">
+                <div class="field">
+                <input id="q" class="field__input" type="text" name="q" value="<?= htmlspecialchars($busqueda) ?>" placeholder=" " />
+                <label for="q" class="field__label">Buscar por título, autor o descripción</label>
+                </div>
+            </section>
 
-    <!-- Filtros -->
-    <form class="form-falla biblioteca__filters" method="GET" action="">
-      <section class="contenido-bloque filtro-busqueda-falla">
-        <div class="field">
-          <input id="q" class="field__input" type="text" name="q" value="<?= htmlspecialchars($busqueda) ?>" placeholder=" " />
-          <label for="q" class="field__label">Buscar por título, autor o descripción</label>
-        </div>
-      </section>
+            <section class=" filtro-categoria-falla">
+                <div class="field">
+                <select id="cat" name="cat" class="field__input field__select">
+                    <option value="" <?= $categoria===''?'selected':''; ?>>Todas las categorías</option>
+                    <?php foreach ($cats as $c): ?>
+                    <option value="<?= htmlspecialchars($c) ?>" <?= $categoria===$c?'selected':''; ?>>
+                        <?= htmlspecialchars($c) ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+                </div>
+            </section>
 
-      <section class="contenido-bloque filtro-categoria-falla">
-        <div class="field">
-          <select id="cat" name="cat" class="field__input field__select">
-            <option value="" <?= $categoria===''?'selected':''; ?>>Todas las categorías</option>
-            <?php foreach ($cats as $c): ?>
-              <option value="<?= htmlspecialchars($c) ?>" <?= $categoria===$c?'selected':''; ?>>
-                <?= htmlspecialchars($c) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-          <label for="cat" class="field__label">Categoría</label>
-        </div>
-      </section>
-
-      <div class="form-falla__actions">
-        <button class="btn-primary" type="submit">Filtrar</button>
-      </div>
-    </form>
+            <div class="form-falla__actions">
+                <button class="btn-secondary" type="submit">Filtrar</button>
+            </div>
+        </form>
   </header>
 
   <!-- GRID de libros -->

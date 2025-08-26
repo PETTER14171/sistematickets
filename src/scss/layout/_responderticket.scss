@@ -8,12 +8,6 @@
   margin: 8px 0 14px; gap: 10px;
 }
 .ticket-title { font-size: 2.5rem; font-weight: 800; color: var(--text); }
-.btn-ghost {
-  padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border);
-  color: var(--text); text-decoration: none; background: #0f141b;
-  transition: background .2s ease, border-color .2s ease;
-}
-.btn-ghost:hover { background: #141b24; border-color: #2a394e; }
 
 .ticket-grid {
   display: grid; gap: clamp(20px,2vw,20px);
