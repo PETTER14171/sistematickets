@@ -44,6 +44,7 @@ incluirTemplate ('header');
         <a href="crear_usuario.php" class="btn-opcion">👤 Crear nuevos usuarios</a>
         <a href="usuarios.php" class="btn-opcion">👥 Usuarios</a>
         <a href="resetear_contraseña.php" class="btn-opcion">🔓 Cambiar contraseña</a>
+        <a href="admin_biblioteca_subir.php" class="btn-opcion">📚 Administrar Biblioteca</a>
         <a href="logout.php" class="btn-opcion rojo">🚪 Cerrar sesión</a>
     </div>
 </main>

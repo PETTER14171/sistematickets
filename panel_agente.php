@@ -18,6 +18,7 @@ incluirTemplate ('header');
         <a href="/autoservicio.php"  class="btn-opcion">🔍 Consultar soluciones comunes</a>
         <a href="crear_ticket.php"  class="btn-opcion">📝 Generar nuevo ticket</a>
         <a href="mis_tickets.php"  class="btn-opcion">📋 Ver mis tickets</a>
+        <a href="biblioteca.php"  class="btn-opcion">📚 Biblioteca</a>
         <a href="logout.php"  class="btn-opcion rojo">🚪 Cerrar sesión</a>
     </div>
 </main>

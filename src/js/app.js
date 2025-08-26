@@ -84,3 +84,36 @@ function abrirModalFalla(id) {
 function cerrarModalFalla(id) {
     document.getElementById('modal-falla-' + id).style.display = 'none';
 }
+
+
+  // Mostrar/ocultar bloques según "modo"
+  const modoSel = document.getElementById('modo');
+  const bloqueExist = document.getElementById('bloque-libro-existente');
+  const bloqueNuevo  = document.getElementById('bloque-libro-nuevo');
+  const bloqueAutor  = document.getElementById('bloque-autor');
+  const bloqueCat    = document.getElementById('bloque-categoria');
+  const bloqueDesc   = document.getElementById('bloque-descripcion');
+
+  function aplicarModo() {
+    const modo = modoSel.value;
+    const esNuevo = (modo === 'nuevo');
+    bloqueExist.style.display = esNuevo ? 'none' : 'block';
+    bloqueNuevo.style.display = esNuevo ? 'block' : 'none';
+    bloqueAutor.style.display = esNuevo ? 'block' : 'none';
+    bloqueCat.style.display   = esNuevo ? 'block' : 'none';
+    bloqueDesc.style.display  = esNuevo ? 'block' : 'none';
+  }
+  modoSel.addEventListener('change', aplicarModo);
+  aplicarModo(); // al cargar
+
+  // Info del PDF seleccionado
+  const inputPdf = document.getElementById('pdf');
+  const infoPdf  = document.getElementById('pdf-info');
+  inputPdf.addEventListener('change', () => {
+    if (inputPdf.files && inputPdf.files[0]) {
+      const f = inputPdf.files[0];
+      infoPdf.textContent = `${f.name} — ${(f.size/1024/1024).toFixed(2)} MB`;
+    } else {
+      infoPdf.textContent = '';
+    }
+  });

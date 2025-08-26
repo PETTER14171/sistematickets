@@ -73,7 +73,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
 
 <main >
   <header>
-        <h1 >📚 Biblioteca</h1>
+        <h1 >📚 Biblioteca  </h1>
         <!-- Filtros -->
         <form class="margin-contenido biblioteca__filters" method="GET" action="">
             <section class=" filtro-busqueda-falla">

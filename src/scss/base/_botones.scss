@@ -302,3 +302,88 @@
     outline-offset: 2px;
   }
 }
+
+
+/* Botón principal (acciones importantes, ej: Subir, Guardar) */
+.btn-primary-2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 1.75rem;
+  color: #fff;
+  background: linear-gradient(135deg, #b82b88, #ef9f40); /* tus colores $primary y $cta */
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary-2:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,.4);
+}
+
+.btn-primary-2:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,0,0,.4);
+}
+
+/* Botón secundario (ej: Cancelar) */
+.btn-secondary-2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-weight: 500;
+  font-size: 1.75rem;
+  color: var(--text, #eaeaea);
+  background: #10151c;
+  border: 1px solid var(--border, #2a394e);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-2:hover {
+  background: #141b24;
+  border-color: var(--primary, #b82b88);
+}
+
+.btn-secondary-2:active {
+  transform: translateY(1px);
+}
+
+/* Botón ghost (enlaces menos prioritarios) */
+.btn-ghost-2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 1.75rem;
+  color: var(--muted, #9fa6b2);
+  background: transparent;
+  border: 1px dashed var(--border, #2a394e);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ghost-2:hover {
+  color: var(--text, #fff);
+  border-color: var(--primary, #b82b88);
+}
+
+@media (min-width: 960px){
+  .form-biblio{
+    /* ejemplo típico; adapta si ya lo tienes */
+    grid-template-columns: 1fr 1fr;
+  }
+  .form-biblio__actions{
+    grid-column: 2 / 3;      /* sólo la columna derecha */
+    justify-self: center;
+    margin-top: 7rem;
+  }
+}
