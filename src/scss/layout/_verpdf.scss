@@ -1,0 +1,26 @@
+/* Reutiliza tu paleta; solo añadimos layout del visor */
+.pdf-view-page{ display:grid; gap:clamp(12px,2vw,16px); }
+.pdf-view-header{ display:grid; gap:8px; }
+.pdf-title{ margin:0; font-weight:800; color:var(--text); font-size:3.5rem; }
+.pdf-meta{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.pdf-breadcrumb{ margin-bottom:4px; }
+
+.pdf-shell{ padding:8px; }
+.pdf-frame{
+  width:100%;
+  height: calc(150vh - 260px); /* ajusta si tu header es más alto */
+  border:0;
+  border-radius:12px;
+  background:#0f141b; /* por si tarda en cargar */
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.pdf-desc p{ color:var(--text); line-height:1.5; }
+
+/* Botón ghost ya lo definiste; por si no, un mínimo: */
+.btn-ghost{
+  padding:8px 12px; border-radius:10px; border:1px solid var(--border);
+  background:#0f141b; color:var(--text); text-decoration:none;
+}
+.btn-ghost:hover{ background:#141b24; border-color:#2a394e; }
+

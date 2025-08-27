@@ -18,10 +18,10 @@
                 </div>
                 <div class="derecha">
                         <nav class="navegacion">
-                            <a href="nosotros.php">Tickets</a>
-                            <a href="anuncios.php">Anuncios</a>
+                            <a href="crear_ticket.php">Crear Ticket</a>
+                            <a href="mis_tickets.php">Tickets</a>
+                            <a href="biblioteca.php">biblioteca</a>
                             <a href="blog.php">Blog</a>
-                            <a href="contacto.php">Contacto</a>
                         </nav>
                 </div>
             </div>
