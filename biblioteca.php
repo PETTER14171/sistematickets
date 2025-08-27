@@ -73,7 +73,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
 
 <main >
   <header>
-        <h1 >📚 Biblioteca  </h1>
+        <h1 >📚 Biblioteca <a href="/fallas_comunes_admin.php" class="volver">Volver</a></h1>
         <!-- Filtros -->
         <form class="margin-contenido biblioteca__filters" method="GET" action="">
             <section class=" filtro-busqueda-falla">
@@ -141,8 +141,8 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
 
           <div class="libro-card__actions">
             <?php if (!empty($l['archivo_id'])): ?>
-              <a class="btn-primary" href="/ver_pdf.php?id=<?= (int)$l['archivo_id'] ?>" target="_blank" rel="noopener">
-                Ver en línea
+              <a class="btn-primary-2" href="/ver_pdf.php?id=<?= (int)$l['archivo_id'] ?>" target="_blank" rel="noopener">
+                Leer en línea
               </a>
             <?php else: ?>
               <button class="btn-primary" type="button" disabled>No disponible</button>
