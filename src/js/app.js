@@ -77,9 +77,6 @@ function verificarNuevaNotificacion() {
 setInterval(verificarNuevaNotificacion, 2000); // cada 5 segundos
 verificarNuevaNotificacion(); // ejecuta al cargar
 
-function abrirModalFalla(id) {
-    document.getElementById('modal-falla-' + id).style.display = 'flex';
-}
 
 function cerrarModalFalla(id) {
     document.getElementById('modal-falla-' + id).style.display = 'none';
