@@ -120,22 +120,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stOff->execute();
 
                     // Insert archivo activo
-                    $sqlArc = "INSERT INTO libro_archivos
-                               (libro_id, nombre_archivo, nombre_original, mime_type, tamanio_bytes, subido_por, activo)
-                               VALUES (?, ?, ?, ?, ?, ?, 1)";
-                    $stA = $conn->prepare($sqlArc);
-                    $mime_to_db = 'application/pdf';
-                    $size_to_db = (int)filesize($dest); // tamaño real en disco
-                    $stA->bind_param("isssii", $libro_id, $filename, $orig, $mime_to_db, $size_to_db, $usuario_id);
-                    $stA->execute();
-                    if ($stA->affected_rows <= 0) {
-                        throw new Exception("No se pudo registrar el archivo del libro.");
-                    }
+                      $sqlArc = "INSERT INTO libro_archivos
+                                (libro_id, nombre_archivo, nombre_original, mime_type, tamanio_bytes, subido_por, activo)
+                                VALUES (?, ?, ?, ?, ?, ?, 1)";
+                      $stA = $conn->prepare($sqlArc);
+                      $mime_to_db = 'application/pdf';
+                      $size_to_db = (int)filesize($dest);
+                      $stA->bind_param("isssii", $libro_id, $filename, $orig, $mime_to_db, $size_to_db, $usuario_id);
+                      $stA->execute();
+                      if ($stA->affected_rows <= 0) {
+                          throw new Exception("No se pudo registrar el archivo del libro.");
+                      }
+                    
+                      $conn->commit();
+                      $archivo_id = $conn->insert_id;
+                      $ver_url = "/ver_pdf.php?id=".$archivo_id;
 
-                    $conn->commit();
-                    $exito = ($modo === 'nuevo')
-                        ? "Libro creado y PDF subido correctamente."
-                        : "Nueva versión de PDF subida y establecida como activa.";
+                      // PRG:
+                      header("Location: admin_biblioteca_subir.php?ok=1&file=".$archivo_id);
+                      exit;
+
+                    // Marca de éxito para JS (no mostramos alerta HTML)
+                    $exito = true;  
                 } catch (Throwable $e) {
                     $conn->rollback();
                     // En caso de error, elimina el archivo movido
@@ -153,15 +159,6 @@ incluirTemplate('header');
 <main class="biblioteca-admin">
   <h1>📚 Panel de Biblioteca — Subir libros (PDF) <a href="/panel_tecnico.php" class="volver">Volver</a></h1>
 
-  <?php if (!empty($exito)): ?>
-    <div class="contenido-bloque" style="border-color: rgba(var(--primary-rgb), .6)">
-      <p style="color:var(--text);"><strong><?= htmlspecialchars($exito) ?></strong></p>
-      <div class="form-falla__actions">
-        <a class="btn-ghost" href="/biblioteca.php">Ir a la biblioteca</a>
-      </div>
-    </div>
-  <?php endif; ?>
-
   <?php if (!empty($errores)): ?>
     <section class="contenido-bloque">
       <h2 class="section-title">Problemas al subir</h2>
@@ -174,7 +171,7 @@ incluirTemplate('header');
   <?php endif; ?>
 
   <!-- Formulario -->
-  <form class="form-falla" method="POST" enctype="multipart/form-data">
+  <form id="form-biblio" class="form-falla" method="POST" enctype="multipart/form-data">
     <!-- Selector de modo -->
     <section class="contenido-bloque modo-falla">
       <div class="field">
@@ -251,5 +248,71 @@ incluirTemplate('header');
     </div>
   </form>
 </main>
+
+<!-- Alerta al subir libro -->
+ <script>
+  // Función para limpiar el formulario y volver a "Crear libro nuevo"
+  function resetFormularioBiblio() {
+    const form = document.getElementById('form-biblio');
+    if (!form) return;
+    form.reset();
+
+    // Volver el modo a "nuevo" y refrescar visibilidad de bloques
+    const modoSel = document.getElementById('modo');
+    if (modoSel) {
+      modoSel.value = 'nuevo';
+      if (typeof aplicarModo === 'function') aplicarModo();
+      // Si no tienes aplicarModo en este archivo, añade la lógica mínima:
+      const bloqueExist = document.getElementById('bloque-libro-existente');
+      const bloqueNuevo  = document.getElementById('bloque-libro-nuevo');
+      const bloqueAutor  = document.getElementById('bloque-autor');
+      const bloqueCat    = document.getElementById('bloque-categoria');
+      const bloqueDesc   = document.getElementById('bloque-descripcion');
+      if (bloqueExist && bloqueNuevo && bloqueAutor && bloqueCat && bloqueDesc) {
+        bloqueExist.style.display = 'none';
+        bloqueNuevo.style.display = 'block';
+        bloqueAutor.style.display = 'block';
+        bloqueCat.style.display   = 'block';
+        bloqueDesc.style.display  = 'block';
+      }
+    }
+
+    // Limpiar preview del archivo (si muestras nombre/tamaño)
+    const infoPdf = document.getElementById('pdf-info');
+    if (infoPdf) infoPdf.textContent = '';
+  }
+
+  // Dispara el SweetAlert si hubo éxito en el PHP
+(function(){
+  const exito  = <?= isset($exito) && $exito ? 'true' : 'false' ?>;
+
+  if (!exito) return;
+
+  Swal.fire({
+    title: '¡Listo!',
+    html: 'El libro se subió correctamente.',
+    icon: 'success',
+    confirmButtonText: 'Aceptar',
+    allowOutsideClick: false,
+    allowEscapeKey: true,
+    customClass: {
+      confirmButton: 'swal2-confirm-custom'
+    }
+  }).then(() => {
+    resetFormularioBiblio();   // ← limpia el formulario para subir otro
+  });
+})();
+</script>
+
+<style>
+/* Botones del SweetAlert acordes a tu tema (oscuro/verde) */
+.swal2-confirm-custom{
+  background: rgba(76,217,100,.92) !important; 
+  color:#08140c !important; 
+  font-weight:800 !important; 
+  border-radius:12px !important;
+}
+
+</style>
 
 <?php incluirTemplate('footer'); ?>

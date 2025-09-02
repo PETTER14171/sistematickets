@@ -117,3 +117,4 @@ function cerrarModalFalla(id) {
       infoPdf.textContent = '';
     }
   });
+
