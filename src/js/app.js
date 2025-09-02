@@ -118,3 +118,45 @@ function cerrarModalFalla(id) {
     }
   });
 
+
+// Modal de fallas comunes
+  function abrirModalFalla(id) {
+    const modal = document.getElementById('modal-falla-' + id);
+    if (!modal) return;
+
+    // Mostrar modal
+    modal.style.display = 'flex';
+
+    // Bloquear el scroll del body detrás del modal
+    document.body.style.overflow = 'hidden';
+
+    // Cerrar al hacer click fuera del contenido
+    modal.addEventListener('click', function backdrop(e) {
+      if (e.target === modal) {
+        cerrarModalFalla(id);
+      }
+    }, { once: true });
+
+    // Cerrar con ESC
+    const onEsc = (e) => {
+      if (e.key === 'Escape') {
+        cerrarModalFalla(id);
+      }
+    };
+    modal._onEsc = onEsc; // guardamos ref para remover luego
+    document.addEventListener('keydown', onEsc);
+  }
+
+  function cerrarModalFalla(id) {
+    const modal = document.getElementById('modal-falla-' + id);
+    if (!modal) return;
+
+    modal.style.display = 'none';
+    document.body.style.overflow = ''; // restaurar scroll body
+
+    // Remover listener de ESC si existe
+    if (modal._onEsc) {
+      document.removeEventListener('keydown', modal._onEsc);
+      delete modal._onEsc;
+    }
+  }

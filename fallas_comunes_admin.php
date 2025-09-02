@@ -22,7 +22,7 @@ require 'includes/funciones.php';
 incluirTemplate ('header');
 ?>
 
-<main>
+<main >
     <h2>📚 Gestión de Fallas Comunes <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
 
     <a href="crear_falla.php" class="crear-btn">➕ Nueva Falla Común</a>
@@ -46,9 +46,24 @@ incluirTemplate ('header');
                     <tr>
                         <td><?= htmlspecialchars($f['titulo']) ?></td>
                         <td><?= htmlspecialchars($f['categoria']) ?></td>
-                        <td><?= htmlspecialchars($f['palabras_clave']) ?></td>
-                        <td><?= nl2br(htmlspecialchars($f['descripcion'])) ?></td>
-                        <td><?= nl2br(htmlspecialchars($f['pasos_solucion'])) ?></td>
+                        <td>
+                            <?= strlen($f['palabras_clave']) > 30 
+                                ? nl2br(substr(htmlspecialchars($f['palabras_clave']), 0, 30)) . '...' 
+                                : nl2br(htmlspecialchars($f['palabras_clave'])) 
+                            ?>
+                        </td>
+                        <td>
+                            <?= strlen($f['descripcion']) > 30 
+                                ? nl2br(substr(htmlspecialchars($f['descripcion']), 0, 30)) . '...' 
+                                : nl2br(htmlspecialchars($f['descripcion'])) 
+                            ?>
+                        </td>
+                        <td>
+                        <?= strlen($f['pasos_solucion']) > 30 
+                                ? nl2br(substr(htmlspecialchars($f['pasos_solucion']), 0, 30)) . '...' 
+                                : nl2br(htmlspecialchars($f['pasos_solucion'])) 
+                        ?>
+                        </td>
                         <td><?= htmlspecialchars($f['autor']) ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($f['creado_en'])) ?></td>
                         <td class="acciones">

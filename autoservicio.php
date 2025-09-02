@@ -90,7 +90,7 @@ incluirTemplate ('header');
                             <h3><?= htmlspecialchars($falla['titulo']) ?></h3>
                             <p><strong>Categoría:</strong> <?= htmlspecialchars($falla['categoria']) ?></p>
                             <p><strong>Descripción:</strong> <?= nl2br(htmlspecialchars($falla['descripcion'])) ?></p>
-                            <p><strong>Pasos:</strong> <?= nl2br(htmlspecialchars($falla['pasos_solucion'])) ?></p>
+                            <p class="pasos-solucion"><strong>Pasos:</strong> <?= nl2br(htmlspecialchars($falla['pasos_solucion'])) ?></p>
                             <a href="crear_ticket.php?referencia=<?= $falla['id'] ?>" class="crear-ticket">🛠 No resolvió mi problema</a>
                         </div>
                     </div>

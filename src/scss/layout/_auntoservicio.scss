@@ -72,34 +72,51 @@ input:focus {
 
 // Modal
 .modal-falla {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.7);
-    justify-content: center;
-    align-items: center;
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0; // top:0; right:0; bottom:0; left:0
+  background-color: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: flex-start;      // para que inicie “arriba”
+  overflow-y: auto;             // <— permite hacer scroll del fondo del modal
+  padding: 2rem;                // respiro alrededor
+
+  // Evita que en móviles el contenido quede pegado
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 
   .modal-contenido {
     background: #fff;
-    max-width: 600px;
-    width: 90%;
-    padding: 2rem;
+    width: min(90%, 1200px);
     border-radius: 10px;
     position: relative;
 
+    // 💡 clave: el contenido interno scrollea, no el body
+    max-height: 90vh;           // <— visible sin salirse de la pantalla
+    overflow: auto;             // <— scroll interno si se excede
+
+    padding: 2.5rem 2rem 1rem;
+
+    @media (max-width: 768px) {
+      padding: 2.5rem 1rem 0.75rem;
+      width: 95%;
+      max-height: 92vh;
+    }
+
     .cerrar-modal {
-      position: absolute;
-      top: -.1rem;
-      right: .4rem;
+      position: sticky;         // <— siempre visible al hacer scroll
+      top: -0.5rem;
+      margin-left: auto;
+      display: inline-block;
       background: #dc3545;
       color: #fff;
       border: none;
       border-radius: 4px;
       padding: 0.4rem 0.8rem;
       cursor: pointer;
+      z-index: 2;
     }
 
     .media-modal {
@@ -110,23 +127,78 @@ input:focus {
         width: 100%;
         height: auto;
         border-radius: 8px;
-        max-height: 300px;
+        max-height: 40vh;       // <— no “come” todo el alto
         object-fit: contain;
       }
     }
 
+    // Que los textos largos tengan buen flujo
+    h3 {
+      margin: 0.5rem 0 0.75rem;
+      line-height: 1.25;
+    }
+
+    .modal-contenido {
+    // ... lo que ya tienes
+
+      p {
+        margin: 0 0 0.75rem;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      // 👇 Ajuste específico para los pasos
+      p strong:contains("Pasos:") + * {
+        line-height: 1.3; // menos separación (ajusta entre 1.2 y 1.4 según gusto)
+      }
+
+      // o más directo si prefieres apuntar por clase:
+      .pasos-solucion {
+        line-height: 1.3;
+      }
+    }
+
+
+    // Botón para crear ticket siempre a la mano
     .crear-ticket {
+      position: sticky;         // <— se “pega” al fondo visible
+      bottom: 0;
       display: inline-block;
       margin-top: 1rem;
       background-color: #f05112;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
+      color: #fff;
+      padding: 0.7rem 1rem;
+      border-radius: 6px;
       text-decoration: none;
+      font-weight: 600;
+
+      // Fondo para legibilidad cuando queda pegado
+      box-shadow: 0 -8px 10px -10px rgba(0,0,0,.25);
 
       &:hover {
-        background-color: #c6450e; // color ajustado manualmente
+        background-color: #c6450e;
       }
     }
+  }
+}
+
+// Mejora: grid responsive (opcional pero recomendado)
+.grid-fallas {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  padding: 2rem;
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
   }
 }

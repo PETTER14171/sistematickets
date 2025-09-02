@@ -73,7 +73,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
 
 <main >
   <header>
-        <h1 >📚 Biblioteca <a href="/fallas_comunes_admin.php" class="volver">Volver</a></h1>
+        <h1 >📚 Biblioteca <a href="/panel_tecnico.php" class="volver">Volver</a></h1>
         <!-- Filtros -->
         <form class="margin-contenido biblioteca__filters" method="GET" action="">
             <section class=" filtro-busqueda-falla">
