@@ -22,10 +22,18 @@ $campana_usuario = $usuario['campana'];
 $stmt->close();
 
 // Obtener categorías válidas según la campaña
-$stmt = $conn->prepare("SELECT DISTINCT categoria FROM incidencias_prioridad WHERE campana = ?");
+$sqlCat = "
+    SELECT DISTINCT categoria
+    FROM incidencias_prioridad
+    WHERE (campana = ?)
+       OR (LOWER(campana) IN ('general','campana general'))
+    ORDER BY categoria ASC
+";
+$stmt = $conn->prepare($sqlCat);
 $stmt->bind_param("s", $campana_usuario);
 $stmt->execute();
 $result = $stmt->get_result();
+
 $categorias_disponibles = [];
 while ($row = $result->fetch_assoc()) {
     $categorias_disponibles[] = $row['categoria'];
@@ -41,15 +49,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($titulo && $descripcion && $categoria) {
         // Obtener prioridad automáticamente
-        $stmt = $conn->prepare("SELECT prioridad FROM incidencias_prioridad WHERE campana = ? AND categoria = ? LIMIT 1");
-        $stmt->bind_param("ss", $campana_usuario, $categoria);
+        $sqlPrio = "
+            SELECT prioridad
+            FROM incidencias_prioridad
+            WHERE categoria = ?
+            AND (
+                    campana = ?
+                OR LOWER(campana) IN ('general','campana general')
+            )
+            ORDER BY (campana = ?) DESC  -- primero exacta de la campaña
+            LIMIT 1
+        ";
+        $stmt = $conn->prepare($sqlPrio);
+        $campana_lower_fallback = $campana_usuario; // se usa dos veces en el ORDER BY
+        $stmt->bind_param("sss", $categoria, $campana_usuario, $campana_lower_fallback);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
         $stmt->close();
 
         if (!$row) {
-            $mensaje = "⚠️ No se encontró prioridad para la categoría seleccionada.";
+            $mensaje = "⚠️ No se encontró prioridad para la categoría seleccionada en tu campaña ni en general.";
         } else {
             $prioridad = $row['prioridad'];
 

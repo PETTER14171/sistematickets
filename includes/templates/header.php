@@ -20,7 +20,7 @@
                         <nav class="navegacion">
                             <a href="crear_ticket.php">Crear Ticket</a>
                             <a href="mis_tickets.php">Tickets</a>
-                            <a href="biblioteca.php">biblioteca</a>
+                            <a href="biblioteca.php">Biblioteca</a>
                             <a href="blog.php">Blog</a>
                         </nav>
                 </div>
