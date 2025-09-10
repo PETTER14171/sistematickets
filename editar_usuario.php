@@ -16,6 +16,7 @@ $stmt->bind_param("i", $id_usuario);
 $stmt->execute();
 $resultado = $stmt->get_result();
 $usuario = $resultado->fetch_assoc();
+$stmt->close();
 
 if (!$usuario) {
     die("❌ Usuario no encontrado.");
@@ -23,15 +24,18 @@ if (!$usuario) {
 
 // Si se envió el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = trim($_POST['nombre']);
-    $correo = trim($_POST['correo']);
-    $rol = $_POST['rol'];
-    $activo = isset($_POST['activo']) ? 1 : 0;
+    $nombre  = trim($_POST['nombre']);
+    $correo  = trim($_POST['correo']);
+    $rol     = $_POST['rol'];
+    $activo  = isset($_POST['activo']) ? 1 : 0;
     $campana = trim($_POST['campana']);
-    $puesto = trim($_POST['puesto']);
+    $puesto  = trim($_POST['puesto']);
     $estacion = trim($_POST['estacion']);
 
-    // Validar correo único (excepto si es el mismo)
+    // Nuevo: flag de acceso a biblioteca
+    $acceso_biblioteca = isset($_POST['acceso_biblioteca']) ? 1 : 0;
+
+    // Validar correo único (excepto si es el mismo usuario)
     $stmt = $conn->prepare("SELECT id FROM usuarios WHERE correo = ? AND id != ?");
     $stmt->bind_param("si", $correo, $id_usuario);
     $stmt->execute();
@@ -40,37 +44,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->num_rows > 0) {
         $mensaje = "⚠️ Ya existe otro usuario con este correo.";
     } else {
-        $stmt = $conn->prepare("UPDATE usuarios 
-            SET nombre = ?, correo = ?, rol = ?, activo = ?, campana = ?, puesto = ?, estacion = ?
-            WHERE id = ?");
+        $stmt->close();
 
-        $stmt->bind_param("sssisssi", $nombre, $correo, $rol, $activo, $campana, $puesto, $estacion, $id_usuario);
+        // Actualizar datos del usuario, incluyendo acceso_biblioteca
+        $stmt = $conn->prepare(
+            "UPDATE usuarios 
+             SET nombre = ?, correo = ?, rol = ?, activo = ?, campana = ?, puesto = ?, estacion = ?, acceso_biblioteca = ?
+             WHERE id = ?"
+        );
+        // Tipos: s s s i s s s i i
+        $stmt->bind_param(
+            "sssisssii",
+            $nombre,
+            $correo,
+            $rol,
+            $activo,
+            $campana,
+            $puesto,
+            $estacion,
+            $acceso_biblioteca,
+            $id_usuario
+        );
 
         if ($stmt->execute()) {
             $mensaje = "✅ Usuario actualizado correctamente.";
-            // Actualizar datos locales
+            // Actualizar datos locales para que el formulario refleje lo guardado
             $usuario = [
-                'nombre' => $nombre,
-                'correo' => $correo,
-                'rol' => $rol,
-                'activo' => $activo,
-                'campana' => $campana,
-                'puesto' => $puesto,
-                'estacion' => $estacion
+                'id'                 => $id_usuario,
+                'nombre'             => $nombre,
+                'correo'             => $correo,
+                'rol'                => $rol,
+                'activo'             => $activo,
+                'campana'            => $campana,
+                'puesto'             => $puesto,
+                'estacion'           => $estacion,
+                'acceso_biblioteca'  => $acceso_biblioteca
             ];
         } else {
             $mensaje = "❌ Error al actualizar el usuario.";
         }
+        $stmt->close();
     }
 }
 ?>
 
 <?php
 require 'includes/funciones.php';
-incluirTemplate ('header');
+incluirTemplate('header');
 ?>
 
-<h2>✏️ Editar Usuario  <a href="/usuarios.php" class="volver">Volver</a></h2>
+<div class="centrat-titulo_boton">
+    <h3>✏️ Editar Usuario</h3>
+    <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+</div>
+
 
 <?php if ($mensaje): ?>
     <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
@@ -188,12 +215,27 @@ incluirTemplate ('header');
     </div>
   </section>
 
+  <!-- Acceso a biblioteca (switch) -->
+  <section class="contenido-bloque biblioteca-falla">
+    <div class="switch">
+      <input
+        id="acceso_biblioteca"
+        class="switch__input"
+        type="checkbox"
+        name="acceso_biblioteca"
+        <?= !empty($usuario['acceso_biblioteca']) ? 'checked' : '' ?>
+      >
+      <label for="acceso_biblioteca" class="switch__label">
+        <span class="switch__title">Acceso a biblioteca</span>
+      </label>
+    </div>
+  </section>
+
   <!-- Botón -->
   <div class="form-falla__actions">
     <button class="btn-primary" type="submit">Guardar cambios</button>
   </div>
 </form>
-
 
 <?php 
 incluirTemplate('footer');

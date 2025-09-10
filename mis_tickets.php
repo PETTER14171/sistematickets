@@ -53,15 +53,17 @@ incluirTemplate('header');
 ?>
 
 <main>
-    <h2>📋 Mis tickets generados
-        <a href="/fallas_comunes_admin.php" class="volver">Volver</a>
-    </h2>
+    <div class="centrat-titulo_boton">
+        <h3>📋 Mis tickets generados</h3>
+        <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+    </div>
 
     <?php if (count($tickets) > 0): ?>
         <div class="margin-table"> 
             <table>
                 <thead>
                     <tr>
+                        <th>ID</th> <!-- ✅ Nueva columna para el ID -->
                         <th>Título</th>
                         <th>Categoría</th>
                         <th>Prioridad</th>
@@ -74,6 +76,7 @@ incluirTemplate('header');
                 <tbody>
                     <?php foreach ($tickets as $t): ?>
                         <tr>
+                            <td>#<?= $t['id'] ?></td> <!-- ✅ Mostrar ID -->
                             <td><?= htmlspecialchars($t['titulo']) ?></td>
                             <td><?= htmlspecialchars($t['categoria']) ?></td>
                             <td><?= ucfirst($t['prioridad']) ?></td>
@@ -101,7 +104,6 @@ incluirTemplate('header');
                             <td>
                                 <?php
                                     $file = $t['evidencia'] ?? '';
-                                    // Seguridad: evita rutas arbitrarias
                                     $fileSafe = $file !== '' ? basename($file) : '';
                                     $ruta = '/adjuntos/' . rawurlencode($fileSafe);
                                 ?>

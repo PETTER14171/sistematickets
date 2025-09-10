@@ -35,7 +35,10 @@ incluirTemplate ('header');
 ?>
 
 <main>
-    <h3>Buscar solución a una falla común </h3>
+    <div class="centrat-titulo_boton">
+        <h3>🔍Buscar solución a una falla común</h3>
+        <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+    </div>
     <form method="POST" class="form-control">
         <input class="form-control-input" type="text" name="busqueda" placeholder="Ej: impresora, VPN, Outlook..." value="<?= htmlspecialchars($busqueda) ?>" required>
         <button class="button-input" type="submit">Buscar</button>
@@ -100,8 +103,6 @@ incluirTemplate ('header');
     <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
         <p>No se encontraron coincidencias. Puedes <a href="crear_ticket.php">crear un ticket</a>.</p>
     <?php endif; ?>
-
-    <a href="/fallas_comunes_admin.php" class="btn-1 btn-volver">← Volver</a>
 </main>
 
 <?php 

@@ -95,8 +95,10 @@ require 'includes/funciones.php';
 incluirTemplate ('header');
 ?>
 
-
-<h2>✏️ Editar Guía de Falla Común  <a href="/fallas_comunes_admin.php" class="volver">Volver</a></h2>
+<div class="centrat-titulo_boton">
+    <h3>✏️ Editar Guía de Falla Común</h3>
+    <a href="/fallas_comunes_admin.php" class="btn-1 btn-volver">← Volver</a>
+</div>
 
 <?php if ($mensaje): ?>
     <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>

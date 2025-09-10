@@ -157,8 +157,9 @@
 }
 
 .editar { 
+  font-size: 1.2rem;
   background-color: #007bff;
-  margin-bottom: 0.5rem;
+
 }
 
 .eliminar { background-color: #dc3545; }
@@ -187,6 +188,7 @@
 }
 
 .toggle {
+  font-size: 1.2rem;
   background-color: #17a2b8;
 }
 
@@ -386,4 +388,26 @@
     justify-self: center;
     margin-top: 7rem;
   }
+}
+
+
+.centrat-titulo_boton {
+  display: flex;
+  align-items: center;     /* Centra verticalmente */
+  position: relative;
+}
+
+.centrat-titulo_boton h3{
+  flex: 1;                 /* Ocupa el espacio disponible */
+  text-align: center;      /* Centra el texto dentro del h3 */
+  margin: 0;               /* Elimina márgenes extra */
+}
+.centrat-titulo_boton h1{
+  flex: 1;                 /* Ocupa el espacio disponible */
+  text-align: center;      /* Centra el texto dentro del h1 */
+  margin: 0;               /* Elimina márgenes extra */
+}
+
+.centrat-titulo_boton a {
+  margin-left: auto;       /* Empuja el botón a la derecha */
 }

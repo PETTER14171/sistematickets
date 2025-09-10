@@ -88,8 +88,10 @@ $respuestas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 require 'includes/funciones.php';
 incluirTemplate ('header');
 ?>
-
-<h2>🛠 Ticket #<?= $ticket['id'] ?>: <?= htmlspecialchars($ticket['titulo']) ?> <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
+<div class="centrat-titulo_boton">
+    <h3>🛠 Ticket #<?= $ticket['id'] ?>: <?= htmlspecialchars($ticket['titulo']) ?></h3>
+    <a href="/admin_tickets.php" class="btn-1 btn-volver">← Volver</a>
+</div>
 
 <main>
     <?php if ($mensaje): ?>

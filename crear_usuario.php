@@ -47,7 +47,10 @@ incluirTemplate ('header');
 ?>
 
 <main>
-    <h2>Crear nuevo usuario <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
+    <div class="centrat-titulo_boton">
+        <h3>👤 Crear nuevo usuario</h3>
+        <a href="/panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
+    </div>
         <?php if ($mensaje): ?>
             <p><?= htmlspecialchars($mensaje) ?></p>
         <?php endif; ?>

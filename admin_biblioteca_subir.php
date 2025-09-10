@@ -157,7 +157,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 incluirTemplate('header');
 ?>
 <main class="biblioteca-admin">
-  <h1>📚 Panel de Biblioteca — Subir libros (PDF) <a href="/panel_tecnico.php" class="volver">Volver</a></h1>
+    <div class="centrat-titulo_boton">
+        <h3>📚 Panel de Biblioteca — Subir libros (PDF)</h3>
+        <a href="/panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
+    </div>
 
   <?php if (!empty($errores)): ?>
     <section class="contenido-bloque">

@@ -9,20 +9,22 @@ if ($_SESSION['rol'] !== 'tecnico') {
 
 // Filtros recibidos por GET
 $filtros = [
-    'nombre' => $_GET['nombre'] ?? '',
-    'correo' => $_GET['correo'] ?? '',
-    'rol' => $_GET['rol'] ?? '',
-    'campana' => $_GET['campana'] ?? '',
-    'puesto' => $_GET['puesto'] ?? '',
-    'estacion' => $_GET['estacion'] ?? '',
-    'estado' => $_GET['estado'] ?? '',
-    'creado_en' => $_GET['creado_en'] ?? ''
+    'nombre'     => $_GET['nombre']     ?? '',
+    'correo'     => $_GET['correo']     ?? '',
+    'rol'        => $_GET['rol']        ?? '',
+    'campana'    => $_GET['campana']    ?? '',
+    'puesto'     => $_GET['puesto']     ?? '',
+    'estacion'   => $_GET['estacion']   ?? '',
+    'estado'     => $_GET['estado']     ?? '',
+    'creado_en'  => $_GET['creado_en']  ?? '',
+    // Nuevo: filtro por acceso a biblioteca
+    'biblioteca' => $_GET['biblioteca'] ?? '',
 ];
 
 // Consulta con filtros
-$where = [];
+$where  = [];
 $params = [];
-$types = '';
+$types  = '';
 
 if ($filtros['nombre']) {
     $where[] = "nombre LIKE ?";
@@ -41,30 +43,34 @@ if ($filtros['rol']) {
 }
 if ($filtros['campana']) {
     $where[] = "campana LIKE ?";
-        $params[] = "%" . $filtros['campana'] . "%";
+    $params[] = "%" . $filtros['campana'] . "%";
     $types .= 's';
 }
 if ($filtros['puesto']) {
     $where[] = "puesto LIKE ?";
-        $params[] = "%" . $filtros['puesto'] . "%";
+    $params[] = "%" . $filtros['puesto'] . "%";
     $types .= 's';
 }
 if ($filtros['estacion']) {
     $where[] = "estacion LIKE ?";
-        $params[] = "%" . $filtros['estacion'] . "%";
+    $params[] = "%" . $filtros['estacion'] . "%";
     $types .= 's';
 }
-
 if ($filtros['estado'] !== '') {
     $where[] = "activo = ?";
     $params[] = $filtros['estado'] === '1' ? 1 : 0;
     $types .= 'i';
 }
-
 if ($filtros['creado_en']) {
     $where[] = "creado_en LIKE ?";
     $params[] = "%" . $filtros['creado_en'] . "%";
     $types .= 's';
+}
+// Nuevo: filtro por acceso_biblioteca
+if ($filtros['biblioteca'] !== '') {
+    $where[] = "acceso_biblioteca = ?";
+    $params[] = $filtros['biblioteca'] === '1' ? 1 : 0;
+    $types .= 'i';
 }
 
 $query = "SELECT * FROM usuarios";
@@ -80,16 +86,19 @@ if ($params) {
 $stmt->execute();
 $resultado = $stmt->get_result();
 $usuarios = $resultado->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 ?>
 
 <?php
 require 'includes/funciones.php';
-incluirTemplate ('header');
+incluirTemplate('header');
 ?>
 
 <main>
-    <h2>👥 Gestión de Usuarios <a href="/panel_tecnico.php" class="volver">Volver</a></h2>
-
+    <div class="centrat-titulo_boton">
+        <h3>👥 Gestión de Usuarios</h3>
+        <a href="/panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
+    </div>
     <form method="GET">
         <table>
             <thead>
@@ -100,9 +109,9 @@ incluirTemplate ('header');
                     <th>
                         <select name="rol">
                             <option value="">Rol</option>
-                            <option value="agente" <?= $filtros['rol'] === 'agente' ? 'selected' : '' ?>>Agente</option>
+                            <option value="agente"  <?= $filtros['rol'] === 'agente' ? 'selected' : '' ?>>Agente</option>
                             <option value="tecnico" <?= $filtros['rol'] === 'tecnico' ? 'selected' : '' ?>>Técnico</option>
-                            <option value="admin" <?= $filtros['rol'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+                            <option value="admin"   <?= $filtros['rol'] === 'admin' ? 'selected' : '' ?>>Admin</option>
                         </select>
                     </th>
                     <th><input type="text" name="campana" placeholder="Campaña" value="<?= htmlspecialchars($filtros['campana']) ?>"></th>
@@ -113,6 +122,14 @@ incluirTemplate ('header');
                             <option value="">Estado</option>
                             <option value="1" <?= $filtros['estado'] === '1' ? 'selected' : '' ?>>Activo</option>
                             <option value="0" <?= $filtros['estado'] === '0' ? 'selected' : '' ?>>Inactivo</option>
+                        </select>
+                    </th>
+                    <!-- Nuevo: Filtro de Biblioteca -->
+                    <th>
+                        <select name="biblioteca">
+                            <option value="">Biblioteca</option>
+                            <option value="1" <?= $filtros['biblioteca'] === '1' ? 'selected' : '' ?>>Permitido</option>
+                            <option value="0" <?= $filtros['biblioteca'] === '0' ? 'selected' : '' ?>>Bloqueado</option>
                         </select>
                     </th>
                     <th><input type="text" name="creado_en" placeholder="Fecha de creación" value="<?= htmlspecialchars($filtros['creado_en']) ?>"></th>
@@ -135,10 +152,18 @@ incluirTemplate ('header');
                             <td class="<?= $u['activo'] ? 'activo' : 'inactivo' ?>">
                                 <?= $u['activo'] ? 'Activo' : 'Inactivo' ?>
                             </td>
+                            <!-- Nuevo: estado de acceso a biblioteca -->
+                            <?php
+                                $permiteBib = !empty($u['acceso_biblioteca']);
+                                $claseBib   = $permiteBib ? 'permitido' : 'bloqueado';
+                                $textoBib   = $permiteBib ? 'Permitido' : 'Bloqueado';
+                            ?>
+                            <td class="<?= $claseBib ?>"><?= $textoBib ?></td>
+
                             <td><?= $u['creado_en'] ?></td>
                             <td class="acciones">
                                 <a href="editar_usuario.php?id=<?= $u['id'] ?>" class="editar">Editar</a>
-                                <a href="eliminar_usuario.php?id=<?= $u['id'] ?>" class="eliminar" onclick="return confirm('¿Eliminar este usuario?')">Eliminar</a>
+                                <!-- <a href="eliminar_usuario.php?id=<?= $u['id'] ?>" class="eliminar" onclick="return confirm('¿Eliminar este usuario?')">Eliminar</a> -->
                                 <a href="toggle_usuario.php?id=<?= $u['id'] ?>" class="toggle">
                                     <?= $u['activo'] ? 'Desactivar' : 'Activar' ?>
                                 </a>
@@ -146,12 +171,13 @@ incluirTemplate ('header');
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="10">No se encontraron usuarios.</td></tr>
+                    <tr><td colspan="11">No se encontraron usuarios.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </form>
 </main>
+
 <?php 
 incluirTemplate('footer');
 ?>

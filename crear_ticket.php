@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute();
                 $stmt->close();
 
-                $mensaje = "✅ Ticket creado correctamente.";
+                $mensaje = "✅ Ticket creado correctamente, Tu numero de ticket es el #" . $ticket_id . ".";
                 $titulo = $descripcion = $categoria = "";
             } else {
                 $mensaje = "❌ Error al crear el ticket.";
@@ -110,19 +110,16 @@ incluirTemplate ('header');
 
 <main>
     <section class="">
-        <h1>📝 Generar nuevo ticket</h1>
-
+        <div class="centrat-titulo_boton">
+            <h3>📝 Generar nuevo ticket</h3>
+            <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+        </div>
         <?php if ($mensaje): ?>
             <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
         <?php endif; ?>
         
         <div class="margin-contenido">
             <form class="formulario-ticket contenido-bloque" method="POST">
-                <label for="titulo">Título del problema:</label>
-                <input type="text" name="titulo" id="titulo" value="<?= htmlspecialchars($titulo) ?>" required>
-
-                <label for="descripcion">Descripción detallada:</label>
-                <textarea name="descripcion" id="descripcion" rows="5" required><?= htmlspecialchars($descripcion) ?></textarea>
 
                 <label for="categoria">Categoría:</label>
                 <select name="categoria" id="categoria" required>
@@ -134,6 +131,12 @@ incluirTemplate ('header');
                     <?php endforeach; ?>
                 </select>
 
+                <label for="titulo">Título del problema:</label>
+                <input type="text" name="titulo" id="titulo" value="<?= htmlspecialchars($titulo) ?>" required>
+
+                <label for="descripcion">Descripción detallada:</label>
+                <textarea name="descripcion" id="descripcion" rows="5" required><?= htmlspecialchars($descripcion) ?></textarea>
+
                 <?php if ($referencia_falla): ?>
                     <input type="hidden" name="referencia_falla" value="<?= $referencia_falla ?>">
                     <p><em>Este ticket está relacionado con la falla común ID #<?= $referencia_falla ?></em></p>
@@ -143,7 +146,6 @@ incluirTemplate ('header');
             </form>
         </div>
     </section>
-     <a href="/fallas_comunes_admin.php" class="btn-volver btn-1">Volver</a>
 </main>
 
 <?php 

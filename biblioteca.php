@@ -4,6 +4,32 @@ require __DIR__ . '/includes/config/conexion.php';
 require __DIR__ . '/includes/funciones.php';
 incluirTemplate('header');
 
+// Consultar flag de acceso
+$stmt = $conn->prepare("SELECT acceso_biblioteca FROM usuarios WHERE id = ?");
+$stmt->bind_param("i", $_SESSION['usuario_id']);
+$stmt->execute();
+$res = $stmt->get_result();
+$u = $res->fetch_assoc();
+$stmt->close();
+
+// Validar acceso
+if (!$u || intval($u['acceso_biblioteca']) !== 1) {
+  echo '
+  <main>
+      <div class="centrat-titulo_boton">
+          <h3>⚠️ No tienes acceso a la biblioteca</h3>
+          <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+      </div>
+  </main>
+  ';
+  incluirTemplate('footer');
+  exit;
+
+}
+
+
+
+
 /** Utilidad: tamaño legible */
 function human_size($bytes) {
     $units = ['B','KB','MB','GB','TB'];
@@ -73,7 +99,10 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
 
 <main >
   <header>
-        <h1 >📚 Biblioteca <a href="/panel_tecnico.php" class="volver">Volver</a></h1>
+        <div class="centrat-titulo_boton">
+          <h3>📚 Biblioteca </h3>
+          <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+        </div>
         <!-- Filtros -->
         <form class="margin-contenido biblioteca__filters" method="GET" action="">
             <section class=" filtro-busqueda-falla">
