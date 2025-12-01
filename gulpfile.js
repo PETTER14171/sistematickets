@@ -5,7 +5,7 @@ const postcss = require('gulp-postcss')
 const sourcemaps = require('gulp-sourcemaps')
 const cssnano = require('cssnano');
 const concat = require('gulp-concat');
-const terser = require('gulp-terser-js');
+const uglify = require('gulp-uglify-es').default;
 const rename = require('gulp-rename');
 const imagemin = require('gulp-imagemin'); // Minificar imagenes 
 const notify = require('gulp-notify');
@@ -33,7 +33,7 @@ function javascript() {
     return src(paths.js)
       .pipe(sourcemaps.init())
       .pipe(concat('bundle.js'))
-      .pipe(terser())
+      .pipe(uglify())
       .pipe(sourcemaps.write('.'))
       .pipe(rename({ suffix: '.min' }))
       .pipe(dest('./build/js'))

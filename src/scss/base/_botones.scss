@@ -255,31 +255,6 @@
 }
 .btn-ghost:hover { background: #141b24; border-color: #2a394e; }
 
-/* Botón primario */
-.btn-primary {
-  --btn-bg: var(--primary);
-  --btn-fg: #0b1016;
-
-  appearance: none;
-  border: 0;
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-weight: 700;
-  font-size: .98rem;
-  background: linear-gradient(180deg, var(--btn-bg), color-mix(in srgb, var(--btn-bg) 85%, #0b0b0b));
-  color: var(--btn-fg);
-  cursor: pointer;
-  transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
-  box-shadow: 0 10px 24px rgba(var(--primary-rgb), .18);
-
-  &:hover { filter: brightness(.98); }
-  &:active { transform: translateY(1px); }
-
-  &:focus-visible {
-    outline: 2px solid rgba(var(--primary-rgb), .9);
-    outline-offset: 2px;
-  }
-}
 
 .btn-secondary {
   --btn-bg: #f05112;

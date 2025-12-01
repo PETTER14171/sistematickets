@@ -2,9 +2,14 @@
 
 require 'app.php';
 
-function incluirTemplate($nombre, $inicio = false){
-    include TEMPLATES_URL . "/$nombre.php";
+function incluirTemplate(string $nombre, array $datos = []) {
+    if (!empty($datos)) {
+        extract($datos, EXTR_SKIP);
+    }
+
+    include __DIR__ . "/templates/{$nombre}.php";
 }
+
 
 function estaAutenticado() : bool {
     session_start();

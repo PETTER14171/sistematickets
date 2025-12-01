@@ -1,12 +1,12 @@
 {
-  "name": "auntosoporte",
+  "name": "Talkhub_Tickets",
   "version": "1.0.0",
-  "description": "Sistema de sorporte automatisado",
+  "description": "Desarrollo de la pagina interna de tickets",
   "main": "gulpfile.js",
   "scripts": {
     "dev": "gulp"
   },
-  "author": "Pedro Gustavo Colin Prado",
+  "author": " Pedro Colin",
   "license": "ISC",
   "devDependencies": {
     "cssnano": "^5.1.0",
@@ -21,7 +21,7 @@
     "gulp-rename": "^2.0.0",
     "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^3.0.0",
-    "gulp-terser-js": "^5.2.2",
+    "gulp-uglify-es": "^3.0.0",
     "gulp-webp": "^4.0.1",
     "sass": "^1.83.4",
     "terser": "^4.8.0"

@@ -1,14 +1,22 @@
 <?php
-include __DIR__ . '/includes/config/verificar_sesion.php';
+    include __DIR__ . '/includes/config/verificar_sesion.php';
 
-if ($_SESSION['rol'] !== 'agente') {
-    header("Location: login.php?error=Acceso denegado");
-    exit;
-}
+    if ($_SESSION['rol'] !== 'agente') {
+        header("Location: login.php?error=Acceso denegado");
+        exit;
+    }
 ?>
-<?php
-require 'includes/funciones.php';
-incluirTemplate ('header');
+
+<?php 
+
+    require 'includes/funciones.php';
+
+    incluirTemplate('head', [
+        'page_title' => 'Panel Agente',
+        'page_desc'  => 'Panel para que el agente levante su ticket'
+    ]);
+
+    incluirTemplate('header');
 ?>
 
 <main>
@@ -22,6 +30,7 @@ incluirTemplate ('header');
         <a href="logout.php"  class="btn-opcion rojo">🚪 Cerrar sesión</a>
     </div>
 </main>
+
 <?php 
 incluirTemplate('footer');
 ?>
