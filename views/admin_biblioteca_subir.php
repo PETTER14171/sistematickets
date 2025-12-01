@@ -1,11 +1,11 @@
 <?php
-require __DIR__ . '/includes/config/verificar_sesion.php';
-require __DIR__ . '/includes/config/conexion.php';
-require __DIR__ . '/includes/funciones.php';
+require __DIR__ . '/../includes/config/verificar_sesion.php';
+require __DIR__ . '/../includes/config/conexion.php';
+require __DIR__ . '/../includes/funciones.php';
 
 // 1) Solo admin
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'tecnico') {
-    header("Location: login.php?error=Acceso denegado");
+    header("Location: ../index.php?error=Acceso denegado");
     exit;
 }
 
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errores)) {
         // 4) Preparar guardado seguro
-        $baseDir = __DIR__ . '/biblioteca';
+        $baseDir = __DIR__ . '/../biblioteca';
         if (!is_dir($baseDir)) {
             @mkdir($baseDir, 0775, true);
         }
@@ -154,12 +154,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Interfaz
-incluirTemplate('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Admin Bilioteca',
+        'page_desc'  => 'Panel para administrar biblioteca'
+    ]);
+    incluirTemplate('header');
+
 ?>
 <main class="biblioteca-admin">
     <div class="centrat-titulo_boton">
         <h3>📚 Panel de Biblioteca — Subir libros (PDF)</h3>
-        <a href="/panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
+        <a href="panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
     </div>
 
   <?php if (!empty($errores)): ?>

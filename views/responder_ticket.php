@@ -1,10 +1,10 @@
 <?php
-include __DIR__ . '/includes/config/verificar_sesion.php';
-include __DIR__ . '/includes/config/conexion.php';
+include __DIR__ . '/../includes/config/verificar_sesion.php';
+include __DIR__ . '/../includes/config/conexion.php';
 
 
 if ($_SESSION['rol'] !== 'tecnico') {
-    header("Location: login.php?error=Acceso denegado");
+    header("Location: index.php?error=Acceso denegado");
     exit;
 }
 
@@ -28,7 +28,6 @@ if (!$ticket) {
     die("Ticket no encontrado.");
 }
 
-// Procesar nueva respuesta
 // Procesar nueva respuesta
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $respuesta = isset($_POST['respuesta']) ? trim($_POST['respuesta']) : '';
@@ -85,12 +84,18 @@ $respuestas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <?php
-require 'includes/funciones.php';
-incluirTemplate ('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Responder Ticket',
+        'page_desc'  => 'Panel para que el Tecnico responda ticket'
+    ]);
+    incluirTemplate('header');
 ?>
+
+
 <div class="centrat-titulo_boton">
     <h3>🛠 Ticket #<?= $ticket['id'] ?>: <?= htmlspecialchars($ticket['titulo']) ?></h3>
-    <a href="/admin_tickets.php" class="btn-1 btn-volver">← Volver</a>
+    <a href="admin_tickets.php" class="btn-1 btn-volver">← Volver</a>
 </div>
 
 <main>

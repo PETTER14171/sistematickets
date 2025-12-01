@@ -1,10 +1,10 @@
 <?php
-include __DIR__ . '/includes/config/verificar_sesion.php';
-include __DIR__ . '/includes/config/conexion.php';
+include __DIR__ . '/../includes/config/verificar_sesion.php';
+include __DIR__ . '/../includes/config/conexion.php';
 
 
 if ($_SESSION['rol'] !== 'tecnico') {
-    header("Location: login.php?error=Acceso denegado");
+    header("Location: index.php?error=Acceso denegado");
     exit;
 }
 
@@ -35,13 +35,17 @@ $usuarios = $conn->query("SELECT id, nombre, correo, rol, activo FROM usuarios O
 ?>
 
 <?php
-require 'includes/funciones.php';
-incluirTemplate ('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Cambiar contraseña',
+        'page_desc'  => 'Panel para que el Tecnico cambie contraseñas'
+    ]);
+    incluirTemplate('header');
 ?>
 <main>
     <div class="centrat-titulo_boton">
         <h3>🔐 Resetear contraseña de usuario</h3>
-        <a href="/panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
+        <a href="panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
     </div>
     <?php if ($mensaje): ?>
         <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>

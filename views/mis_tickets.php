@@ -1,9 +1,9 @@
 <?php
-include __DIR__ . '/includes/config/verificar_sesion.php';
-include __DIR__ . '/includes/config/conexion.php';
+include __DIR__ . '/../includes/config/verificar_sesion.php';
+include __DIR__ . '/../includes/config/conexion.php';
 
 if ($_SESSION['rol'] !== 'agente') {
-    header("Location: login.php?error=Acceso denegado");
+    header("Location: index.php?error=Acceso denegado");
     exit;
 }
 
@@ -48,14 +48,18 @@ $stmt->execute();
 $result = $stmt->get_result();
 $tickets = $result->fetch_all(MYSQLI_ASSOC);
 
-require 'includes/funciones.php';
-incluirTemplate('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Mis Tickets',
+        'page_desc'  => 'Panel para que los usuarios vean sus tickets'
+    ]);
+    incluirTemplate('header');
 ?>
 
 <main>
     <div class="centrat-titulo_boton">
         <h3>📋 Mis tickets generados</h3>
-        <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+        <a href="panel_agente.php" class="btn-1 btn-volver">← Volver</a>
     </div>
 
     <?php if (count($tickets) > 0): ?>

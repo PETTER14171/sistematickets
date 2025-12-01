@@ -1,7 +1,7 @@
 <?php
-require __DIR__ . '/includes/config/verificar_sesion.php';
-require __DIR__ . '/includes/config/conexion.php';
-require __DIR__ . '/includes/funciones.php';
+require __DIR__ . '/../includes/config/verificar_sesion.php';
+require __DIR__ . '/../includes/config/conexion.php';
+require __DIR__ . '/../includes/funciones.php';
 
 if (!isset($_GET['libro_id']) || !ctype_digit($_GET['libro_id'])) {
   header("Location: biblioteca.php?error=Libro inválido");
@@ -119,12 +119,17 @@ function human_size($bytes) {
   return number_format($bytes, $i?2:0) . ' ' . $u[$i];
 }
 
-incluirTemplate('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Reseñas',
+        'page_desc'  => 'Panel para visualizar las reseñas de los libros de la biblioteca'
+    ]);
+    incluirTemplate('header');
 ?>
 
 <main class="resenas-page">
   <header class="resenas-header">
-    <a class="btn-ghost" href="/biblioteca.php">← Volver a la biblioteca</a>
+    <a class="btn-ghost" href="biblioteca.php">← Volver a la biblioteca</a>
     <h1 class="ticket-title"><?= htmlspecialchars($libro['titulo']) ?></h1>
     <div class="libro-meta">
       <?php if (!empty($libro['autor'])): ?>
@@ -137,7 +142,7 @@ incluirTemplate('header');
         <span class="muted"><?= human_size((int)$libro['tamanio_bytes']) ?></span>
       <?php endif; ?>
       <?php if (!empty($libro['archivo_id'])): ?>
-        <a class="btn-primary" href="/ver_pdf.php?id=<?= (int)$libro['archivo_id'] ?>" target="_blank" rel="noopener">Ver en línea</a>
+        <a class="btn-primary" href="ver_pdf.php?id=<?= (int)$libro['archivo_id'] ?>" target="_blank" rel="noopener">Ver en línea</a>
       <?php endif; ?>
     </div>
 

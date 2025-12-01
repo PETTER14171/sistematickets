@@ -1,8 +1,14 @@
 <?php
-require __DIR__ . '/includes/config/verificar_sesion.php';
-require __DIR__ . '/includes/config/conexion.php';
-require __DIR__ . '/includes/funciones.php';
-incluirTemplate('header');
+require __DIR__ . '/../includes/config/verificar_sesion.php';
+require __DIR__ . '/../includes/config/conexion.php';
+require __DIR__ . '/../includes/funciones.php';
+
+  require_once __DIR__ . '/../includes/funciones.php';
+  incluirTemplate('head', [
+      'page_title' => 'Biblioteca Talk-Hub',
+      'page_desc'  => 'Biblioteca Virtual para Talkhub'
+  ]);
+  incluirTemplate('header');
 
 // Consultar flag de acceso
 $stmt = $conn->prepare("SELECT acceso_biblioteca FROM usuarios WHERE id = ?");
@@ -18,7 +24,7 @@ if (!$u || intval($u['acceso_biblioteca']) !== 1) {
   <main>
       <div class="centrat-titulo_boton">
           <h3>⚠️ No tienes acceso a la biblioteca</h3>
-          <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+          <a href="panel_agente.php" class="btn-1 btn-volver">← Volver</a>
       </div>
   </main>
   ';
@@ -26,9 +32,6 @@ if (!$u || intval($u['acceso_biblioteca']) !== 1) {
   exit;
 
 }
-
-
-
 
 /** Utilidad: tamaño legible */
 function human_size($bytes) {
@@ -101,7 +104,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
   <header>
         <div class="centrat-titulo_boton">
           <h3>📚 Biblioteca </h3>
-          <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+          <a href="panel_agente.php" class="btn-1 btn-volver">← Volver</a>
         </div>
         <!-- Filtros -->
         <form class="margin-contenido biblioteca__filters" method="GET" action="">
@@ -170,7 +173,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
 
           <div class="libro-card__actions">
             <?php if (!empty($l['archivo_id'])): ?>
-              <a class="btn-primary-2" href="/ver_pdf.php?id=<?= (int)$l['archivo_id'] ?>" target="_blank" rel="noopener">
+              <a class="btn-primary-2" href="ver_pdf.php?id=<?= (int)$l['archivo_id'] ?>" target="_blank" rel="noopener">
                 Leer en línea
               </a>
             <?php else: ?>
@@ -178,7 +181,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
             <?php endif; ?>
 
             <!-- Enlace opcional a reseñas del libro -->
-            <a class="btn-ghost" href="/resenas.php?libro_id=<?= (int)$l['id'] ?>">
+            <a class="btn-ghost" href="resenas.php?libro_id=<?= (int)$l['id'] ?>">
               Reseñas
             </a>
           </div>

@@ -1,21 +1,18 @@
 <?php
-    include __DIR__ . '/includes/config/verificar_sesion.php';
+    include __DIR__ . '/../includes/config/verificar_sesion.php';
 
     if ($_SESSION['rol'] !== 'agente') {
-        header("Location: login.php?error=Acceso denegado");
+        header("Location: ../index.php?error=Acceso denegado");
         exit;
     }
 ?>
 
 <?php 
-
-    require 'includes/funciones.php';
-
+    require_once __DIR__ . '/../includes/funciones.php';
     incluirTemplate('head', [
         'page_title' => 'Panel Agente',
         'page_desc'  => 'Panel para que el agente levante su ticket'
     ]);
-
     incluirTemplate('header');
 ?>
 
@@ -23,7 +20,7 @@
     <h2>👋 Bienvenido, <?= htmlspecialchars($_SESSION['nombre']) ?> (Agente)</h2>
 
     <div class="panel-opciones">
-        <a href="/autoservicio.php"  class="btn-opcion">🔍 Consultar soluciones comunes</a>
+        <a href="autoservicio.php"  class="btn-opcion">🔍 Consultar soluciones comunes</a>
         <a href="crear_ticket.php"  class="btn-opcion">📝 Generar nuevo ticket</a>
         <a href="mis_tickets.php"  class="btn-opcion">📋 Ver mis tickets</a>
         <a href="biblioteca.php"  class="btn-opcion">📚 Biblioteca</a>

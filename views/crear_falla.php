@@ -1,9 +1,9 @@
 <?php
-include __DIR__ . '/includes/config/verificar_sesion.php';
-include __DIR__ . '/includes/config/conexion.php';
+include __DIR__ . '/../includes/config/verificar_sesion.php';
+include __DIR__ . '/../includes/config/conexion.php';
 
 if ($_SESSION['rol'] !== 'tecnico') {
-    header("Location: login.php?error=Acceso denegado");
+    header("Location: index.php?error=Acceso denegado");
     exit;
 }
 
@@ -65,15 +65,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <?php
-require 'includes/funciones.php';
-incluirTemplate ('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Crear Falla',
+        'page_desc'  => 'Panel para que el Tecnico documente una falla'
+    ]);
+    incluirTemplate('header');
 ?>
 
 <main>
 
     <div class="centrat-titulo_boton">
         <h3>➕ Registrar nueva guía de falla común</h3>
-        <a href="/fallas_comunes_admin.php" class="btn-1 btn-volver">← Volver</a>
+        <a href="fallas_comunes_admin.php" class="btn-1 btn-volver">← Volver</a>
     </div>
     
     <?php if ($mensaje): ?>

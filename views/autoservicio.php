@@ -1,9 +1,9 @@
 <?php
-include __DIR__ . '/includes/config/verificar_sesion.php';
-include __DIR__ . '/includes/config/conexion.php';
+include __DIR__ . '/../includes/config/verificar_sesion.php';
+include __DIR__ . '/../includes/config/conexion.php';
 
 if ($_SESSION['rol'] !== 'agente') {
-    header("Location: login.php?error=Acceso denegado");
+    header("Location: index.php?error=Acceso denegado");
     exit;
 }
 
@@ -30,14 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <?php
-require 'includes/funciones.php';
-incluirTemplate ('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Autos Servicio',
+        'page_desc'  => 'Listado de soluciones para los usuarios'
+    ]);
+    incluirTemplate('header');
 ?>
 
 <main>
     <div class="centrat-titulo_boton">
         <h3>🔍Buscar solución a una falla común</h3>
-        <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+        <a href="panel_agente.php" class="btn-1 btn-volver">← Volver</a>
     </div>
     <form method="POST" class="form-control">
         <input class="form-control-input" type="text" name="busqueda" placeholder="Ej: impresora, VPN, Outlook..." value="<?= htmlspecialchars($busqueda) ?>" required>

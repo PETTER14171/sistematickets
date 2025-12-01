@@ -1,9 +1,9 @@
 <?php
-include __DIR__ . '/includes/config/verificar_sesion.php';
-include __DIR__ . '/includes/config/conexion.php';
+include __DIR__ . '/../includes/config/verificar_sesion.php';
+include __DIR__ . '/../includes/config/conexion.php';
 
 if ($_SESSION['rol'] !== 'agente') {
-    header("Location: login.php?error=Acceso denegado");
+    header("Location: index.php?error=Acceso denegado");
     exit;
 }
 
@@ -104,15 +104,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <?php
-require 'includes/funciones.php';
-incluirTemplate ('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Crear Ticket',
+        'page_desc'  => 'Panel agente cree su tickets'
+    ]);
+    incluirTemplate('header');
 ?>
 
 <main>
     <section class="">
         <div class="centrat-titulo_boton">
             <h3>📝 Generar nuevo ticket</h3>
-            <a href="/panel_agente.php" class="btn-1 btn-volver">← Volver</a>
+            <a href="panel_agente.php" class="btn-1 btn-volver">← Volver</a>
         </div>
         <?php if ($mensaje): ?>
             <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>

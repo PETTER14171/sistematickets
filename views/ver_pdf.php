@@ -1,8 +1,8 @@
 <?php
 // ver_pdf.php
-require __DIR__ . '/includes/config/verificar_sesion.php';
-require __DIR__ . '/includes/config/conexion.php';
-require __DIR__ . '/includes/funciones.php';
+require __DIR__ . '/../includes/config/verificar_sesion.php';
+require __DIR__ . '/../includes/config/conexion.php';
+require __DIR__ . '/../includes/funciones.php';
 
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
   http_response_code(400); exit('ID inválido');
@@ -27,10 +27,14 @@ if (!$file) { http_response_code(404); exit('Archivo no encontrado'); }
 // if ($_SESSION['rol'] === 'invitado') { http_response_code(403); exit('Sin permiso'); }
 
 /* === Ruta física segura === */
-$baseDir = __DIR__ . '/biblioteca';
-$filename = basename($file['nombre_archivo']);   // evita path traversal
+$baseDir = __DIR__ . '/../biblioteca';   // sube un nivel y entra a biblioteca
+$filename = basename($file['nombre_archivo']);   
 $path = $baseDir . '/' . $filename;
-if (!is_file($path)) { http_response_code(404); exit('No existe el archivo'); }
+
+if (!is_file($path)) {
+    http_response_code(404);
+    exit('No existe el archivo');
+}
 
 /* === MODO STREAM: entrega bytes con inline + rangos === */
 if (isset($_GET['stream']) && $_GET['stream'] === '1') {
@@ -75,7 +79,12 @@ if (isset($_GET['stream']) && $_GET['stream'] === '1') {
 }
 
 /* === MODO PÁGINA: interface con visor embebido === */
-incluirTemplate('header');
+    require_once __DIR__ . '/../includes/funciones.php';
+    incluirTemplate('head', [
+        'page_title' => 'Leer Libro',
+        'page_desc'  => 'Pagina para leer libros en pdf'
+    ]);
+    incluirTemplate('header');
 
 // Utilidad de formato
 function human_size($bytes) {
@@ -85,12 +94,13 @@ function human_size($bytes) {
 }
 
 // URL de stream interno + parámetros de UI del visor
-$src = '/ver_pdf.php?id='.(int)$file['id'].'&stream=1#toolbar=0&navpanes=0&scrollbar=0&zoom=page-width';
+$src = './ver_pdf.php?id='.(int)$file['id'].'&stream=1#toolbar=0&navpanes=0&scrollbar=0&zoom=page-width';
+
 ?>
 <main class="contenido-bloque pdf-view-page">
   <header class="pdf-view-header">
     <div class="pdf-breadcrumb">
-      <a href="/biblioteca.php" class="btn-ghost">← Volver a la biblioteca</a>
+      <a href="biblioteca.php" class="btn-ghost">← Volver a la biblioteca</a>
     </div>
     <h1 class="pdf-title"><?= htmlspecialchars($file['titulo']) ?></h1>
     <div class="pdf-meta">
