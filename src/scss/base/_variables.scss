@@ -6,6 +6,7 @@
 $fuente_titulos:"Archivo Black", sans-serif;
 $fuente_principal: "Oxygen", sans-serif;
 $font-main: 'Inter', sans-serif;
+$font-family-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
 
 // Tamaño de Media Queries
 $telefono: 480px;
@@ -28,8 +29,17 @@ $difuminado_botones: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
 $muted: #64748b;
 $accent-2: #005AFF; 
 $border:#ccc;
-$primary: #fac532; 
 $accent: #3886c9; 
+$bg-page: #f3f4f6;
+$surface: #ffffff;
+$border-subtle: #e5e7eb;
+$text-main: #111827;
+$text-muted: #6b7280;
+$text-soft: #9ca3af;
+$primary: #2563eb;
+$primary-soft: #dbeafe;
+$primary-strong: #1d4ed8;
+$shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.12);
 
 
 // Fuentes
@@ -37,7 +47,13 @@ $delgada: 300;
 $regular : 400;
 $bold: 700;
 $black-f: 900;
-
+$radius-lg: 24px;
+$radius-md: 16px;
+$radius-sm: 999px;
+$sidebar-width: 280px;
+$gap-lg: 32px;
+$gap-md: 20px;
+$gap-sm: 12px;
 
 // otros
 $separacion: 5rem;
