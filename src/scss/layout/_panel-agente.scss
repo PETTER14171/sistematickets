@@ -7,7 +7,7 @@
 
 // --------- Contenedor general ---------
 .tickets-body {
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -379,8 +379,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 160px;
-  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.55);
+  min-width: 145px;
   transition:
     transform 0.08s ease,
     box-shadow 0.08s ease,
@@ -389,7 +388,6 @@
   &:hover {
     transform: translateY(-1px);
     filter: brightness(1.05);
-    box-shadow: 0 18px 35px rgba(37, 99, 235, 0.7);
   }
 
   &:active {
