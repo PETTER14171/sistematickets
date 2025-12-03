@@ -1,0 +1,304 @@
+@use '../base/variables' as var;
+@use '../base/mixins' as mix;
+@use 'sass:color';
+
+// Página de listado de tickets
+.tickets-page {
+  padding: 24px;
+  background: var.$bg-page;
+  min-height: calc(100vh - 80px); // ajusta según tu header
+}
+
+.tickets-page__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Barra superior: búsqueda + filtro
+.tickets-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+// Search
+.tickets-toolbar__search {
+  flex: 1;
+  max-width: 360px;
+  position: relative;
+}
+
+.tickets-toolbar__search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  opacity: 0.65;
+}
+
+.tickets-toolbar__search-input {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid var.$border-subtle;
+  padding: 9px 12px 9px 32px;
+  font-size: 0.9rem;
+  background-color: #f9fafb;
+  color: var.$text-main;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+
+  &::placeholder {
+    color: var.$text-soft;
+  }
+
+  &:hover {
+    background-color: #ffffff;
+  }
+
+  &:focus {
+    background-color: #ffffff;
+    border-color: var.$primary;
+    box-shadow: 0 0 0 1px rgba(184, 43, 136, 0.35);
+  }
+}
+
+// Filtro de estado
+.tickets-toolbar__filter {
+  flex-shrink: 0;
+}
+
+.tickets-toolbar__filter-select {
+  border-radius: 999px;
+  border: 1px solid var.$border-subtle;
+  padding: 8px 28px 8px 12px;
+  font-size: 0.9rem;
+  background-color: #f9fafb;
+  color: var.$text-main;
+  outline: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var.$text-soft 50%),
+                    linear-gradient(135deg, var.$text-soft 50%, transparent 50%);
+  background-position: calc(100% - 12px) 10px, calc(100% - 8px) 10px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    background-color: #ffffff;
+  }
+
+  &:focus {
+    border-color: var.$primary;
+    box-shadow: 0 0 0 1px rgba(184, 43, 136, 0.35);
+  }
+}
+
+// Card de la tabla
+.tickets-table-card {
+  background-color: var.$surface;
+  border-radius: 20px;
+  padding: 16px 18px 18px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  
+}
+
+.tickets-table__wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+// Tabla
+.tickets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tickets-table thead tr {
+  border-bottom: 1px solid var.$border-subtle;
+}
+
+.tickets-table th,
+.tickets-table td {
+  text-align: left;
+  padding: 10px 8px;
+  white-space: nowrap;
+}
+
+.tickets-table th {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var.$text-soft;
+}
+
+.tickets-table__row {
+  border-bottom: 1px solid #f1f5f9;
+  transition:
+    background-color 0.12s ease,
+    transform 0.05s ease,
+    box-shadow 0.12s ease;
+  cursor: default;
+
+  &:hover {
+    background-color: #f9fafb;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(148, 163, 184, 0.35);
+  }
+}
+
+.tickets-table__cell-id {
+  font-weight: 600;
+  color: var.$text-soft;
+}
+
+.tickets-table__cell-title {
+  max-width: 270px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.tickets-table__empty {
+  text-align: center;
+  padding: 24px 8px;
+  color: var.$text-soft;
+}
+
+// Pills de prioridad
+.priority-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.priority-pill--high {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.priority-pill--medium {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.priority-pill--low {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.priority-pill--normal {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+// Pills de estado
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.status-pill--open {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-pill--in-progress {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-pill--resolved {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-pill--closed {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+// Paginación (si la usas después)
+.tickets-table__pagination {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-btn {
+  border-radius: 999px;
+  border: 1px solid var.$border-subtle;
+  background-color: #f9fafb;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.page-current {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .tickets-page {
+    padding: 16px;
+  }
+
+  .tickets-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tickets-toolbar__search {
+    max-width: 100%;
+  }
+
+  .tickets-table-card {
+    padding: 12px;
+  }
+}
+
+
+.tickets-table__row {
+  border-bottom: 1px solid #f1f5f9;
+  transition:
+    background-color 0.12s ease,
+    transform 0.05s ease,
+    box-shadow 0.12s ease;
+  cursor: default;
+
+  &--clickable {
+    cursor: pointer;
+  }
+
+  &:hover {
+    background-color: #f9fafb;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(148, 163, 184, 0.35);
+  }
+}
