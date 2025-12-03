@@ -136,9 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header class="ticket-main__header">
     <div class="ticket-main__title-group">
         <h1 class="ticket-main__title">Crea Nuevo Ticket</h1>
-        <p class="ticket-main__subtitle">
-            Describe tu problema de la forma más clara posible para ayudarte más rápido.
-        </p>
     </div>
 
     <nav class="ticket-main__nav" aria-label="Navegación de panel">
