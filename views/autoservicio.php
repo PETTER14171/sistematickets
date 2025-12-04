@@ -50,16 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <form method="POST" class="kb-search">
-                <div class="kb-search__icon">🔍</div>
-                <input
-                    class="kb-search__input"
-                    type="text"
-                    name="busqueda"
-                    placeholder="Buscar por asunto, categoría o palabra clave…"
-                    value="<?= htmlspecialchars($busqueda) ?>"
-                    required
-                >
-                <button class="kb-search__button" type="submit">Buscar</button>
+                    <input
+                        class="tickets-toolbar__search-input"
+                        type="text"
+                        name="busqueda"
+                        placeholder="Buscar por asunto, categoría o palabra clave…"
+                        value="<?= htmlspecialchars($busqueda) ?>"
+                        required
+                    >
             </form>
         </header>
 
@@ -167,7 +165,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     </section>
 </main>
-
 
 <?php 
 incluirTemplate('footer');
