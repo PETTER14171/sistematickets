@@ -107,38 +107,36 @@ $src = 'ver_pdf.php?id='.(int)$file['id'].'&stream=1#toolbar=0&navpanes=0&scroll
       </div>
 
       <div class="pdf-toolbar__center">
-        <button class="pdf-btn pdf-btn--circle" type="button">□</button>
-        <button class="pdf-btn pdf-btn--circle" type="button">+</button>
+        <!-- Reset / “fit page” -->
+        <button class="pdf-btn pdf-btn--circle js-pdf-zoom-reset" type="button">-</button>
+
+        <!-- Zoom in -->
+        <button class="pdf-btn pdf-btn--circle js-pdf-zoom-in" type="button">+</button>
 
         <div class="pdf-toolbar__page-pill">
           <span><?= htmlspecialchars($file['titulo']) ?></span>
         </div>
       </div>
 
-      <div class="pdf-toolbar__right">
-        <button class="pdf-btn pdf-btn--ghost" type="button">🔍</button>
-      </div>
     </header>
 
     <!-- CUERPO DEL VISOR -->
     <section class="pdf-view-body">
       <!-- Barra lateral izquierda “dummy” -->
       <aside class="pdf-sidebar">
-        <button class="pdf-sidebar__btn" type="button"></button>
-        <button class="pdf-sidebar__btn pdf-sidebar__btn--secondary" type="button"></button>
       </aside>
 
       <!-- Área del documento -->
       <div class="pdf-canvas">
         <div class="pdf-page">
           <iframe
-            class="pdf-frame"
+            class="pdf-frame js-pdf-frame"
             src="<?= htmlspecialchars($src) ?>"
             title="Lector de PDF"
             loading="eager"
           ></iframe>
 
-          <div class="pdf-zoom-indicator">
+          <div class="pdf-zoom-indicator js-pdf-zoom-label">
             110%
           </div>
         </div>

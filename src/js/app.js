@@ -131,43 +131,84 @@
   window.cerrarModalFalla           = cerrarModalFalla;
 
 
-  /* =========================
-   *  UI Condicional: modo / PDF
-   * ========================= */
-  // Mostrar/ocultar bloques según "modo"
-  const modoSel     = document.getElementById('modo');
-  const bloqueExist = document.getElementById('bloque-libro-existente');
-  const bloqueNuevo = document.getElementById('bloque-libro-nuevo');
-  const bloqueAutor = document.getElementById('bloque-autor');
-  const bloqueCat   = document.getElementById('bloque-categoria');
-  const bloqueDesc  = document.getElementById('bloque-descripcion');
+})();
 
-  if (modoSel && bloqueExist && bloqueNuevo && bloqueAutor && bloqueCat && bloqueDesc) {
-    const aplicarModo = () => {
-      const esNuevo = (modoSel.value === 'nuevo');
-      bloqueExist.style.display = esNuevo ? 'none'  : 'block';
-      bloqueNuevo.style.display = esNuevo ? 'block' : 'none';
-      bloqueAutor.style.display = esNuevo ? 'block' : 'none';
-      bloqueCat.style.display   = esNuevo ? 'block' : 'none';
-      bloqueDesc.style.display  = esNuevo ? 'block' : 'none';
-    };
-    modoSel.addEventListener('change', aplicarModo);
-    aplicarModo(); // al cargar
+  /* ============================
+   *  Interfaz de visualizar pdf
+   * ============================*/
+
+  
+document.addEventListener('DOMContentLoaded', () => {
+  const frame      = document.querySelector('.js-pdf-frame');
+  const zoomLabel  = document.querySelector('.js-pdf-zoom-label');
+  const btnZoomIn  = document.querySelector('.js-pdf-zoom-in');
+  const btnReset   = document.querySelector('.js-pdf-zoom-reset');
+  const btnSearch  = document.querySelector('.js-pdf-search-tip');
+
+  if (!frame || !zoomLabel || !btnZoomIn || !btnReset) {
+    return; // si algo no existe, no hacemos nada
   }
 
-  // Info del PDF seleccionado
-  const inputPdf = document.getElementById('pdf');
-  const infoPdf  = document.getElementById('pdf-info');
+  // --- Estado de zoom ---
+  let zoom = 1;        // 100% inicial
+  const MIN_ZOOM = 0.6;
+  const MAX_ZOOM = 2.0;
+  const STEP     = 0.1;
 
-  if (inputPdf && infoPdf) {
-    inputPdf.addEventListener('change', () => {
-      if (inputPdf.files && inputPdf.files[0]) {
-        const f = inputPdf.files[0];
-        infoPdf.textContent = `${f.name} — ${(f.size / 1024 / 1024).toFixed(2)} MB`;
-      } else {
-        infoPdf.textContent = '';
-      }
+  function applyZoom() {
+    // Escalamos el iframe visualmente
+    frame.style.transform = `scale(${zoom})`;
+    frame.style.transformOrigin = 'top center';
+
+    // Actualizamos el texto del indicador
+    zoomLabel.textContent = `${Math.round(zoom * 100)}%`;
+  }
+
+  // Aplicamos el zoom inicial
+  applyZoom();
+
+  // --- Eventos de los botones ---
+  btnZoomIn.addEventListener('click', () => {
+    zoom = Math.min(MAX_ZOOM, +(zoom + STEP).toFixed(2));
+    applyZoom();
+  });
+
+  // El cuadrado resetea a 100%
+  btnReset.addEventListener('click', () => {
+    zoom = 1.0;
+    applyZoom();
+  });
+
+  // --- Atajos de teclado: Ctrl + / Ctrl - / Ctrl 0 ---
+  document.addEventListener('keydown', (ev) => {
+    const isCtrl = ev.ctrlKey || ev.metaKey; // Cmd en Mac
+
+    // Ctrl + / =  Zoom in
+    if (isCtrl && (ev.key === '+' || ev.key === '=')) {
+      ev.preventDefault();
+      zoom = Math.min(MAX_ZOOM, +(zoom + STEP).toFixed(2));
+      applyZoom();
+    }
+
+    // Ctrl - = Zoom out
+    if (isCtrl && ev.key === '-') {
+      ev.preventDefault();
+      zoom = Math.max(MIN_ZOOM, +(zoom - STEP).toFixed(2));
+      applyZoom();
+    }
+
+    // Ctrl 0 = reset
+    if (isCtrl && ev.key === '0') {
+      ev.preventDefault();
+      zoom = 1.0;
+      applyZoom();
+    }
+  });
+
+  // --- Botón de “buscar” (tip para el usuario) ---
+  if (btnSearch) {
+    btnSearch.addEventListener('click', () => {
+      alert('Tip: usa Ctrl + F (Cmd + F en Mac) para buscar dentro del documento.');
     });
   }
-
-})();
+});
