@@ -145,4 +145,6 @@ $src = 'ver_pdf.php?id='.(int)$file['id'].'&stream=1#toolbar=0&navpanes=0&scroll
   </section>
 </main>
 
-<?php incluirTemplate('footer'); ?>
+<?php 
+    incluirTemplate('footer');
+?>

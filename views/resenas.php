@@ -326,3 +326,6 @@ function human_size($bytes) {
   </section>
 </main>
 
+<?php 
+    incluirTemplate('footer');
+?>

@@ -188,3 +188,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
     <p class="muted">No se encontraron libros con los filtros aplicados.</p>
   <?php endif; ?>
 </main>
+
+<?php 
+    incluirTemplate('footer');
+?>

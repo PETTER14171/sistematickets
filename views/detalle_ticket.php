@@ -531,3 +531,6 @@ incluirTemplate('header');
         </section>
     </section>
 </main>
+<?php 
+    incluirTemplate('footer');
+?>
