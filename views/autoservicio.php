@@ -38,44 +38,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     incluirTemplate('header');
 ?>
 
-<main>
-    <div class="centrat-titulo_boton">
-        <h3>🔍Buscar solución a una falla común</h3>
-        <a href="panel_agente.php" class="btn-1 btn-volver">← Volver</a>
-    </div>
-    <form method="POST" class="form-control">
-        <input class="form-control-input" type="text" name="busqueda" placeholder="Ej: impresora, VPN, Outlook..." value="<?= htmlspecialchars($busqueda) ?>" required>
-        <button class="button-input" type="submit">Buscar</button>
-    </form>
+<main class="kb-page">
+    <section class="kb-layout">
+        <!-- Header + buscador -->
+        <header class="kb-header">
+            <div class="kb-header__titles">
+                <h1 class="kb-title">Centro de ayuda / Autoservicio</h1>
+                <p class="kb-subtitle">
+                    Guías y soluciones a las fallas más comunes dentro de la compañía.
+                </p>
+            </div>
 
-    <?php if ($resultados): ?>
-        <h1>Resultados encontrados:</h1>
-            <div class="grid-fallas">
-                <?php foreach ($resultados as $falla): ?>
+            <form method="POST" class="kb-search">
+                <div class="kb-search__icon">🔍</div>
+                <input
+                    class="kb-search__input"
+                    type="text"
+                    name="busqueda"
+                    placeholder="Buscar por asunto, categoría o palabra clave…"
+                    value="<?= htmlspecialchars($busqueda) ?>"
+                    required
+                >
+                <button class="kb-search__button" type="submit">Buscar</button>
+            </form>
+        </header>
+
+        <?php if ($resultados): ?>
+            <section class="kb-results">
+                <?php foreach ($resultados as $i => $falla): ?>
                     <?php
-                        $archivo = $falla['multimedia'];
+                        $archivo   = $falla['multimedia'];
                         $extension = strtolower(pathinfo($archivo, PATHINFO_EXTENSION));
-                        $ruta = 'fallamultimedia/' . $archivo;
-                    ?>
-                    <div class="falla" onclick="abrirModalFalla(<?= $falla['id'] ?>)">
-                        <h3><?= htmlspecialchars($falla['titulo']) ?></h3>
+                        $ruta      = '/../fallamultimedia/' . $archivo;
 
-                        <?php if (!empty($archivo)): ?>
-                            <?php if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])): ?>
-                                <div class="media-wrapper">
-                                    <img src="<?= $ruta ?>" alt="Multimedia de la falla">
-                                </div>
-                            <?php elseif (in_array($extension, ['mp4', 'webm', 'ogg'])): ?>
-                                <div class="media-wrapper">
-                                    <video muted autoplay loop>
-                                        <source src="<?= $ruta ?>" type="video/<?= $extension ?>">
-                                    </video>
+                        // tags simples: categoría + palabras_clave (si quieres algo más elaborado luego lo vemos)
+                        $tags = [];
+                        if (!empty($falla['categoria'])) {
+                            $tags[] = $falla['categoria'];
+                        }
+                        if (!empty($falla['palabras_clave'])) {
+                            $tags[] = $falla['palabras_clave'];
+                        }
+
+                        $isFeatured = ($i === 0); // primera card grande
+                    ?>
+
+                    <article
+                        class="kb-card <?= $isFeatured ? 'kb-card--featured' : '' ?>"
+                        onclick="abrirModalFalla(<?= (int)$falla['id'] ?>)"
+                    >
+                        <div class="kb-card__media">
+                            <?php if (!empty($archivo) && in_array($extension, ['jpg','jpeg','png','gif'])): ?>
+                                <img src="<?= $ruta ?>" alt="Imagen de la falla">
+                            <?php else: ?>
+                                <!-- icono simple si no hay imagen -->
+                                <span class="kb-card__media-icon">🖥️</span>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="kb-card__content">
+                            <?php if (!empty($tags)): ?>
+                                <div class="kb-card__tags">
+                                    <?php foreach ($tags as $tag): ?>
+                                        <span class="kb-pill">
+                                            <?= htmlspecialchars($tag) ?>
+                                        </span>
+                                    <?php endforeach; ?>
                                 </div>
                             <?php endif; ?>
-                        <?php endif; ?>
-                    </div>
 
-                    <!-- Modal -->
+                            <h2 class="kb-card__title">
+                                <?= htmlspecialchars($falla['titulo']) ?>
+                            </h2>
+
+                            <p class="kb-card__excerpt">
+                                <?= htmlspecialchars(mb_strimwidth($falla['descripcion'] ?? '', 0, 120, '…')) ?>
+                            </p>
+
+                            <div class="kb-card__meta">
+                                <span class="kb-pill kb-pill--type">
+                                    <?= htmlspecialchars($falla['categoria'] ?: 'General') ?>
+                                </span>
+
+                                <?php if (!empty($falla['creado_en'])): ?>
+                                    <span class="kb-card__date">
+                                        <?= (new DateTime($falla['creado_en']))->format('M j, Y') ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Modal original (lo dejamos tal cual, solo movido abajo del card) -->
                     <div id="modal-falla-<?= $falla['id'] ?>" class="modal-falla">
                         <div class="modal-contenido">
                             <button class="cerrar-modal" onclick="cerrarModalFalla(<?= $falla['id'] ?>)">✖</button>
@@ -98,16 +152,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <p><strong>Categoría:</strong> <?= htmlspecialchars($falla['categoria']) ?></p>
                             <p><strong>Descripción:</strong> <?= nl2br(htmlspecialchars($falla['descripcion'])) ?></p>
                             <p class="pasos-solucion"><strong>Pasos:</strong> <?= nl2br(htmlspecialchars($falla['pasos_solucion'])) ?></p>
-                            <a href="crear_ticket.php?referencia=<?= $falla['id'] ?>" class="crear-ticket">🛠 No resolvió mi problema</a>
+                            <a href="crear_ticket.php?referencia=<?= $falla['id'] ?>" class="crear-ticket">
+                                🛠 No resolvió mi problema
+                            </a>
                         </div>
                     </div>
                 <?php endforeach; ?>
-            </div>
+            </section>
 
-    <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
-        <p>No se encontraron coincidencias. Puedes <a href="crear_ticket.php">crear un ticket</a>.</p>
-    <?php endif; ?>
+        <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
+            <section class="kb-empty">
+                <p>No se encontraron coincidencias. Puedes <a href="crear_ticket.php">crear un ticket</a>.</p>
+            </section>
+        <?php endif; ?>
+    </section>
 </main>
+
 
 <?php 
 incluirTemplate('footer');
