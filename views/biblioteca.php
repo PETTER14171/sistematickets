@@ -100,12 +100,8 @@ $result = $stmt->get_result();
 $libros = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
-<main >
+<main class="biblioteca-page">
   <header>
-        <div class="centrat-titulo_boton">
-          <h3>📚 Biblioteca </h3>
-          <a href="panel_agente.php" class="btn-1 btn-volver">← Volver</a>
-        </div>
         <!-- Filtros -->
         <form class="margin-contenido biblioteca__filters" method="GET" action="">
             <section class=" filtro-busqueda-falla">
@@ -181,7 +177,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
             <?php endif; ?>
 
             <!-- Enlace opcional a reseñas del libro -->
-            <a class="btn-ghost" href="resenas.php?libro_id=<?= (int)$l['id'] ?>">
+            <a class="btn-ghost_2" href="resenas.php?libro_id=<?= (int)$l['id'] ?>">
               Reseñas
             </a>
           </div>
@@ -192,5 +188,3 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
     <p class="muted">No se encontraron libros con los filtros aplicados.</p>
   <?php endif; ?>
 </main>
-
-<?php incluirTemplate('footer'); ?>
