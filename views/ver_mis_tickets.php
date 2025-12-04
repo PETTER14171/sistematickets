@@ -201,6 +201,7 @@ incluirTemplate('header');
 ?>
 
 <main class="tickets-page">
+    <a href="panel_agente.php" class="btn-1 btn-volver ticket-detail__back">← Volver</a>
     <section class="tickets-page__inner">
         <header class="tickets-toolbar">
             <form class="tickets-toolbar__search" method="GET">
