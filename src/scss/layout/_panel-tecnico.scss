@@ -2,18 +2,327 @@
 @use '../base/mixins' as mix;
 @use 'sass:color';
 
+// ============================
+// LAYOUT GENERAL
+// ============================
 
-.panel-opciones {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(350px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+.resenas-page {
+  padding: 24px;
+  background-color: #f3f4f6;
+  min-height: calc(100vh - 80px);
 
-    a{
-        font-size: 2.5rem;
-    }
-
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
 }
 
+// ============================
+// HEADER LIBRO + RATING
+// ============================
+
+.resenas-header {
+  max-width: 960px;
+  margin: 0 auto 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .btn-ghost {
+    align-self: flex-start;
+    border-radius: 999px;
+    padding-inline: 12px;
+    font-size: 0.85rem;
+  }
+}
+
+.resenas-header .ticket-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var.$text-main;
+}
+
+.libro-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  font-size: 0.86rem;
+
+  .muted {
+    color: var.$text-soft;
+  }
+
+  .chip {
+    font-size: 0.72rem;
+  }
+
+  .btn-primary {
+    margin-left: auto;
+
+    @media (max-width: 640px) {
+      margin-left: 0;
+    }
+  }
+}
+
+/* Resumen de rating */
+
+.rating-summary {
+  margin-top: 4px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(184, 43, 136, 0.06),
+    #ffffff
+  );
+  border: 1px solid rgba(184, 43, 136, 0.24);
+}
+
+.rating-summary__value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.rating-big {
+  font-size: 1.6rem;
+}
+
+.rating-summary__meta {
+  font-size: 0.82rem;
+  color: var.$text-soft;
+}
+
+// ============================
+// GRID PRINCIPAL (form + lista)
+// ============================
+
+.resenas-grid {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+  gap: 16px;
+
+  @media (max-width: 880px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var.$text-main;
+}
+
+// ============================
+// FORMULARIO DE RESEÑA
+// ============================
+
+.resena-form {
+  border-radius: 22px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.16);
+}
+
+.resena-form .form-falla {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* fieldset estrellas */
+
+.stars {
+  border: none;
+  padding: 0;
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.stars legend {
+  margin-bottom: 4px;
+  font-size: 0.82rem;
+}
+
+.stars input {
+  display: none;
+}
+
+.stars label {
+  font-size: 1.4rem;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: color 0.1s ease;
+}
+
+/* efecto hover + checked */
+.stars input:not(:checked) ~ label:hover,
+.stars input:not(:checked) ~ label:hover ~ label {
+  color: #fbbf24;
+}
+
+.stars input:checked ~ label {
+  color: #f59e0b;
+}
+
+/* textarea reutilizando tus estilos de .field */
+.resena-form .field {
+  margin-top: 4px;
+}
+
+.resena-form .field__textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.resena-form .form-falla__actions {
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+// ============================
+// LISTADO DE RESEÑAS
+// ============================
+
+.resena-lista {
+  border-radius: 22px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.16);
+}
+
+.resenas {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resena {
+  padding: 8px 10px;
+  border-radius: 14px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.resena__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-bottom: 4px;
+}
+
+.resena__header .autor {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stars-inline {
+  font-size: 0.8rem;
+  color: #f59e0b;
+}
+
+.resena__header .fecha {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var.$text-soft;
+
+  @media (max-width: 640px) {
+    margin-left: 0;
+  }
+}
+
+.resena__text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var.$text-main;
+  white-space: pre-line;
+}
+
+// ============================
+// PAGINACIÓN
+// ============================
+
+.paginacion {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.page {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  text-decoration: none;
+  color: var.$text-main;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.05s ease;
+
+  &:hover {
+    background-color: #f9fafb;
+    border-color: color.scale(#e5e7eb, $lightness: -10%);
+    box-shadow: 0 8px 20px rgba(148, 163, 184, 0.35);
+    transform: translateY(-1px);
+  }
+
+  &.is-active {
+    border-color: var.$primary;
+    background-color: rgba(184, 43, 136, 0.1);
+    color: var.$primary;
+    box-shadow: 0 10px 22px rgba(184, 43, 136, 0.45);
+  }
+}
+
+// ============================
+// MENSAJES DE ÉXITO / ERROR
+// ============================
+
+.resenas-page .contenido-bloque + .contenido-bloque {
+  margin-top: 10px;
+}
+
+/* podrías reemplazar inline styles del mensaje ok con algo así en HTML:
+   <section class="contenido-bloque resena-alert resena-alert--success"> ... */
+.resena-alert {
+  border-radius: 18px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+
+  &--success {
+    background-color: #dcfce7;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+  }
+
+  &--error {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+  }
+}

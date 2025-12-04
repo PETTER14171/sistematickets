@@ -79,12 +79,12 @@ if (isset($_GET['stream']) && $_GET['stream'] === '1') {
 }
 
 /* === MODO PÁGINA: interface con visor embebido === */
-    require_once __DIR__ . '/../includes/funciones.php';
-    incluirTemplate('head', [
-        'page_title' => 'Leer Libro',
-        'page_desc'  => 'Pagina para leer libros en pdf'
-    ]);
-    incluirTemplate('header');
+require_once __DIR__ . '/../includes/funciones.php';
+incluirTemplate('head', [
+    'page_title' => 'Leer Libro',
+    'page_desc'  => 'Página para leer libros en PDF'
+]);
+incluirTemplate('header');
 
 // Utilidad de formato
 function human_size($bytes) {
@@ -94,27 +94,56 @@ function human_size($bytes) {
 }
 
 // URL de stream interno + parámetros de UI del visor
-$src = './ver_pdf.php?id='.(int)$file['id'].'&stream=1#toolbar=0&navpanes=0&scrollbar=0&zoom=page-width';
-
+$src = 'ver_pdf.php?id='.(int)$file['id'].'&stream=1#toolbar=0&navpanes=0&scrollbar=0&zoom=page-width';
 ?>
-<main class="contenido-bloque pdf-view-page">
-  <header class="pdf-view-header">
-    <div class="pdf-breadcrumb">
-      <a href="biblioteca.php" class="btn-ghost">← Volver a la biblioteca</a>
-    </div>
-    <h1 class="pdf-title"><?= htmlspecialchars($file['titulo']) ?></h1>
-    <div class="pdf-meta">
-      <?php if (!empty($file['autor'])): ?>
-        <span class="muted">Autor: <strong><?= htmlspecialchars($file['autor']) ?></strong></span>
-      <?php endif; ?>
+<main class="pdf-view-page">
+  <section class="pdf-view-shell">
+    <!-- BARRA SUPERIOR -->
+    <header class="pdf-toolbar">
+      <div class="pdf-toolbar__left">
+        <a href="biblioteca.php" class="pdf-btn pdf-btn--ghost">
+          ←
+        </a>
+      </div>
 
-      <span class="muted">Tamaño: <?= human_size((int)$file['tamanio_bytes']) ?></span>
-    </div>
-  </header>
+      <div class="pdf-toolbar__center">
+        <button class="pdf-btn pdf-btn--circle" type="button">□</button>
+        <button class="pdf-btn pdf-btn--circle" type="button">+</button>
 
-  <section class="pdf-shell contenido-bloque">
-    <!-- Visor embebido (misma página) -->
-    <iframe class="pdf-frame" src="<?= htmlspecialchars($src) ?>" title="Lector de PDF" loading="eager"></iframe>
+        <div class="pdf-toolbar__page-pill">
+          <span><?= htmlspecialchars($file['titulo']) ?></span>
+        </div>
+      </div>
+
+      <div class="pdf-toolbar__right">
+        <button class="pdf-btn pdf-btn--ghost" type="button">🔍</button>
+      </div>
+    </header>
+
+    <!-- CUERPO DEL VISOR -->
+    <section class="pdf-view-body">
+      <!-- Barra lateral izquierda “dummy” -->
+      <aside class="pdf-sidebar">
+        <button class="pdf-sidebar__btn" type="button"></button>
+        <button class="pdf-sidebar__btn pdf-sidebar__btn--secondary" type="button"></button>
+      </aside>
+
+      <!-- Área del documento -->
+      <div class="pdf-canvas">
+        <div class="pdf-page">
+          <iframe
+            class="pdf-frame"
+            src="<?= htmlspecialchars($src) ?>"
+            title="Lector de PDF"
+            loading="eager"
+          ></iframe>
+
+          <div class="pdf-zoom-indicator">
+            110%
+          </div>
+        </div>
+      </div>
+    </section>
   </section>
 </main>
 

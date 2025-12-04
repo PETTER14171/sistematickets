@@ -127,117 +127,195 @@ function human_size($bytes) {
     incluirTemplate('header');
 ?>
 
-<main class="resenas-page">
-  <header class="resenas-header">
-    <a class="btn-ghost" href="biblioteca.php">← Volver a la biblioteca</a>
-    <h1 class="ticket-title"><?= htmlspecialchars($libro['titulo']) ?></h1>
-    <div class="libro-meta">
-      <?php if (!empty($libro['autor'])): ?>
-        <span class="muted">Autor: <strong><?= htmlspecialchars($libro['autor']) ?></strong></span>
-      <?php endif; ?>
-      <?php if (!empty($libro['categoria'])): ?>
-        <span class="chip chip--estado-en_proceso"><?= htmlspecialchars($libro['categoria']) ?></span>
-      <?php endif; ?>
-      <?php if (!empty($libro['tamanio_bytes'])): ?>
-        <span class="muted"><?= human_size((int)$libro['tamanio_bytes']) ?></span>
-      <?php endif; ?>
-      <?php if (!empty($libro['archivo_id'])): ?>
-        <a class="btn-primary" href="ver_pdf.php?id=<?= (int)$libro['archivo_id'] ?>" target="_blank" rel="noopener">Ver en línea</a>
-      <?php endif; ?>
-    </div>
+<main class="review-page">
+  <section class="review-shell">
+    <!-- HEADER SUPERIOR -->
+    <header class="review-header">
+      <div class="review-header__titles">
+        <h1 class="review-title">Califica y reseña el libro</h1>
+        <p class="review-subtitle"><?= htmlspecialchars($libro['titulo']) ?></p>
 
-    <div class="rating-summary contenido-bloque">
-      <div class="rating-summary__value">
-        <span class="rating-big"><?= number_format((float)$rating['promedio'], 2) ?></span> ★
+        <div class="review-tags">
+          <?php if (!empty($libro['categoria'])): ?>
+            <span class="review-pill"><?= htmlspecialchars($libro['categoria']) ?></span>
+          <?php endif; ?>
+          <!-- pill “Networking” fijo como ejemplo, puedes mapear más tarde -->
+          <span class="review-pill review-pill--soft">Biblioteca</span>
+        </div>
       </div>
-      <div class="rating-summary__meta">
-        <span><?= (int)$rating['total'] ?> reseñas</span>
+
+      <div class="review-header__actions">
+        <a class="review-link" href="biblioteca.php">← Volver a la biblioteca</a>
+
+        <?php if (!empty($libro['archivo_id'])): ?>
+          <a class="review-link" href="ver_pdf.php?id=<?= (int)$libro['archivo_id'] ?>" target="_blank" rel="noopener">
+            📄 Ver PDF
+          </a>
+        <?php endif; ?>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <?php if (isset($_GET['ok'])): ?>
-    <section class="contenido-bloque" style="border-color: rgba(var(--primary-rgb), .6)">
-      <p style="color:var(--text)"><strong>¡Tu reseña se guardó correctamente!</strong></p>
-    </section>
-  <?php endif; ?>
-
-  <?php if (!empty($errores)): ?>
-    <section class="contenido-bloque">
-      <h2 class="section-title">Problemas al guardar</h2>
-      <ul>
-        <?php foreach ($errores as $e): ?>
-          <li style="color:#ffb9b9;"><?= htmlspecialchars($e) ?></li>
-        <?php endforeach; ?>
-      </ul>
-    </section>
-  <?php endif; ?>
-
-  <div class="resenas-grid">
-    <!-- Formulario de reseña -->
-    <section class="contenido-bloque resena-form">
-      <h2 class="section-title">Escribe tu reseña</h2>
-
-      <?php if ($puede_comentar): ?>
-        <form class="form-falla" method="POST">
-          <section class="contenido-bloque">
-            <!-- Calificación (estrellas) -->
-            <fieldset class="stars">
-              <legend class="muted">Calificación</legend>
-              <?php
-                $value = (int)($miResena['calificacion'] ?? 0);
-                for ($i=5; $i>=1; $i--):
-              ?>
-                <input type="radio" id="star<?= $i ?>" name="calificacion" value="<?= $i ?>" <?= $value===$i?'checked':''; ?>>
-                <label for="star<?= $i ?>" title="<?= $i ?> estrellas">★</label>
-              <?php endfor; ?>
-            </fieldset>
-          </section>
-
-          <section class="contenido-bloque">
-            <div class="field">
-              <textarea class="field__input field__textarea" name="comentario" rows="4" placeholder=" "><?= htmlspecialchars($miResena['comentario'] ?? '') ?></textarea>
-              <label class="field__label">Comentario (opcional)</label>
-            </div>
-          </section>
-
-          <div class="form-falla__actions">
-            <button class="btn-primary-2" type="submit">
-              <?= $miResena ? 'Actualizar reseña' : 'Publicar reseña' ?>
-            </button>
+    <!-- GRID PRINCIPAL: LIBRO (IZQ) + PANEL RESEÑA (DER) -->
+    <section class="review-main">
+      <!-- Columna izquierda: tarjeta del libro -->
+      <aside class="review-book">
+        <div class="review-book__cover">
+          <!-- placeholder de portada -->
+          <div class="review-book__cover-inner">
+            <div class="review-book__thumb"></div>
           </div>
-        </form>
-      <?php else: ?>
-        <p class="muted">Los administradores no pueden publicar reseñas.</p>
-      <?php endif; ?>
+        </div>
+
+        <div class="review-book__content">
+          <h2 class="review-book__title"><?= htmlspecialchars($libro['titulo']) ?></h2>
+
+          <?php if (!empty($libro['autor'])): ?>
+            <p class="review-book__author"><?= htmlspecialchars($libro['autor']) ?></p>
+          <?php endif; ?>
+
+          <?php if (!empty($libro['descripcion'])): ?>
+            <p class="review-book__desc">
+              <?= nl2br(htmlspecialchars($libro['descripcion'])) ?>
+            </p>
+          <?php endif; ?>
+
+          <div class="review-book__meta">
+            <?php if (!empty($libro['categoria'])): ?>
+              <span class="review-pill review-pill--soft">
+                <?= htmlspecialchars($libro['categoria']) ?>
+              </span>
+            <?php endif; ?>
+
+            <?php if (!empty($libro['tamanio_bytes'])): ?>
+              <span class="review-book__size">
+                <?= human_size((int)$libro['tamanio_bytes']) ?>
+              </span>
+            <?php endif; ?>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Columna derecha: panel para crear/editar reseña -->
+      <section class="review-panel">
+        <?php if (isset($_GET['ok'])): ?>
+          <div class="review-alert review-alert--success">
+            ¡Tu reseña se guardó correctamente!
+          </div>
+        <?php endif; ?>
+
+        <?php if (!empty($errores)): ?>
+          <div class="review-alert review-alert--error">
+            <?php foreach ($errores as $e): ?>
+              <p><?= htmlspecialchars($e) ?></p>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+
+        <div class="review-panel__card">
+          <h2 class="review-panel__title">Selecciona tu calificación</h2>
+
+          <form class="review-form" method="POST" enctype="multipart/form-data">
+            <!-- estrellas + nota numérica -->
+            <div class="review-stars-row">
+              <fieldset class="review-stars">
+                <?php
+                  $myScore = (int)($miResena['calificacion'] ?? 0);
+                  for ($i = 5; $i >= 1; $i--):
+                ?>
+                  <input
+                    type="radio"
+                    id="star<?= $i ?>"
+                    name="calificacion"
+                    value="<?= $i ?>"
+                    <?= $myScore === $i ? 'checked' : '' ?>
+                  >
+                  <label for="star<?= $i ?>" title="<?= $i ?> estrellas">★</label>
+                <?php endfor; ?>
+              </fieldset>
+
+              <div class="review-score">
+                <?php
+                  $scoreToShow = $myScore > 0 ? $myScore : (float)$rating['promedio'];
+                ?>
+                <span class="review-score__value">
+                  <?= number_format($scoreToShow, 1) ?>
+                </span>
+              </div>
+            </div>
+
+            <!-- textarea -->
+            <div class="review-form__field">
+              <label class="review-form__label" for="comentario">Escribe tu reseña</label>
+              <textarea
+                class="review-form__textarea"
+                id="comentario"
+                name="comentario"
+                rows="4"
+                placeholder="Escribe tu opinión sobre este libro…"
+              ><?= htmlspecialchars($miResena['comentario'] ?? '') ?></textarea>
+            </div>
+
+            <!-- botón -->
+            <?php if ($puede_comentar): ?>
+              <div class="review-form__actions">
+                <button class="review-submit" type="submit">
+                  <?= $miResena ? 'Actualizar reseña' : 'Enviar reseña' ?>
+                </button>
+              </div>
+            <?php else: ?>
+              <p class="review-form__note">
+                Los administradores no pueden publicar reseñas.
+              </p>
+            <?php endif; ?>
+          </form>
+        </div>
+      </section>
     </section>
 
-    <!-- Listado de reseñas -->
-    <section class="contenido-bloque resena-lista">
-      <h2 class="section-title">Reseñas de la comunidad</h2>
+    <!-- LISTA DE RESEÑAS -->
+    <section class="review-list-section">
+      <h2 class="review-list__title">Reseñas</h2>
 
       <?php if ($total_resenas === 0): ?>
-        <p class="muted">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
+        <p class="review-empty">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
       <?php else: ?>
-        <ul class="resenas">
+        <ul class="review-list">
           <?php foreach ($resenas as $r): ?>
-            <li class="resena">
-              <div class="resena__header">
-                <strong class="autor"><?= htmlspecialchars($r['nombre']) ?></strong>
-                <span class="stars-inline"><?= str_repeat('★', (int)$r['calificacion']) . str_repeat('☆', 5 - (int)$r['calificacion']) ?></span>
-                <time class="fecha muted"><?= date('d/m/Y H:i', strtotime($r['creado_en'])) ?></time>
+            <li class="review-item">
+              <div class="review-item__avatar">
+                <span><?= strtoupper(mb_substr($r['nombre'], 0, 1)) ?></span>
               </div>
-              <?php if (!empty($r['comentario'])): ?>
-                <p class="resena__text"><?= nl2br(htmlspecialchars($r['comentario'])) ?></p>
-              <?php endif; ?>
+
+              <div class="review-item__body">
+                <div class="review-item__header">
+                  <span class="review-item__author">
+                    <?= htmlspecialchars($r['nombre']) ?>
+                  </span>
+                  <span class="review-item__stars">
+                    <?= str_repeat('★', (int)$r['calificacion']) . str_repeat('☆', 5 - (int)$r['calificacion']) ?>
+                  </span>
+                  <time class="review-item__date">
+                    <?= date('M d, Y', strtotime($r['creado_en'])) ?>
+                  </time>
+                </div>
+
+                <?php if (!empty($r['comentario'])): ?>
+                  <p class="review-item__text">
+                    <?= nl2br(htmlspecialchars($r['comentario'])) ?>
+                  </p>
+                <?php endif; ?>
+              </div>
             </li>
           <?php endforeach; ?>
         </ul>
 
         <?php if ($paginas > 1): ?>
-          <nav class="paginacion">
+          <nav class="review-pagination">
             <?php for ($p=1; $p <= $paginas; $p++): ?>
-              <a class="page <?= $p===$pag?'is-active':'' ?>" href="?libro_id=<?= (int)$libro_id ?>&p=<?= $p ?>">
+              <a
+                href="?libro_id=<?= (int)$libro_id ?>&p=<?= $p ?>"
+                class="review-pagination__page <?= $p === $pag ? 'is-active' : '' ?>"
+              >
                 <?= $p ?>
               </a>
             <?php endfor; ?>
@@ -245,8 +323,6 @@ function human_size($bytes) {
         <?php endif; ?>
       <?php endif; ?>
     </section>
-  </div>
+  </section>
 </main>
 
-
-<?php incluirTemplate('footer'); ?>
