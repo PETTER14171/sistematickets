@@ -212,3 +212,63 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+
+  /* ============================
+   *  Funciones del panel admin
+   * ============================*/
+
+  // public/js/panel-tecnico.js
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) Tarjetas clickeables (stats / middle)
+  const clickableCards = document.querySelectorAll('.js-card-link');
+
+  clickableCards.forEach(card => {
+    const link = card.dataset.link;
+    if (!link) return;
+
+    card.classList.add('admin-card--clickable');
+
+    card.addEventListener('click', () => {
+      window.location.href = link;
+    });
+  });
+
+  // 2) Botón de búsqueda del header
+  const btnSearch = document.querySelector('.js-admin-search');
+  if (btnSearch) {
+    btnSearch.addEventListener('click', () => {
+      const term = window.prompt('Buscar tickets por título o descripción:');
+      if (term && term.trim() !== '') {
+        const q = encodeURIComponent(term.trim());
+        window.location.href = `admin_tickets.php?q=${q}`;
+      }
+    });
+  }
+
+  // 3) Botón de campana del header -> scroll a notificaciones + highlight
+  const btnBell = document.querySelector('.js-admin-bell');
+  const notifWrapper = document.querySelector('.js-notifications-wrapper');
+
+  if (btnBell && notifWrapper) {
+    btnBell.addEventListener('click', () => {
+      notifWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      notifWrapper.classList.add('admin-card--highlight');
+
+      setTimeout(() => {
+        notifWrapper.classList.remove('admin-card--highlight');
+      }, 1800);
+    });
+  }
+
+  // 4) Scroll en notificaciones cuando haya más de 5
+  const notifList = document.querySelector('.js-notifications-list');
+  if (notifList) {
+    const items = notifList.querySelectorAll('.admin-notifications__item');
+
+    if (items.length > 5) {
+      notifList.classList.add('has-scroll');
+    }
+  }
+});
+
