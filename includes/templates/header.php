@@ -7,7 +7,8 @@
                 <a href="panel_agente.php">Inicio</a>
                 <a href="ver_mis_tickets.php">Tickets</a>
                 <a href="biblioteca.php">Biblioteca</a>
-                <a class="btn btn-primary" href="autoservicio.php">Soluciones</a>
+                <a href="autoservicio.php">Soluciones</a>
+                <a class="btn btn-primary" href="logout.php">Cerrar Sesion</a>
             </nav>
         </div>
     </header>

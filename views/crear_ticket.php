@@ -219,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <span class="form-label">Adjunto (opcional)</span>
             <label class="file-input" for="archivo">
                 <span class="file-input__icon">📎</span>
-                <span class="file-input__text">Choose a file</span>
+                <span class="file-input__text">Adjuntar Archivo</span>
                 <input
                     type="file"
                     id="archivo"

@@ -36,7 +36,6 @@ if (isset($_SESSION['rol'])) {
     <?php endif; ?>
 
 <main>
-    <h2>Iniciar Sesión</h2>
 
     <section class="login seccion">
         <form action="views/procesar_login.php" method="POST">
