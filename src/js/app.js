@@ -272,3 +272,46 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
+  /* ============================
+   *  Navegacion Responsiva
+   * ============================*/
+
+document.addEventListener('DOMContentLoaded', () => {
+  const navToggle = document.getElementById('navToggle');
+  const mainNav   = document.getElementById('mainNav');
+
+  if (!navToggle || !mainNav) return;
+
+  // Abrir/cerrar menú
+  navToggle.addEventListener('click', () => {
+    const isOpen = mainNav.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  // Cerrar menú al hacer clic en un enlace (en móvil)
+  mainNav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900 && mainNav.classList.contains('open')) {
+        mainNav.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  // Cerrar menú si se cambia a escritorio
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900 && mainNav.classList.contains('open')) {
+      mainNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Opcional: cerrar con Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mainNav.classList.contains('open')) {
+      mainNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+});

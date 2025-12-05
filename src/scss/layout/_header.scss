@@ -7,50 +7,52 @@
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 10; // asegúrate de que sea mayor que el ::before del hero
-  background: transparent; // elimina el fondo sólido
-  border: none; // opcional si tenías borde
+  z-index: 20; // un poco más alto
+  background: transparent;
+  border: none;
 }
 
-.secondary{
-    position: relative;
-    background-color: var.$dark;
+.secondary {
+  position: relative;
+  background-color: var.$dark;
 }
 
-.brand{
+.brand {
   max-width: 50%;
 }
 
-.brand img{
-    max-width: 35%;
+.brand img {
+  max-width: 35%;
 }
 
-.site-header .nav{ 
-    display:flex; 
-    align-items:center; 
-    justify-content:space-between; 
-    height:72px; 
-    gap:1rem;
-    border-block-end: 1px solid var.$white; 
+.site-header .nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+  gap: 1rem;
+  border-block-end: 1px solid var.$white;
 }
 
-.brand--logo{ 
-    text-decoration:none; 
-    color:inherit; 
+.brand--logo {
+  text-decoration: none;
+  color: inherit;
 }
 
-.brand__text{ 
-    font-weight:var.$black-f; 
-    letter-spacing:.3px; 
-    font-size:1.25rem; 
-    color:#0f172a; 
+.brand__text {
+  font-weight: var.$black-f;
+  letter-spacing: .3px;
+  font-size: 1.25rem;
+  color: #0f172a;
 }
 
-.brand__tag{ 
-    color:var.$muted; 
-    font-weight:var.$regular; 
-    margin-left:.5rem; 
+.brand__tag {
+  color: var.$muted;
+  font-weight: var.$regular;
+  margin-left: .5rem;
 }
+
+/* ====== MENÚ DESKTOP ====== */
 
 .menu {
   display: flex;
@@ -58,7 +60,7 @@
   gap: 1rem;
 }
 
-/* === Enlaces normales (sin clase) === */
+/* Enlaces normales */
 .menu a:not(.btn) {
   position: relative;
   text-decoration: none;
@@ -86,17 +88,17 @@
   width: 100%;
 }
 
-/* ===  Botón especial (.btn) === */
+/* Botón especial */
 .menu .btn {
-    background-color: var.$accent-2;
-    padding: 0.5rem 1rem;
-    border-radius: 999px;
-    transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
-    color: var.$white;
-    text-decoration: none;
+  position: relative;
+  background-color: var.$accent-2;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+  color: var.$white;
+  text-decoration: none;
 }
 
-/* Efecto distinto para el botón: brillo al pasar */
 .menu .btn::before {
   content: "";
   position: absolute;
@@ -109,41 +111,67 @@
 }
 
 .menu .btn:hover {
-    background-color: var.$dark;
-    transform: scale(1.05);
+  background-color: var.$dark;
+  transform: scale(1.05);
 }
 
 .menu .btn:hover::before {
-  left: 100%; /* brillo pasa de izquierda a derecha */
+  left: 100%;
 }
 
+/* ====== TOGGLE ====== */
 
-.nav-toggle{ 
-    display:none; 
+.nav-toggle {
+  display: none;
+  color: var.$white;
 }
 
-@media (max-width: 900px){
-    .nav-toggle{ 
-        display:block; 
-        background:none; 
-        border:1px solid var.$border; 
-        padding:.4rem .6rem; 
-        border-radius:8px; 
-    }
+/* ====== RESPONSIVE ====== */
 
-    .menu{ 
-        position:fixed; 
-        inset: 72px 0 auto 0; 
-        background:var.$white; 
-        padding: 1rem; 
-        border-bottom: 1px solid var.$border; 
-        transform: translateY(-120%); 
-        transition:.25s; 
-        flex-direction:column; 
-        align-items:flex-start; 
-    }
-    
-    .menu.open{ 
-        transform:translateY(0); 
-    }
+@media (max-width: 900px) {
+
+  .brand {
+    max-width: 100%;
+  }
+
+  .brand img {
+    max-width: 140px; // más razonable en móvil
+  }
+
+  .nav-toggle {
+    display: block;
+    background: none;
+    border: 1px solid var.$border;
+    padding: .4rem .6rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .menu {
+    position: fixed;
+    inset: 72px 0 auto 0;   // debajo del header
+    background: #ffffff;
+    padding: 1rem 1.25rem 1.5rem;
+    border-bottom: 1px solid var.$border;
+    transform: translateY(-120%);
+    transition: transform .25s ease;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 40; // por encima del resto
+  }
+
+  .menu.open {
+    transform: translateY(0);
+  }
+
+  /* En móvil, texto oscuro sobre fondo blanco */
+  .menu a:not(.btn) {
+    color: #111827;
+    width: 100%;
+  }
+
+  .menu .btn {
+    align-self: stretch;
+    text-align: center;
+  }
 }
