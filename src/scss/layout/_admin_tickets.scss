@@ -346,3 +346,7 @@
 .page-pill.is-active:hover {
   transform: none;
 }
+
+.admin-tickets-table__row--clickable {
+  cursor: pointer;
+}

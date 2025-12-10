@@ -290,7 +290,7 @@ incluirTemplate('header');
                         <?php foreach ($tickets as $t): ?>
                             <tr
                                 class="admin-tickets-table__row admin-tickets-table__row--clickable"
-                                onclick="window.location='detalle_ticket.php?id=<?= (int)$t['id'] ?>';"
+                                onclick="window.location='responder_ticket.php?id=<?= (int)$t['id'] ?>';"
                             >
                                 <td class="admin-tickets-table__cell-id">
                                     #<?= (int)$t['id'] ?>
