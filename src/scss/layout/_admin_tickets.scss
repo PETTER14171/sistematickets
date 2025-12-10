@@ -1,0 +1,348 @@
+@use '../base/variables' as var;
+@use '../base/mixins' as mix;
+
+// ======= CONTENEDOR GENERAL =======
+.admin-tickets-page {
+  padding: 32px 16px 40px;
+
+  @media (min-width: var.$tablet) {
+    padding: 40px 24px 56px;
+  }
+
+  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.04), transparent),
+              radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.04), transparent);
+}
+
+.admin-tickets__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+// ======= HEADER (TÍTULO + BUSCADOR + FILTROS) =======
+
+.admin-tickets__header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @media (min-width: var.$tablet) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+}
+
+.admin-tickets__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-tickets__title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  color: #0f172a;
+}
+
+.admin-tickets__subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var.$text-soft;
+}
+
+.admin-tickets__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+/* Search */
+
+.admin-tickets__search {
+  flex: 1;
+}
+
+.admin-tickets__search-input {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid var.$border-subtle;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  outline: none;
+  background: #f9fafb;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+  &::placeholder {
+    color: var.$text-muted;
+  }
+
+  &:focus {
+    background: #ffffff;
+    border-color: rgb(184, 43, 136);
+    box-shadow: 0 0 0 1px rgba(184, 43, 136), 0 10px 25px rgba(15, 23, 42, 0.08);
+  }
+}
+
+/* Filtro */
+
+.admin-tickets__filter {
+  flex-shrink: 0;
+}
+
+.admin-tickets__filter-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid var.$border-subtle;
+  padding: 0.25rem 0.75rem;
+}
+
+.admin-tickets__filter-select {
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  padding-right: 1.2rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.admin-tickets__filter-label {
+  font-size: 0.85rem;
+  color: var.$text-soft;
+}
+
+// ======= TARJETA & TABLA =======
+
+.admin-tickets-card {
+  margin-top: 8px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  overflow: hidden;
+}
+
+.admin-tickets-table__wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-tickets-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+
+.admin-tickets-table thead {
+  background: #f9fafb;
+}
+
+.admin-tickets-table th,
+.admin-tickets-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eef1f5;
+  white-space: nowrap;
+}
+
+.admin-tickets-table thead th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var.$text-muted;
+}
+
+.admin-tickets-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-tickets-table__row {
+  transition: background-color 0.12s ease, box-shadow 0.12s ease, transform 0.07s ease;
+}
+
+.admin-tickets-table__row:hover {
+  background: #fefefe;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.07);
+  transform: translateY(-1px);
+}
+
+.admin-tickets-table__cell-id {
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin-tickets-table__cell-title {
+  max-width: 260px;
+  white-space: normal;
+}
+
+.admin-tickets-table__title-main {
+  font-weight: 500;
+  color: #111827;
+}
+
+.admin-tickets-table__title-sub {
+  font-size: 0.78rem;
+  color: var.$text-soft;
+}
+
+.admin-tickets-table__empty {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.9rem;
+  color: var.$text-soft;
+}
+
+.admin-tickets-table__actions {
+  text-align: right;
+}
+
+// ======= Pills de prioridad / estado (reutilizables) =======
+
+.priority-pill,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.18rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: none;
+}
+
+/* Prioridad */
+.priority-pill--high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.priority-pill--medium {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.priority-pill--low {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.priority-pill--normal {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* Estado */
+.status-pill--open {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-pill--in-progress {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.status-pill--resolved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pill--closed {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+// ======= Link de acción =======
+
+.admin-tickets__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var.$border-subtle;
+  font-size: 0.78rem;
+  color: #111827;
+  text-decoration: none;
+  background: #f9fafb;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+
+  &:hover {
+    background: #ffffff;
+    border-color: rgba(184, 43, 136, 0.5);
+    transform: translateY(-1px);
+  }
+}
+
+
+/* ================================
+   PAGINATION STYLES
+   ================================ */
+
+.admin-tickets__pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1.8rem;
+  padding: 1rem 0;
+}
+
+.page-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 36px;
+  height: 36px;
+
+  padding: 0 12px;
+
+  font-size: 0.88rem;
+  font-weight: 500;
+
+  color: var(--text-soft);
+  background: var(--surface);
+  border-radius: 10px;
+
+  text-decoration: none;
+  transition: all 0.22s ease;
+
+  border: 1px solid rgba(var(--primary-rgb), 0.08);
+}
+
+.page-pill:hover {
+  background: rgba(var(--primary-rgb), 0.08);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+/* Estado activo */
+.page-pill.is-active {
+  background: rgb(var(--primary-rgb));
+  color: var.$secundario;
+  font-weight: 600;
+  border-color: rgb(var(--primary-rgb));
+  box-shadow: 0 2px 6px rgba(var(--primary-rgb), 0.25);
+}
+
+.page-pill.is-active:hover {
+  transform: none;
+}
