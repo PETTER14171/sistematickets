@@ -10,7 +10,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 
-$usuario_id = $_SESSION['usuario_id'];
+$usuario_id = (int)$_SESSION['usuario_id'];
 
 // ----------------------------
 // Filtros desde GET
@@ -37,9 +37,72 @@ switch ($estado_filtro) {
 }
 
 // ----------------------------
-// Armar consulta de tickets
+// Paginación
 // ----------------------------
-$sql = "
+$por_pagina = 10;
+$pagina_actual = isset($_GET['page']) && ctype_digit($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($pagina_actual < 1) {
+    $pagina_actual = 1;
+}
+
+// ----------------------------
+// Construir WHERE reutilizable
+// ----------------------------
+$sql_base = "
+    FROM tickets
+    WHERE id_usuario = ?
+";
+$params = [$usuario_id];
+$types  = 'i';
+
+// Filtro por estado (mapeo a tus valores reales)
+if ($estado_grupo !== null) {
+    switch ($estado_grupo) {
+        case 'abierto':
+            $sql_base .= " AND (estado = 'abierto' OR estado = 'open')";
+            break;
+        case 'en_proceso':
+            $sql_base .= " AND (estado = 'en_proceso' OR estado = 'en proceso' OR estado = 'in_progress')";
+            break;
+        case 'resuelto':
+            $sql_base .= " AND (estado = 'resuelto' OR estado = 'resuelto_ok' OR estado = 'resolved')";
+            break;
+        case 'cerrado':
+            $sql_base .= " AND (estado = 'cerrado' OR estado = 'closed')";
+            break;
+    }
+}
+
+// Filtro de búsqueda
+if ($search !== '') {
+    $sql_base .= " AND (titulo LIKE ? OR descripcion LIKE ?)";
+    $like = '%' . $search . '%';
+    $params[] = $like;
+    $params[] = $like;
+    $types   .= 'ss';
+}
+
+// ----------------------------
+// 1) TOTAL de registros (para paginación)
+// ----------------------------
+$sql_count = "SELECT COUNT(*) AS total " . $sql_base;
+$stmt = $conn->prepare($sql_count);
+$stmt->bind_param($types, ...$params);
+$stmt->execute();
+$res_count = $stmt->get_result()->fetch_assoc();
+$total_registros = (int)($res_count['total'] ?? 0);
+$stmt->close();
+
+$total_paginas = max(1, (int)ceil($total_registros / $por_pagina));
+if ($pagina_actual > $total_paginas) {
+    $pagina_actual = $total_paginas;
+}
+$offset = ($pagina_actual - 1) * $por_pagina;
+
+// ----------------------------
+// 2) Consulta de datos paginados
+// ----------------------------
+$sql_data = "
     SELECT
         id,
         titulo,
@@ -48,44 +111,18 @@ $sql = "
         prioridad,
         estado,
         COALESCE(actualizado_en, creado_en) AS ultima
-    FROM tickets
-    WHERE id_usuario = ?
+    " . $sql_base . "
+    ORDER BY ultima DESC
+    LIMIT ? OFFSET ?
 ";
 
-if ($estado_grupo !== null) {
-    // Aplicar el mismo mapeo de estados que usas en mis_tickets.php
-    switch ($estado_grupo) {
-        case 'abierto':
-            $sql .= " AND (estado = 'abierto' OR estado = 'open')";
-            break;
-        case 'en_proceso':
-            $sql .= " AND (estado = 'en_proceso' OR estado = 'en proceso' OR estado = 'in_progress')";
-            break;
-        case 'resuelto':
-            $sql .= " AND (estado = 'resuelto' OR estado = 'resuelto_ok' OR estado = 'resolved')";
-            break;
-        case 'cerrado':
-            $sql .= " AND (estado = 'cerrado' OR estado = 'closed')";
-            break;
-    }
-}
+$params_data = $params;
+$types_data  = $types . 'ii';
+$params_data[] = $por_pagina;
+$params_data[] = $offset;
 
-if ($search !== '') {
-    $sql .= " AND (titulo LIKE ? OR descripcion LIKE ?)";
-}
-
-$sql .= " ORDER BY ultima DESC";
-
-// Preparar statement
-if ($search !== '') {
-    $stmt = $conn->prepare($sql);
-    $like = '%' . $search . '%';
-    $stmt->bind_param("iss", $usuario_id, $like, $like);
-} else {
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $usuario_id);
-}
-
+$stmt = $conn->prepare($sql_data);
+$stmt->bind_param($types_data, ...$params_data);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -158,11 +195,10 @@ while ($row = $result->fetch_assoc()) {
     $fecha_label = '';
     if (!empty($row['ultima'])) {
         $dt = new DateTime($row['ultima']);
-        // Ejemplo "Apr 9, 2023"
-        $fecha_label = $dt->format('M j, Y');
+        $fecha_label = $dt->format('M j, Y'); // Ej: Apr 9, 2023
     }
 
-    // Preview corto por si lo quieres usar después
+    // Preview corto (por si lo quieres usar después)
     $preview = trim($row['descripcion'] ?? '');
     if (function_exists('mb_strlen')) {
         if (mb_strlen($preview) > 80) {
@@ -234,11 +270,11 @@ incluirTemplate('header');
                     name="estado"
                     onchange="this.form.submit()"
                 >
-                    <option value="todos"     <?= $estado_filtro === 'todos'     ? 'selected' : '' ?>>Todos</option>
-                    <option value="abierto"   <?= $estado_filtro === 'abierto'   ? 'selected' : '' ?>>Abierto</option>
-                    <option value="en_proceso"<?= $estado_filtro === 'en_proceso'? 'selected' : '' ?>>En proceso</option>
-                    <option value="resuelto"  <?= $estado_filtro === 'resuelto'  ? 'selected' : '' ?>>Resuelto</option>
-                    <option value="cerrado"   <?= $estado_filtro === 'cerrado'   ? 'selected' : '' ?>>Cerrado</option>
+                    <option value="todos"      <?= $estado_filtro === 'todos'      ? 'selected' : '' ?>>Todos</option>
+                    <option value="abierto"    <?= $estado_filtro === 'abierto'    ? 'selected' : '' ?>>Abierto</option>
+                    <option value="en_proceso" <?= $estado_filtro === 'en_proceso' ? 'selected' : '' ?>>En proceso</option>
+                    <option value="resuelto"   <?= $estado_filtro === 'resuelto'   ? 'selected' : '' ?>>Resuelto</option>
+                    <option value="cerrado"    <?= $estado_filtro === 'cerrado'    ? 'selected' : '' ?>>Cerrado</option>
                 </select>
             </form>
         </header>
@@ -263,49 +299,64 @@ incluirTemplate('header');
                                 No hay tickets para este filtro.
                             </td>
                         </tr>
-                        <?php else: ?>
-                            <?php foreach ($tickets as $t): ?>
-                                <tr
-                                    class="tickets-table__row tickets-table__row--clickable"
-                                    onclick="window.location.href='detalle_ticket.php?id=<?= (int)$t['id'] ?>'"
-                                >
-                                    <td class="tickets-table__cell-id">
-                                        #<?= (int)$t['id'] ?>
-                                    </td>
-                                    <td class="tickets-table__cell-title">
-                                        <?= htmlspecialchars($t['titulo'], ENT_QUOTES, 'UTF-8') ?>
-                                    </td>
-                                    <td>
-                                        <?= htmlspecialchars($t['categoria'], ENT_QUOTES, 'UTF-8') ?>
-                                    </td>
-                                    <td>
-                                        <span class="priority-pill priority-pill--<?= htmlspecialchars($t['priority_key'], ENT_QUOTES, 'UTF-8') ?>">
-                                            <?= htmlspecialchars($t['priority_label'], ENT_QUOTES, 'UTF-8') ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="status-pill status-pill--<?= htmlspecialchars($t['status_key'], ENT_QUOTES, 'UTF-8') ?>">
-                                            <?= htmlspecialchars($t['status_label'], ENT_QUOTES, 'UTF-8') ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?= htmlspecialchars($t['last_response'], ENT_QUOTES, 'UTF-8') ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                    <?php else: ?>
+                        <?php foreach ($tickets as $t): ?>
+                            <tr
+                                class="tickets-table__row tickets-table__row--clickable"
+                                onclick="window.location.href='detalle_ticket.php?id=<?= (int)$t['id'] ?>'"
+                            >
+                                <td class="tickets-table__cell-id">
+                                    #<?= (int)$t['id'] ?>
+                                </td>
+                                <td class="tickets-table__cell-title">
+                                    <?= htmlspecialchars($t['titulo'], ENT_QUOTES, 'UTF-8') ?>
+                                </td>
+                                <td>
+                                    <?= htmlspecialchars($t['categoria'], ENT_QUOTES, 'UTF-8') ?>
+                                </td>
+                                <td>
+                                    <span class="priority-pill priority-pill--<?= htmlspecialchars($t['priority_key'], ENT_QUOTES, 'UTF-8') ?>">
+                                        <?= htmlspecialchars($t['priority_label'], ENT_QUOTES, 'UTF-8') ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-pill status-pill--<?= htmlspecialchars($t['status_key'], ENT_QUOTES, 'UTF-8') ?>">
+                                        <?= htmlspecialchars($t['status_label'], ENT_QUOTES, 'UTF-8') ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?= htmlspecialchars($t['last_response'], ENT_QUOTES, 'UTF-8') ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Si luego agregas paginación real, aquí puedes ponerla -->
-            <!--
-            <footer class="tickets-table__pagination">
-                <button type="button" class="page-btn" disabled>◀</button>
-                <span class="page-current">1</span>
-                <button type="button" class="page-btn">▶</button>
-            </footer>
-            -->
+            <?php if ($total_paginas > 1): ?>
+                <footer class="tickets-pagination">
+                    <?php for ($p = 1; $p <= $total_paginas; $p++): ?>
+                        <?php
+                            // Reconstruimos la query manteniendo filtros
+                            $query = [
+                                'page'   => $p,
+                                'estado' => $estado_filtro,
+                            ];
+                            if ($search !== '') {
+                                $query['q'] = $search;
+                            }
+                            $url = 'ver_mis_tickets.php?' . http_build_query($query);
+                        ?>
+                        <a
+                            href="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>"
+                            class="page-pill <?= $p === $pagina_actual ? 'is-active' : '' ?>"
+                        >
+                            <?= $p ?>
+                        </a>
+                    <?php endfor; ?>
+                </footer>
+            <?php endif; ?>
         </section>
     </section>
 </main>
