@@ -98,141 +98,176 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ]);
     incluirTemplate('header');
 ?>
+<main class="admin-tickets-page falla-edit-page">
+  <a href="fallas_comunes_admin.php" class="btn-1 btn-volver ticket-detail__back">← Volver</a>
+    <section class="admin-tickets__inner">
+        <!-- Header -->
+        <header class="admin-tickets__header">
+            <div class="admin-tickets__title-group">
+                <h1 class="admin-tickets__title">Editar guía de falla común</h1>
+                <p class="admin-tickets__subtitle">
+                    Actualiza la descripción, pasos y recursos multimedia de esta guía.
+                </p>
+            </div>
+        </header>
 
-<div class="centrat-titulo_boton">
-    <h3>✏️ Editar Guía de Falla Común</h3>
-    <a href="fallas_comunes_admin.php" class="btn-1 btn-volver">← Volver</a>
-</div>
+        <section class="admin-tickets-card">
+            <?php if ($mensaje): ?>
+                <div class="mensaje mensaje--inline">
+                    <?= htmlspecialchars($mensaje) ?>
+                </div>
+            <?php endif; ?>
 
-<?php if ($mensaje): ?>
-    <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
-<?php endif; ?>
+            <form class="form-falla" method="POST" enctype="multipart/form-data">
+                <!-- Título -->
+                <section class="contenido-bloque titulo-falla form-falla__block">
+                    <div class="field">
+                        <input
+                            id="titulo"
+                            class="field__input"
+                            type="text"
+                            name="titulo"
+                            placeholder=" "
+                            value="<?= htmlspecialchars($falla['titulo'] ?? '') ?>"
+                            required
+                        >
+                        <label for="titulo" class="field__label">Título</label>
+                    </div>
+                </section>
 
-<form class="form-falla" method="POST" enctype="multipart/form-data">
-  <!-- Título -->
-  <section class="contenido-bloque titulo-falla">
-    <div class="field">
-      <input
-        id="titulo"
-        class="field__input"
-        type="text"
-        name="titulo"
-        placeholder=" "
-        value="<?= htmlspecialchars($falla['titulo'] ?? '') ?>"
-        required
-      >
-      <label for="titulo" class="field__label">Título</label>
-    </div>
-  </section>
+                <!-- Descripción -->
+                <section class="contenido-bloque descripcion-falla form-falla__block">
+                    <div class="field">
+                        <textarea
+                            id="descripcion"
+                            class="field__input field__textarea"
+                            name="descripcion"
+                            rows="4"
+                            placeholder=" "
+                            required
+                        ><?= htmlspecialchars($falla['descripcion'] ?? '') ?></textarea>
+                        <label for="descripcion" class="field__label">Descripción</label>
+                    </div>
+                </section>
 
-  <!-- Descripción -->
-  <section class="contenido-bloque descripcion-falla">
-    <div class="field">
-      <textarea
-        id="descripcion"
-        class="field__input field__textarea"
-        name="descripcion"
-        rows="4"
-        placeholder=" "
-        required
-      ><?= htmlspecialchars($falla['descripcion'] ?? '') ?></textarea>
-      <label for="descripcion" class="field__label">Descripción</label>
-    </div>
-  </section>
+                <!-- Pasos para solucionarlo -->
+                <section class="contenido-bloque solucion-falla form-falla__block">
+                    <div class="field">
+                        <textarea
+                            id="pasos_solucion"
+                            class="field__input field__textarea"
+                            name="pasos_solucion"
+                            rows="5"
+                            placeholder=" "
+                            required
+                        ><?= htmlspecialchars($falla['pasos_solucion'] ?? '') ?></textarea>
+                        <label for="pasos_solucion" class="field__label">Pasos para solucionarlo</label>
+                    </div>
+                </section>
 
-  <!-- Pasos para solucionarlo -->
-  <section class="contenido-bloque solucion-falla">
-    <div class="field">
-      <textarea
-        id="pasos_solucion"
-        class="field__input field__textarea"
-        name="pasos_solucion"
-        rows="5"
-        placeholder=" "
-        required
-      ><?= htmlspecialchars($falla['pasos_solucion'] ?? '') ?></textarea>
-      <label for="pasos_solucion" class="field__label">Pasos para solucionarlo</label>
-    </div>
-  </section>
+                <!-- Categoría + Palabras clave en 2 columnas -->
+                <section class="form-falla__grid-2">
+                    <section class="contenido-bloque categoria-falla form-falla__block">
+                        <div class="field">
+                            <input
+                                id="categoria"
+                                class="field__input"
+                                type="text"
+                                name="categoria"
+                                placeholder=" "
+                                value="<?= htmlspecialchars($falla['categoria'] ?? '') ?>"
+                                required
+                            >
+                            <label for="categoria" class="field__label">Categoría</label>
+                        </div>
+                    </section>
 
-  <!-- Categoría -->
-  <section class="contenido-bloque categoria-falla">
-    <div class="field">
-      <input
-        id="categoria"
-        class="field__input"
-        type="text"
-        name="categoria"
-        placeholder=" "
-        value="<?= htmlspecialchars($falla['categoria'] ?? '') ?>"
-        required
-      >
-      <label for="categoria" class="field__label">Categoría</label>
-    </div>
-  </section>
+                    <section class="contenido-bloque palabraclave-falla form-falla__block">
+                        <div class="field">
+                            <input
+                                id="palabras_clave"
+                                class="field__input"
+                                type="text"
+                                name="palabras_clave"
+                                placeholder=" "
+                                value="<?= htmlspecialchars($falla['palabras_clave'] ?? '') ?>"
+                                required
+                            >
+                            <label for="palabras_clave" class="field__label">
+                                Palabras clave (separadas por coma)
+                            </label>
+                        </div>
+                    </section>
+                </section>
 
-  <!-- Palabras clave -->
-  <section class="contenido-bloque palabraclave-falla">
-    <div class="field">
-      <input
-        id="palabras_clave"
-        class="field__input"
-        type="text"
-        name="palabras_clave"
-        placeholder=" "
-        value="<?= htmlspecialchars($falla['palabras_clave'] ?? '') ?>"
-        required
-      >
-      <label for="palabras_clave" class="field__label">Palabras clave (separadas por coma)</label>
-    </div>
-  </section>
+                <!-- Vista del archivo actual (si existe) -->
+                <?php if (!empty($falla['multimedia'])): ?>
+                    <?php
+                        $ext = strtolower(pathinfo($falla['multimedia'], PATHINFO_EXTENSION));
+                        $isVideo = in_array($ext, ['mp4', 'webm', 'mov']);
+                        $src = "../fallamultimedia/" . $falla['multimedia'];
+                    ?>
+                    <section class="contenido-bloque multimedia-falla form-falla__block">
+                        <article class="media-card">
+                            <header class="media-card__header">
+                                <h2 class="media-card__title">Archivo actual</h2>
+                                <p class="media-card__subtitle">
+                                    Puedes mantener este archivo o reemplazarlo por uno nuevo.
+                                </p>
+                            </header>
+                            <div class="media-card__preview">
+                                <?php if ($isVideo): ?>
+                                    <video
+                                        src="<?= htmlspecialchars($src) ?>"
+                                        controls
+                                        class="media-card__video"
+                                    ></video>
+                                <?php else: ?>
+                                    <img
+                                        src="<?= htmlspecialchars($src) ?>"
+                                        alt="Media actual"
+                                        class="media-card__image"
+                                    >
+                                <?php endif; ?>
+                            </div>
+                            <footer class="media-card__footer">
+                                <span class="media-card__filename">
+                                    <?= htmlspecialchars($falla['multimedia']) ?>
+                                </span>
+                            </footer>
+                        </article>
+                    </section>
+                <?php endif; ?>
 
-  <!-- Vista del archivo actual (si existe) -->
-  <?php if (!empty($falla['multimedia'])): ?>
-    <?php
-      $ext = strtolower(pathinfo($falla['multimedia'], PATHINFO_EXTENSION));
-      $isVideo = in_array($ext, ['mp4', 'webm', 'mov']);
-      $src = "../fallamultimedia/" . $falla['multimedia'];
-    ?>
-    <section class="contenido-bloque multimedia-falla">
-      <div class="media-card" style="display:grid;gap:.5rem">
-        <div class="media-card__title" style="color:var(--text);font-weight:600">Archivo actual</div>
-        <div class="media-card__preview" style="border:1px solid var(--border);border-radius:12px;padding:12px;background:#10151c">
-          <?php if ($isVideo): ?>
-            <video src="<?= htmlspecialchars($src) ?>" controls style="max-width:100%;border-radius:10px"></video>
-          <?php else: ?>
-            <img src="<?= htmlspecialchars($src) ?>" alt="Media actual" style="max-width:100%;border-radius:10px;display:block">
-          <?php endif; ?>
-        </div>
-        <div class="media-card__name" style="color:var(--muted);font-size:.9rem">
-          <strong><?= htmlspecialchars($falla['multimedia']) ?></strong>
-        </div>
-      </div>
+                <!-- Reemplazar multimedia -->
+                <section class="contenido-bloque multimedia-falla form-falla__block">
+                    <div class="uploader">
+                        <input
+                            id="multimedia"
+                            class="uploader__input"
+                            type="file"
+                            name="multimedia"
+                            accept="image/*,video/*"
+                        >
+                        <label for="multimedia" class="uploader__label">
+                            <span class="uploader__title">Reemplazar multimedia (opcional)</span>
+                            <span class="uploader__hint">
+                                Arrastra una imagen o video aquí, o haz clic para seleccionar.
+                            </span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Botón -->
+                <div class="form-falla__actions">
+                    <button class="btn-primary" type="submit">
+                        Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </section>
     </section>
-  <?php endif; ?>
-
-  <!-- Reemplazar multimedia -->
-  <section class="contenido-bloque multimedia-falla">
-    <div class="uploader">
-      <input
-        id="multimedia"
-        class="uploader__input"
-        type="file"
-        name="multimedia"
-        accept="image/*,video/*"
-      >
-      <label for="multimedia" class="uploader__label">
-        <span class="uploader__title">Reemplazar multimedia (opcional)</span>
-        <span class="uploader__hint">Imagen o video (arrastrar y soltar / clic para seleccionar)</span>
-      </label>
-    </div>
-  </section>
-
-  <!-- Botón -->
-  <div class="form-falla__actions">
-    <button class="btn-primary" type="submit">Guardar cambios</button>
-  </div>
-</form>
+</main>
 
 <?php 
 incluirTemplate('footer');
