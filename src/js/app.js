@@ -535,8 +535,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Lanzar polling cada 10 segundos (ajusta si quieres)
-    setInterval(pollNewMessages, 1000);
+    // Lanzar polling cada 3 segundos (ajusta si quieres)
+    setInterval(pollNewMessages, 3000);
 });
 
 
