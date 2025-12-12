@@ -3,7 +3,7 @@ session_start();
 
 // Si no hay sesión iniciada
 if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['rol'])) {
-    header("Location: login.php");
+    header("Location: /../views/login.php");
     exit;
 }
 
