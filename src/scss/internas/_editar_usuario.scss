@@ -1,0 +1,178 @@
+@use '../base/variables' as var;
+@use '../base/mixins' as mix;
+@use 'sass:color';
+
+// Página y contenedor (reusa look panel)
+.user-edit-page {
+  padding: 24px;
+  background: #f3f4f6;
+}
+
+.user-edit-page__inner {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+// Header superior (título + volver)
+.centrad-titulo_boton,
+.centrat-titulo_boton {
+  max-width: 980px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var.$text-main;
+  }
+}
+
+// Mensaje / alerta
+.mensaje {
+  max-width: 980px;
+  margin: 0 auto 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: .86rem;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: var.$text-main;
+}
+
+// ==============================
+// FORM (recicla editar_falla)
+// ==============================
+.form-usuario {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  gap: 12px;
+
+  // 2 columnas en desktop para que se vea moderno
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  // secciones “cards”
+  .contenido-bloque {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    padding: 12px 14px;
+  }
+
+  // inputs que deben ocupar todo el ancho (si quieres)
+
+
+  // switches en 2 columnas, pero se ven bien
+  .activo-falla,
+  .biblioteca-falla {
+    grid-column: span 1;
+  }
+
+  // Botones
+  &__actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+}
+
+
+
+// textarea (si algún día lo reutilizas)
+.field__textarea {
+  min-height: 120px;
+  padding-top: 20px;
+  resize: vertical;
+}
+
+// select con look moderno
+.field__select {
+  appearance: none;
+  padding-right: 40px;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, #9ca3af 50%),
+    linear-gradient(135deg, #9ca3af 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+// ==============================
+// SWITCH (usuario activo / biblioteca)
+// ==============================
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.switch__input {
+  width: 42px;
+  height: 24px;
+  appearance: none;
+  background: #e5e7eb;
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  transition: background-color .2s ease, border-color .2s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+    transition: left .2s ease;
+  }
+
+  &:checked {
+    background: var.$primary;
+    border-color: color.scale(var.$primary, $lightness: -6%);
+
+    &::after {
+      left: 20px;
+    }
+  }
+}
+
+.switch__label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.switch__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var.$text-main;
+}
+
+// ==============================
+// Responsive
+// ==============================
+@media (max-width: 860px) {
+  .form-falla {
+    grid-template-columns: 1fr;
+
+    .correo-falla,
+    .rol-falla,
+    .activo-falla,
+    .biblioteca-falla {
+      grid-column: 1 / -1;
+    }
+  }
+}

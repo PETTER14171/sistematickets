@@ -97,150 +97,158 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     incluirTemplate('header');
 ?>
 
-<div class="centrat-titulo_boton">
-    <h3>✏️ Editar Usuario</h3>
-    <a href="usuarios.php" class="btn-1 btn-volver">← Volver</a>
-</div>
+<main class="admin-tickets-page falla-edit-page">
+  <a href="usuarios.php" class="btn-1 btn-volver ticket-detail__back">← Volver</a>
+    <section class="admin-tickets__inner">
+      <header class="admin-tickets__header">
+          <div class="admin-tickets__title-group">
+              <h1 class="admin-tickets__title">Editar Usuario</h1>
+              <p class="admin-tickets__subtitle">
+                  Actualiza la informacion del usuario.
+              </p>
+          </div>
+      </header>
+      <?php if ($mensaje): ?>
+          <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
+      <?php endif; ?>
 
+      <section class="admin-tickets-card nombre-falla">
+        <form class="form-usuario" method="POST">
+          <!-- Nombre -->
+          <section class="contenido-bloque nombre-falla">
+            <div class="field">
+              <input
+                id="nombre"
+                class="field__input"
+                type="text"
+                name="nombre"
+                placeholder=" "
+                value="<?= htmlspecialchars($usuario['nombre'] ?? '') ?>"
+                required
+              >
+              <label for="nombre" class="field__label">Nombre</label>
+            </div>
+          </section>
 
-<?php if ($mensaje): ?>
-    <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
-<?php endif; ?>
+          <!-- Correo -->
+          <section class="contenido-bloque correo-falla">
+            <div class="field">
+              <input
+                id="correo"
+                class="field__input"
+                type="email"
+                name="correo"
+                placeholder=" "
+                value="<?= htmlspecialchars($usuario['correo'] ?? '') ?>"
+                required
+              >
+              <label for="correo" class="field__label">Correo electrónico</label>
+            </div>
+          </section>
 
-<form class="form-falla" method="POST">
-  <!-- Nombre -->
-  <section class="contenido-bloque nombre-falla">
-    <div class="field">
-      <input
-        id="nombre"
-        class="field__input"
-        type="text"
-        name="nombre"
-        placeholder=" "
-        value="<?= htmlspecialchars($usuario['nombre'] ?? '') ?>"
-        required
-      >
-      <label for="nombre" class="field__label">Nombre</label>
-    </div>
-  </section>
+          <!-- Rol -->
+          <section class="contenido-bloque rol-falla">
+            <div class="field">
+              <select
+                id="rol"
+                class="field__input field__select"
+                name="rol"
+                required
+              >
+                <option value="" disabled>Selecciona un rol</option>
+                <option value="agente"  <?= ($usuario['rol'] ?? '') === 'agente'  ? 'selected' : '' ?>>Agente</option>
+                <option value="tecnico" <?= ($usuario['rol'] ?? '') === 'tecnico' ? 'selected' : '' ?>>Técnico</option>
+                <option value="admin"   <?= ($usuario['rol'] ?? '') === 'admin'   ? 'selected' : '' ?>>Administrador</option>
+              </select>
+              <label for="rol" class="field__label">Rol</label>
+            </div>
+          </section>
 
-  <!-- Correo -->
-  <section class="contenido-bloque correo-falla">
-    <div class="field">
-      <input
-        id="correo"
-        class="field__input"
-        type="email"
-        name="correo"
-        placeholder=" "
-        value="<?= htmlspecialchars($usuario['correo'] ?? '') ?>"
-        required
-      >
-      <label for="correo" class="field__label">Correo electrónico</label>
-    </div>
-  </section>
+          <!-- Campaña -->
+          <section class="contenido-bloque campana-falla">
+            <div class="field">
+              <input
+                id="campana"
+                class="field__input"
+                type="text"
+                name="campana"
+                placeholder=" "
+                value="<?= htmlspecialchars($usuario['campana'] ?? '') ?>"
+              >
+              <label for="campana" class="field__label">Campaña</label>
+            </div>
+          </section>
 
-  <!-- Rol -->
-  <section class="contenido-bloque rol-falla">
-    <div class="field">
-      <select
-        id="rol"
-        class="field__input field__select"
-        name="rol"
-        required
-      >
-        <option value="" disabled>Selecciona un rol</option>
-        <option value="agente"  <?= ($usuario['rol'] ?? '') === 'agente'  ? 'selected' : '' ?>>Agente</option>
-        <option value="tecnico" <?= ($usuario['rol'] ?? '') === 'tecnico' ? 'selected' : '' ?>>Técnico</option>
-        <option value="admin"   <?= ($usuario['rol'] ?? '') === 'admin'   ? 'selected' : '' ?>>Administrador</option>
-      </select>
-      <label for="rol" class="field__label">Rol</label>
-    </div>
-  </section>
+          <!-- Puesto -->
+          <section class="contenido-bloque puesto-falla">
+            <div class="field">
+              <input
+                id="puesto"
+                class="field__input"
+                type="text"
+                name="puesto"
+                placeholder=" "
+                value="<?= htmlspecialchars($usuario['puesto'] ?? '') ?>"
+              >
+              <label for="puesto" class="field__label">Puesto</label>
+            </div>
+          </section>
 
-  <!-- Campaña -->
-  <section class="contenido-bloque campana-falla">
-    <div class="field">
-      <input
-        id="campana"
-        class="field__input"
-        type="text"
-        name="campana"
-        placeholder=" "
-        value="<?= htmlspecialchars($usuario['campana'] ?? '') ?>"
-      >
-      <label for="campana" class="field__label">Campaña</label>
-    </div>
-  </section>
+          <!-- Estación -->
+          <section class="contenido-bloque estacion-falla">
+            <div class="field">
+              <input
+                id="estacion"
+                class="field__input"
+                type="text"
+                name="estacion"
+                placeholder=" "
+                value="<?= htmlspecialchars($usuario['estacion'] ?? '') ?>"
+              >
+              <label for="estacion" class="field__label">Estación</label>
+            </div>
+          </section>
 
-  <!-- Puesto -->
-  <section class="contenido-bloque puesto-falla">
-    <div class="field">
-      <input
-        id="puesto"
-        class="field__input"
-        type="text"
-        name="puesto"
-        placeholder=" "
-        value="<?= htmlspecialchars($usuario['puesto'] ?? '') ?>"
-      >
-      <label for="puesto" class="field__label">Puesto</label>
-    </div>
-  </section>
+          <!-- Usuario activo (switch) -->
+          <section class="contenido-bloque activo-falla">
+            <div class="switch">
+              <input
+                id="activo"
+                class="switch__input"
+                type="checkbox"
+                name="activo"
+                <?= !empty($usuario['activo']) ? 'checked' : '' ?>
+              >
+              <label for="activo" class="switch__label">
+                <span class="switch__title">Usuario activo</span>
+              </label>
+            </div>
+          </section>
 
-  <!-- Estación -->
-  <section class="contenido-bloque estacion-falla">
-    <div class="field">
-      <input
-        id="estacion"
-        class="field__input"
-        type="text"
-        name="estacion"
-        placeholder=" "
-        value="<?= htmlspecialchars($usuario['estacion'] ?? '') ?>"
-      >
-      <label for="estacion" class="field__label">Estación</label>
-    </div>
-  </section>
+          <!-- Acceso a biblioteca (switch) -->
+          <section class="contenido-bloque biblioteca-falla">
+            <div class="switch">
+              <input
+                id="acceso_biblioteca"
+                class="switch__input"
+                type="checkbox"
+                name="acceso_biblioteca"
+                <?= !empty($usuario['acceso_biblioteca']) ? 'checked' : '' ?>
+              >
+              <label for="acceso_biblioteca" class="switch__label">
+                <span class="switch__title">Acceso a biblioteca</span>
+              </label>
+            </div>
+          </section>
 
-  <!-- Usuario activo (switch) -->
-  <section class="contenido-bloque activo-falla">
-    <div class="switch">
-      <input
-        id="activo"
-        class="switch__input"
-        type="checkbox"
-        name="activo"
-        <?= !empty($usuario['activo']) ? 'checked' : '' ?>
-      >
-      <label for="activo" class="switch__label">
-        <span class="switch__title">Usuario activo</span>
-      </label>
-    </div>
-  </section>
-
-  <!-- Acceso a biblioteca (switch) -->
-  <section class="contenido-bloque biblioteca-falla">
-    <div class="switch">
-      <input
-        id="acceso_biblioteca"
-        class="switch__input"
-        type="checkbox"
-        name="acceso_biblioteca"
-        <?= !empty($usuario['acceso_biblioteca']) ? 'checked' : '' ?>
-      >
-      <label for="acceso_biblioteca" class="switch__label">
-        <span class="switch__title">Acceso a biblioteca</span>
-      </label>
-    </div>
-  </section>
-
-  <!-- Botón -->
-  <div class="form-falla__actions">
-    <button class="btn-primary" type="submit">Guardar cambios</button>
-  </div>
-</form>
-
+          <!-- Botón -->
+          <div class="form-falla__actions">
+            <button class="btn-primary" type="submit">Guardar cambios</button>
+          </div>
+        </form>
+      </section>
+    </section>
+</main>
 <?php 
 incluirTemplate('footer');
 ?>
