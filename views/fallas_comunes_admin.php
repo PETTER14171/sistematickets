@@ -57,14 +57,14 @@ incluirTemplate('header');
         <!-- HEADER -->
         <header class="admin-tickets__header">
             <div class="admin-tickets__title-group">
-                <h1 class="admin-tickets__title">Fallas Comunes</h1>
+                <h1 class="admin-tickets__title">Guías De Fallas Comunes</h1>
                 <p class="admin-tickets__subtitle">
                     Administra las guías de solución que usan los agentes en la sección de autoservicio.
                 </p>
             </div>
 
                 <a href="crear_falla.php" class="btn-primary">
-                    Nueva Falla Común
+                    Nueva Guía
                 </a>
             </div>
         </header>
