@@ -1,198 +1,734 @@
 <?php
+// views/responder_ticket.php 
+
 include __DIR__ . '/../includes/config/verificar_sesion.php';
 include __DIR__ . '/../includes/config/conexion.php';
+require_once __DIR__ . '/../includes/funciones.php';
 
-
-if ($_SESSION['rol'] !== 'tecnico') {
-    header("Location: index.php?error=Acceso denegado");
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php?error=Debes+iniciar+sesion");
     exit;
 }
 
-$ticket_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$mensaje = "";
+$usuario_id = (int)$_SESSION['usuario_id'];
+$rol        = $_SESSION['rol'] ?? 'agente';
 
-// Obtener información del ticket
-$stmt = $conn->prepare("
-    SELECT t.*, u.nombre AS nombre_agente, f.titulo AS titulo_falla
-    FROM tickets t
-    JOIN usuarios u ON t.id_usuario = u.id
-    LEFT JOIN fallas_comunes f ON t.referencia_falla = f.id
-    WHERE t.id = ?
-");
-$stmt->bind_param("i", $ticket_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$ticket = $result->fetch_assoc();
-
-if (!$ticket) {
-    die("Ticket no encontrado.");
+// ----------------------------
+// Validar ID de ticket
+// ----------------------------
+if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
+    header("Location: ver_mis_tickets.php?error=Ticket+invalido");
+    exit;
 }
 
-// Procesar nueva respuesta
+$ticket_id = (int)$_GET['id'];
+
+// ----------------------------
+// Cargar ticket y verificar permisos
+// ----------------------------
+
+if ($rol === 'agente') {
+    $sqlTicket = "
+        SELECT t.*, COALESCE(t.actualizado_en, t.creado_en) AS ultima
+        FROM tickets t
+        WHERE t.id = ? AND t.id_usuario = ?
+        LIMIT 1
+    ";
+    $stmt = $conn->prepare($sqlTicket);
+    $stmt->bind_param("ii", $ticket_id, $usuario_id);
+} else {
+    $sqlTicket = "
+        SELECT t.*, COALESCE(t.actualizado_en, t.creado_en) AS ultima
+        FROM tickets t
+        WHERE t.id = ?
+        LIMIT 1
+    ";
+    $stmt = $conn->prepare($sqlTicket);
+    $stmt->bind_param("i", $ticket_id);
+}
+
+$stmt->execute();
+$resTicket = $stmt->get_result();
+$ticket = $resTicket->fetch_assoc();
+$stmt->close();
+
+if (!$ticket) {
+    incluirTemplate('head', [
+        'page_title' => 'Ticket no encontrado',
+        'page_desc'  => 'El ticket no existe o no tienes permiso para verlo'
+    ]);
+    incluirTemplate('header');
+    ?>
+    <main class="tickets-page">
+        <section class="tickets-page__inner">
+            <section class="tickets-table-card contenido-bloque">
+                <p>No se encontró el ticket o no tienes permiso para verlo.</p>
+                <a href="admin_tickets.php?estado=todos" class="btn-1 btn-volver">← Volver a mis tickets</a>
+            </section>
+        </section>
+    </main>
+    <?php
+    incluirTemplate('footer');
+    exit;
+}
+
+// ----------------------------
+// Acciones POST (mensaje nuevo / actualizar estado)
+// ----------------------------
+$alert_msg  = '';
+$alert_type = 'success'; // success | error
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $respuesta = isset($_POST['respuesta']) ? trim($_POST['respuesta']) : '';
-    $nuevo_estado = isset($_POST['estado']) ? $_POST['estado'] : '';
+    $accion  = $_POST['accion'] ?? '';
+    // Detectar si es AJAX
+    $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
+        && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
-    if ($respuesta && $nuevo_estado) {
-        $archivo = null;
+    // Ruta física para archivos adjuntos
+    $uploadDir = dirname(__DIR__) . '/adjuntos/';
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0775, true);
+    }
 
-        if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
-            $archivo_nombre = basename($_FILES['archivo']['name']);
-            $archivo_ruta = "adjuntos/" . uniqid() . "_" . $archivo_nombre;
-            move_uploaded_file($_FILES['archivo']['tmp_name'], $archivo_ruta);
-            $archivo = $archivo_ruta;
+    // ------------------------------------
+    // 1) Nuevo mensaje
+    // ------------------------------------
+    if ($accion === 'mensaje_nuevo') {
+        $mensaje = trim($_POST['mensaje'] ?? '');
+        $archivo_nombre = null;
+
+        if ($mensaje === '') {
+            $alert_msg  = '⚠️ El mensaje no puede estar vacío.';
+            $alert_type = 'error';
+        } else {
+            // Procesar archivo adjunto opcional
+            if (!empty($_FILES['archivo_adjunto']['name']) && is_uploaded_file($_FILES['archivo_adjunto']['tmp_name'])) {
+                $original = $_FILES['archivo_adjunto']['name'];
+                $ext = pathinfo($original, PATHINFO_EXTENSION);
+                $safeExt = $ext ? ('.' . preg_replace('/[^a-zA-Z0-9]/', '', $ext)) : '';
+                $archivo_nombre = 'resp_' . $ticket_id . '_' . time() . '_' . bin2hex(random_bytes(3)) . $safeExt;
+
+                $destino = $uploadDir . $archivo_nombre;
+                if (!move_uploaded_file($_FILES['archivo_adjunto']['tmp_name'], $destino)) {
+                    $archivo_nombre = null; // no guardar nombre si falló
+                }
+            }
+
+            // Insertar mensaje en respuestas_ticket
+            $sqlMsg = "
+                INSERT INTO respuestas_ticket (ticket_id, usuario_id, mensaje, archivo_adjunto, creado_en)
+                VALUES (?, ?, ?, ?, NOW())
+            ";
+            $stmt = $conn->prepare($sqlMsg);
+            $stmt->bind_param("iiss", $ticket_id, $usuario_id, $mensaje, $archivo_nombre);
+
+            if ($stmt->execute()) {
+                $insert_id = $stmt->insert_id;
+                $stmt->close();
+
+                // Actualizar última fecha del ticket
+                $sqlUpd = "UPDATE tickets SET actualizado_en = NOW() WHERE id = ?";
+                $stmt = $conn->prepare($sqlUpd);
+                $stmt->bind_param("i", $ticket_id);
+                $stmt->execute();
+                $stmt->close();
+
+                // ===========================
+                //  RESPUESTA AJAX
+                // ===========================
+                if ($isAjax) {
+                    $es_mio = true;
+                    $autor_label = ($rol === 'tecnico' || $rol === 'admin') ? 'Soporte' : 'Tú';
+                    $fecha_msg = (new DateTime())->format('M j, Y H:i');
+                    $has_file  = !empty($archivo_nombre);
+                    $file_url  = $has_file 
+                        ? '/adjuntos/' . rawurlencode(basename($archivo_nombre))
+                        : '';
+
+                    $body_html = nl2br(htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'));
+                    $msg_class = $es_mio ? 'ticket-msg--mine' : 'ticket-msg--other';
+
+                    $attachment_html = '';
+                    if ($has_file) {
+                        $attachment_html = '
+                            <p class="ticket-msg__attachment">
+                                📎 <a href="' . $file_url . '" download>'
+                                    . htmlspecialchars($archivo_nombre, ENT_QUOTES, 'UTF-8') .
+                                '</a>
+                            </p>';
+                    }
+
+                    $html = '
+                            <article class="ticket-msg ' . $msg_class . '">
+                                <header class="ticket-msg__meta">
+                                    <span class="ticket-msg__author">'
+                                        . htmlspecialchars($autor_label, ENT_QUOTES, 'UTF-8') .
+                                    '</span>
+                                    <span class="ticket-msg__time">'
+                                        . htmlspecialchars($fecha_msg, ENT_QUOTES, 'UTF-8') .
+                                    '</span>
+                                </header>
+                                <p class="ticket-msg__body">'
+                                    . $body_html .
+                                '</p>'
+                                . $attachment_html .
+                            '</article>';
+
+                    header('Content-Type: application/json; charset=UTF-8');
+                    echo json_encode([
+                        'ok'      => true,
+                        'html'    => $html,
+                        'last_id' => $insert_id,
+                    ]);
+                    exit;
+                }
+
+                // ===========================
+                //  FLUJO NORMAL (no AJAX)
+                // ===========================
+                header("Location: responder_ticket.php?id={$ticket_id}&msg=mensaje_ok");
+                exit;
+            } else {
+                $alert_msg  = '❌ Error al guardar el mensaje.';
+                $alert_type = 'error';
+                $stmt->close();
+            }
         }
+    }
 
-        // Guardar respuesta
-        $stmt = $conn->prepare("
-            INSERT INTO respuestas_ticket (ticket_id, usuario_id, mensaje, archivo_adjunto)
-            VALUES (?, ?, ?, ?)
-        ");
-        $stmt->bind_param("iiss", $ticket_id, $_SESSION['usuario_id'], $respuesta, $archivo);
-        $stmt->execute();
+    // ------------------------------------
+    // 2) Actualizar estado del ticket
+    // ------------------------------------
+    if ($accion === 'actualizar_estado') {
+        // Solo técnico o admin deberían poder cambiar estado
+        if (!in_array($rol, ['tecnico', 'admin'], true)) {
+            $alert_msg  = '❌ No tienes permisos para cambiar el estado del ticket.';
+            $alert_type = 'error';
+        } else {
+            $nuevo_estado = $_POST['nuevo_estado'] ?? '';
+            $nuevo_estado = trim(strtolower($nuevo_estado));
 
-        // Actualizar estado del ticket
-        $stmt = $conn->prepare("UPDATE tickets SET estado = ? WHERE id = ?");
-        $stmt->bind_param("si", $nuevo_estado, $ticket_id);
-        $stmt->execute();
+            $estados_validos = ['abierto', 'en_proceso', 'resuelto', 'cerrado'];
 
-        // Marcar notificaciones relacionadas como leídas
-        $stmt = $conn->prepare("UPDATE notificaciones SET leido = TRUE WHERE ticket_id = ?");
-        $stmt->bind_param("i", $ticket_id);
-        $stmt->execute();
+            if (!in_array($nuevo_estado, $estados_validos, true)) {
+                $alert_msg  = '⚠️ Estado inválido.';
+                $alert_type = 'error';
+            } else {
+                $sqlUpd = "
+                    UPDATE tickets
+                    SET estado = ?, actualizado_en = NOW()
+                    WHERE id = ?
+                ";
+                $stmt = $conn->prepare($sqlUpd);
+                $stmt->bind_param("si", $nuevo_estado, $ticket_id);
 
-        // Redireccionar con mensaje de éxito
-        header("Location: admin_tickets.php?exito=1");
-        exit;
-    } else {
-        $mensaje = "⚠️ Debes escribir una respuesta y elegir un estado.";
+                if ($stmt->execute()) {
+                    $stmt->close();
+
+                    // Si quieres devolver algo por AJAX en el futuro, aquí
+                    if ($isAjax) {
+                        header('Content-Type: application/json; charset=UTF-8');
+                        echo json_encode([
+                            'ok'     => true,
+                            'estado' => $nuevo_estado,
+                        ]);
+                        exit;
+                    }
+
+                    header("Location: responder_ticket.php?id={$ticket_id}&msg=estado_ok");
+                    exit;
+                } else {
+                    $alert_msg  = '❌ Error al actualizar el estado del ticket.';
+                    $alert_type = 'error';
+                    $stmt->close();
+                }
+            }
+        }
     }
 }
 
+// Mensajes GET (PRG)
+if (isset($_GET['msg'])) {
+    if ($_GET['msg'] === 'mensaje_ok') {
+        $alert_msg  = '✅ Mensaje enviado correctamente.';
+        $alert_type = 'success';
+    } elseif ($_GET['msg'] === 'estado_ok') {
+        $alert_msg  = '✅ Estado del ticket actualizado correctamente.';
+        $alert_type = 'success';
+    }
+}
 
-// Obtener historial de respuestas
-$stmt = $conn->prepare("
-    SELECT r.*, u.nombre AS nombre_usuario
+// ----------------------------
+// Volver a cargar ticket (por si cambió estado)
+// ----------------------------
+if ($rol === 'agente') {
+    $sqlTicket = "
+        SELECT t.*, COALESCE(t.actualizado_en, t.creado_en) AS ultima
+        FROM tickets t
+        WHERE t.id = ? AND t.id_usuario = ?
+        LIMIT 1
+    ";
+    $stmt = $conn->prepare($sqlTicket);
+    $stmt->bind_param("ii", $ticket_id, $usuario_id);
+} else {
+    $sqlTicket = "
+        SELECT t.*, COALESCE(t.actualizado_en, t.creado_en) AS ultima
+        FROM tickets t
+        WHERE t.id = ?
+        LIMIT 1
+    ";
+    $stmt = $conn->prepare($sqlTicket);
+    $stmt->bind_param("i", $ticket_id);
+}
+$stmt->execute();
+$resTicket = $stmt->get_result();
+$ticket = $resTicket->fetch_assoc();
+$stmt->close();
+
+// ----------------------------
+// Mapear estado y prioridad
+// ----------------------------
+$estado_bd    = strtolower(trim($ticket['estado']));
+$status_label = 'Abierto';
+$status_key   = 'open';
+
+switch ($estado_bd) {
+    case 'en_proceso':
+        $status_label = 'En proceso';
+        $status_key   = 'in-progress';
+        break;
+    case 'resuelto':
+        $status_label = 'Resuelto';
+        $status_key   = 'resolved';
+        break;
+    case 'cerrado':
+        $status_label = 'Cerrado';
+        $status_key   = 'closed';
+        break;
+    case 'abierto':
+    default:
+        $status_label = 'Abierto';
+        $status_key   = 'open';
+        break;
+}
+
+$prio_bd        = strtolower(trim($ticket['prioridad'] ?? ''));
+$priority_label = 'Media';
+$priority_key   = 'medium';
+
+$fecha_creado = $ticket['creado_en'] ? (new DateTime($ticket['creado_en']))->format('M j, Y H:i') : '';
+$fecha_ultima = $ticket['ultima']    ? (new DateTime($ticket['ultima']))   ->format('M j, Y H:i') : '';
+
+// ----------------------------
+// Evidencia inicial del ticket (campo multimedia)
+// ----------------------------
+$evidencia_inicial = null;
+if (!empty($ticket['multimedia'])) {
+    $evidencia_inicial = basename($ticket['multimedia']);
+}
+
+// ----------------------------
+// Cargar respuestas (mensajes) + adjuntos
+// ----------------------------
+$sqlMsgs = "
+    SELECT r.id, r.usuario_id, r.mensaje, r.archivo_adjunto, r.creado_en,
+           u.nombre, u.rol
     FROM respuestas_ticket r
-    JOIN usuarios u ON r.usuario_id = u.id
+    INNER JOIN usuarios u ON u.id = r.usuario_id
     WHERE r.ticket_id = ?
     ORDER BY r.creado_en ASC
-");
+";
+$stmt = $conn->prepare($sqlMsgs);
 $stmt->bind_param("i", $ticket_id);
 $stmt->execute();
-$respuestas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-?>
+$resMsgs = $stmt->get_result();
+$mensajes = $resMsgs->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
-<?php
-    require_once __DIR__ . '/../includes/funciones.php';
-    incluirTemplate('head', [
-        'page_title' => 'Responder Ticket',
-        'page_desc'  => 'Panel para que el Tecnico responda ticket'
+// calcular último ID actual
+$last_msg_id = 0;
+foreach ($mensajes as $m) {
+    if ($m['id'] > $last_msg_id) {
+        $last_msg_id = (int)$m['id'];
+    }
+}
+
+// =====================================
+//  AJAX GET: obtener mensajes nuevos
+//  /responder_ticket.php?id=XX&ajax=1&action=list&last_id=YY
+// =====================================
+if (
+    isset($_GET['ajax']) && $_GET['ajax'] === '1' &&
+    $_SERVER['REQUEST_METHOD'] === 'GET' &&
+    ($_GET['action'] ?? '') === 'list'
+) {
+    $last_id = isset($_GET['last_id']) ? (int)$_GET['last_id'] : 0;
+
+    $html = '';
+    $new_last_id = $last_id;
+
+    foreach ($mensajes as $msg) {
+        if ((int)$msg['id'] <= $last_id) {
+            continue;
+        }
+
+        $es_mio = ((int)$msg['usuario_id'] === $usuario_id);
+        $autor_label = $es_mio
+            ? 'Tú'
+            : ($msg['rol'] === 'tecnico' || $msg['rol'] === 'admin' ? 'Soporte' : $msg['nombre']);
+        $fecha_msg = (new DateTime($msg['creado_en']))->format('M j, Y H:i');
+        $has_file  = !empty($msg['archivo_adjunto']);
+        $file_url  = $has_file ? '/adjuntos/' . rawurlencode(basename($msg['archivo_adjunto'])) : '';
+
+        $body_html = nl2br(htmlspecialchars($msg['mensaje'], ENT_QUOTES, 'UTF-8'));
+        $msg_class = $es_mio ? 'ticket-msg--mine' : 'ticket-msg--other';
+
+        $attachment_html = '';
+        if ($has_file) {
+            $attachment_html = '
+                <p class="ticket-msg__attachment">
+                    📎 <a href="' . $file_url . '" download>'
+                        . htmlspecialchars($msg['archivo_adjunto'], ENT_QUOTES, 'UTF-8') .
+                    '</a>
+                </p>';
+        }
+
+        $html .= '
+<article class="ticket-msg ' . $msg_class . '">
+    <header class="ticket-msg__meta">
+        <span class="ticket-msg__author">'
+            . htmlspecialchars($autor_label, ENT_QUOTES, 'UTF-8') .
+        '</span>
+        <span class="ticket-msg__time">'
+            . htmlspecialchars($fecha_msg, ENT_QUOTES, 'UTF-8') .
+        '</span>
+    </header>
+    <p class="ticket-msg__body">'
+        . $body_html .
+    '</p>'
+    . $attachment_html .
+'</article>';
+
+        if ((int)$msg['id'] > $new_last_id) {
+            $new_last_id = (int)$msg['id'];
+        }
+    }
+
+    header('Content-Type: application/json; charset=UTF-8');
+    echo json_encode([
+        'ok'      => true,
+        'html'    => $html,
+        'last_id' => $new_last_id,
     ]);
-    incluirTemplate('header');
+    exit;
+}
+
+// Evidencias separadas por rol
+$evidencias_tecnico = [];
+$evidencias_usuario = [];
+
+foreach ($mensajes as $msg) {
+    if (empty($msg['archivo_adjunto'])) {
+        continue;
+    }
+
+    $item = [
+        'archivo' => basename($msg['archivo_adjunto']),
+        'nombre'  => $msg['archivo_adjunto'],
+        'creado'  => $msg['creado_en'],
+        'autor'   => $msg['nombre'],
+        'rol'     => $msg['rol'],
+    ];
+
+    if (in_array($msg['rol'], ['tecnico', 'admin'], true)) {
+        $evidencias_tecnico[] = $item;
+    } else {
+        // agente / usuario
+        $evidencias_usuario[] = $item;
+    }
+}
+
+// ----------------------------
+// Render
+// ----------------------------
+incluirTemplate('head', [
+    'page_title' => 'Detalle Ticket #' . $ticket_id,
+    'page_desc'  => 'Detalle e interacción del ticket'
+]);
+
+incluirTemplate('header');
 ?>
 
+<main class="tickets-page">
+    <section class="tickets-page__inner ticket-detail">
 
-<div class="centrat-titulo_boton">
-    <h3>🛠 Ticket #<?= $ticket['id'] ?>: <?= htmlspecialchars($ticket['titulo']) ?></h3>
-    <a href="admin_tickets.php" class="btn-1 btn-volver">← Volver</a>
-</div>
+        <a href="admin_tickets.php?estado=todos" class="btn-1 btn-volver ticket-detail__back">← Volver a mis tickets</a>
 
-<main>
-    <?php if ($mensaje): ?>
-        <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
-    <?php endif; ?>
-<div class="ticket-grid">
-  <!-- Columna izquierda: Detalles -->
-  <section class="contenido-bloque detalle-falla">
-    <h2 class="section-title">Detalles del ticket</h2>
+        <section class="ticket-detail__layout">
+            <!-- INFO TICKET -->
+            <article class="ticket-detail__info contenido-bloque">
+                <header class="ticket-detail__header">
+                    <div>
+                        <h1 class="ticket-detail__title">Titulo:
+                            <br>
+                            <span class="ticket-detail__meta">
+                                <?= htmlspecialchars($ticket['titulo'], ENT_QUOTES, 'UTF-8') ?>    
+                            </span>
+                        </h1>
+                        <h1 class="ticket-detail__title">Id:
+                            <span class="ticket-detail__meta"> #<?= (int)$ticket_id ?></span>
+                        </h1>
+                        <h1 class="ticket-detail__title top_margin">Creado:
+                            <br>
+                            <span class="ticket-detail__meta">
+                                <?= htmlspecialchars($fecha_creado, ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                        </h1> 
+                        <h1 class="ticket-detail__title">Actualización:
+                            <br>
+                            <span class="ticket-detail__meta">
+                                <?php if ($fecha_ultima && $fecha_ultima !== $fecha_creado): ?>
+                                    <?= htmlspecialchars($fecha_ultima, ENT_QUOTES, 'UTF-8') ?>
+                                <?php endif; ?>
+                            </span>
+                        </h1>
+                    </div>
+                    <div class="ticket-detail__pills">
+                        <span class="status-pill status-pill--<?= htmlspecialchars($status_key, ENT_QUOTES, 'UTF-8') ?>">
+                            <?= htmlspecialchars($status_label, ENT_QUOTES, 'UTF-8') ?>
+                        </span>
+                    </div>
+                </header>
 
-    <div class="detalle-kv">
-      <div><span>Agente</span><strong><?= htmlspecialchars($ticket['nombre_agente']) ?></strong></div>
-      <div><span>Categoría</span><strong><?= htmlspecialchars($ticket['categoria']) ?></strong></div>
-      <div><span>Prioridad</span>
-        <span class="chip chip--prio-<?= strtolower($ticket['prioridad']) ?>"><?= ucfirst($ticket['prioridad']) ?></span>
-      </div>
-      <div><span>Estado</span>
-        <span class="chip chip--estado-<?= strtolower($ticket['estado']) ?>"><?= ucfirst(str_replace('_',' ',$ticket['estado'])) ?></span>
-      </div>
-      <div class="full"><span>Falla común</span><strong><?= $ticket['titulo_falla'] ?: '-' ?></strong></div>
-    </div>
+                <section class="ticket-detail__grid">
+                    <div class="ticket-detail__section">
+                        <h2 class="ticket-detail__section-title">Descripción</h2>
+                        <p class="ticket-detail__description">
+                            <?= nl2br(htmlspecialchars($ticket['descripcion'], ENT_QUOTES, 'UTF-8')) ?>
+                        </p>
+                    </div>
 
-    <div class="detalle-desc">
-      <label>Descripción</label>
-      <div class="desc-box"><?= nl2br(htmlspecialchars($ticket['descripcion'])) ?></div>
-    </div>
-  </section>
+                    <div class="ticket-detail__section ticket-detail__section--meta">
+                        <h2 class="ticket-detail__section-title">Información</h2>
+                        <dl class="ticket-detail__meta-list">
+                            <div>
+                                <dt>Categoría</dt>
+                                <dd><?= htmlspecialchars($ticket['categoria'], ENT_QUOTES, 'UTF-8') ?></dd>
+                            </div>
+                            <div>
+                                <dt>Estatus</dt>
+                                <dd>
+                                    <?php if (in_array($rol, ['tecnico', 'admin'], true)): ?>
+                                        <form method="POST" class="ticket-status-form">
+                                            <input type="hidden" name="accion" value="actualizar_estado">
+                                            <select name="nuevo_estado" class="form-control form-control--select" onchange="this.form.submit()">
+                                                <option value="abierto"   <?= $estado_bd === 'abierto' ? 'selected' : '' ?>>Abierto</option>
+                                                <option value="en_proceso"<?= $estado_bd === 'en_proceso' ? 'selected' : '' ?>>En proceso</option>
+                                                <option value="resuelto"  <?= $estado_bd === 'resuelto' ? 'selected' : '' ?>>Resuelto</option>
+                                                <option value="cerrado"   <?= $estado_bd === 'cerrado' ? 'selected' : '' ?>>Cerrado</option>
+                                            </select>
+                                        </form>
+                                    <?php else: ?>
+                                        <?= htmlspecialchars($status_label, ENT_QUOTES, 'UTF-8') ?>
+                                    <?php endif; ?>
+                                </dd>
+                            </div>
+                            <?php if (!empty($ticket['referencia_falla'])): ?>
+                                <div>
+                                    <dt>Referencia de falla</dt>
+                                    <dd>#<?= (int)$ticket['referencia_falla'] ?></dd>
+                                </div>
+                            <?php endif; ?>
+                        </dl>
+                    </div>
+                </section>
 
-  <!-- Columna derecha: Historial -->
-  <section class="contenido-bloque historial-falla">
-    <h2 class="section-title">💬 Historial de respuestas</h2>
+                <!-- EVIDENCIAS -->
+                <section class="ticket-detail__section">
+                    <h2 class="ticket-detail__section-title">Evidencias del Usuario</h2>
 
-    <?php if ($respuestas): ?>
-      <ul class="chat">
-        <?php foreach ($respuestas as $r): ?>
-          <li class="chat__msg <?= strtolower($r['nombre_usuario']) === strtolower($ticket['nombre_agente']) ? 'is-agent' : 'is-tech' ?>">
-            <div class="chat__bubble">
-              <div class="chat__meta">
-                <strong class="chat__author"><?= htmlspecialchars($r['nombre_usuario']) ?></strong>
-                <time class="chat__time"><?= date('d/m/Y H:i', strtotime($r['creado_en'])) ?></time>
-              </div>
-              <div class="chat__text"><?= nl2br(htmlspecialchars($r['mensaje'])) ?></div>
+                    <?php if (!$evidencia_inicial && empty($evidencias_usuario)): ?>
+                        <p class="ticket-detail__empty">Aún no hay evidencias adjuntas.</p>
+                    <?php else: ?>
+                        <ul class="ticket-detail__files">
+                            <?php if ($evidencia_inicial): ?>
+                                <?php $path_ini = '/adjuntos/' . rawurlencode($evidencia_inicial); ?>
+                                <li class="ticket-file">
+                                    <div class="ticket-file__icon">📎</div>
+                                    <div class="ticket-file__body">
+                                        <p class="ticket-file__name">
+                                            <?= htmlspecialchars($evidencia_inicial, ENT_QUOTES, 'UTF-8') ?>
+                                        </p>
+                                        <p class="ticket-file__meta">
+                                            Evidencia inicial del ticket
+                                        </p>
+                                    </div>
+                                    <div class="ticket-file__actions">
+                                        <a href="<?= $path_ini ?>" class="btn-ghost-small" download>
+                                            Descargar
+                                        </a>
+                                    </div>
+                                </li>
+                            <?php endif; ?>
 
-              <?php if ($r['archivo_adjunto']): ?>
-                <a class="chat__attach" href="<?= htmlspecialchars($r['archivo_adjunto']) ?>" target="_blank">📎 Ver archivo adjunto</a>
-              <?php endif; ?>
-            </div>
-          </li>
-        <?php endforeach; ?>
-      </ul>
-    <?php else: ?>
-      <p class="muted">No hay respuestas registradas.</p>
-    <?php endif; ?>
-  </section>
-</div>
+                            <?php foreach ($evidencias_usuario as $file): ?>
+                                <?php
+                                    $url = '/adjuntos/' . rawurlencode($file['archivo']);
+                                    $fechaEv = $file['creado']
+                                        ? (new DateTime($file['creado']))->format('M j, Y H:i')
+                                        : '';
+                                ?>
+                                <li class="ticket-file">
+                                    <div class="ticket-file__icon">📎</div>
+                                    <div class="ticket-file__body">
+                                        <p class="ticket-file__name">
+                                            <?= htmlspecialchars($file['nombre'], ENT_QUOTES, 'UTF-8') ?>
+                                        </p>
+                                        <p class="ticket-file__meta">
+                                            Subido por <?= htmlspecialchars($file['autor'], ENT_QUOTES, 'UTF-8') ?>
+                                            <?php if ($fechaEv): ?>
+                                                · <?= htmlspecialchars($fechaEv, ENT_QUOTES, 'UTF-8') ?>
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                    <div class="ticket-file__actions">
+                                        <a href="<?= $url ?>" class="btn-ghost-small" download>
+                                            Descargar
+                                        </a>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </section>
 
-<!-- Composer -->
-<section class="contenido-bloque composer-falla">
-  <h2 class="section-title">📝 Escribir nueva respuesta</h2>
+                <section class="ticket-detail__section">
+                    <h2 class="ticket-detail__section-title">Evidencias del Técnico</h2>
 
-  <form class="composer" method="POST" enctype="multipart/form-data">
-    <div class="composer__left">
-      <div class="field">
-        <textarea id="respuesta" class="field__input field__textarea_2 allow-tabs" name="respuesta" rows="4" placeholder=" " required></textarea>
-        <label for="respuesta" class="field__label">Mensaje</label>
-      </div>
-    </div>
+                    <?php if (empty($evidencias_tecnico)): ?>
+                        <p class="ticket-detail__empty">Aún no hay evidencias del técnico.</p>
+                    <?php else: ?>
+                        <ul class="ticket-detail__files">
+                            <?php foreach ($evidencias_tecnico as $file): ?>
+                                <?php
+                                    $url = '/adjuntos/' . rawurlencode($file['archivo']);
+                                    $fechaEv = $file['creado']
+                                        ? (new DateTime($file['creado']))->format('M j, Y H:i')
+                                        : '';
+                                ?>
+                                <li class="ticket-file">
+                                    <div class="ticket-file__icon">📎</div>
+                                    <div class="ticket-file__body">
+                                        <p class="ticket-file__name">
+                                            <?= htmlspecialchars($file['nombre'], ENT_QUOTES, 'UTF-8') ?>
+                                        </p>
+                                        <p class="ticket-file__meta">
+                                            Subido por <?= htmlspecialchars($file['autor'], ENT_QUOTES, 'UTF-8') ?>
+                                            <?php if ($fechaEv): ?>
+                                                · <?= htmlspecialchars($fechaEv, ENT_QUOTES, 'UTF-8') ?>
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                    <div class="ticket-file__actions">
+                                        <a href="<?= $url ?>" class="btn-ghost-small" download>
+                                            Descargar
+                                        </a>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </section>
+            </article>
 
-    <div class="composer__right">
-      <div class="uploader">
-        <input id="archivo" class="uploader__input" type="file" name="archivo" />
-        <label for="archivo" class="uploader__label">
-          <span class="uploader__title">Adjuntar archivo (opcional)</span>
-          <span class="uploader__hint">Imagen / video / PDF</span>
-        </label>
-      </div>
+            <!-- HILO DE MENSAJES -->
+            <aside class="ticket-detail__thread contenido-bloque">
+                <header class="ticket-detail__thread-header">
+                    <h2 class="ticket-detail__section-title">Mensajes</h2>
+                </header>
 
-      <div class="field">
-        <select id="estado" name="estado" class="field__input field__select" required>
-          <option value="" disabled selected>Seleccionar estado</option>
-          <option value="en_proceso">En proceso</option>
-          <option value="resuelto">Resuelto</option>
-          <option value="cerrado">Cerrado</option>
-        </select>
-        <label for="estado" class="field__label">Cambiar estado del ticket</label>
-      </div>
+                <div class="ticket-thread__messages" id="ticketMessages" data-last-id="<?= (int)$last_msg_id ?>">
+                    <?php if (empty($mensajes)): ?>
+                        <p class="ticket-detail__empty">
+                            Aún no hay mensajes. Usa el formulario de abajo para escribir el primero.
+                        </p>
+                    <?php else: ?>
+                        <?php foreach ($mensajes as $msg): ?>
+                            <?php
+                                $es_mio = ((int)$msg['usuario_id'] === $usuario_id);
+                                $autor_label = $es_mio ? 'Tú' : ($msg['rol'] === 'tecnico' || $msg['rol'] === 'admin' ? 'Soporte' : $msg['nombre']);
+                                $fecha_msg = (new DateTime($msg['creado_en']))->format('M j, Y H:i');
+                                $has_file  = !empty($msg['archivo_adjunto']);
+                                $file_url  = $has_file ? '/adjuntos/' . rawurlencode(basename($msg['archivo_adjunto'])) : '';
+                            ?>
+                            <article class="ticket-msg <?= $es_mio ? 'ticket-msg--mine' : 'ticket-msg--other' ?>">
+                                <header class="ticket-msg__meta">
+                                    <span class="ticket-msg__author">
+                                        <?= htmlspecialchars($autor_label, ENT_QUOTES, 'UTF-8') ?>
+                                    </span>
+                                    <span class="ticket-msg__time">
+                                        <?= htmlspecialchars($fecha_msg, ENT_QUOTES, 'UTF-8') ?>
+                                    </span>
+                                </header>
+                                <p class="ticket-msg__body">
+                                    <?= nl2br(htmlspecialchars($msg['mensaje'], ENT_QUOTES, 'UTF-8')) ?>
+                                </p>
+                                <?php if ($has_file): ?>
+                                    <p class="ticket-msg__attachment">
+                                        📎 <a href="<?= $file_url ?>" download>
+                                            <?= htmlspecialchars($msg['archivo_adjunto'], ENT_QUOTES, 'UTF-8') ?>
+                                        </a>
+                                    </p>
+                                <?php endif; ?>
+                            </article>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
 
-      <div class="composer__actions">
-        <button class="btn-primary" type="submit">Enviar</button>
-      </div>
-    </div>
-  </form>
-</section>
+                <footer class="ticket-thread__footer">
+                    <?php if ($alert_msg): ?>
+                        <div class="ticket-alert ticket-alert--<?= $alert_type === 'error' ? 'error' : 'success' ?>">
+                            <?= htmlspecialchars($alert_msg, ENT_QUOTES, 'UTF-8') ?>
+                        </div>
+                    <?php endif; ?>
 
+                    <form method="POST" class="ticket-thread__form" enctype="multipart/form-data">
+                        <input type="hidden" name="accion" value="mensaje_nuevo">
+                        <label class="form-label" for="mensaje">Escribe un mensaje</label>
+                        <textarea
+                            id="mensaje"
+                            name="mensaje"
+                            class="form-control form-control--textarea"
+                            rows="3"
+                            placeholder="Describe actualizaciones, dudas o comentarios sobre este ticket…"
+                            required
+                        ></textarea>
 
+                        <div class="form-field">
+                            <span class="form-label">Adjuntar archivo (opcional)</span>
+                            <label class="file-input" for="archivo_adjunto">
+                                <span class="file-input__icon">📎</span>
+                                <span class="file-input__text">Elegir archivo</span>
+                                <input
+                                    type="file"
+                                    id="archivo_adjunto"
+                                    name="archivo_adjunto"
+                                    class="file-input__native"
+                                >
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                Enviar mensaje
+                            </button>
+                        </div>
+                    </form>
+                </footer>
+            </aside>
+        </section>
+    </section>
 </main>
 <?php 
-incluirTemplate('footer');
+    incluirTemplate('footer');
 ?>

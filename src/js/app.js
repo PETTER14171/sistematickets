@@ -315,3 +315,152 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+
+  /* ============================
+   *  Ajax para mensajes
+   * ============================*/
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const messagesContainer = document.getElementById('ticketMessages');
+    const form = document.querySelector('.ticket-thread__form');
+    if (!messagesContainer || !form) return;
+
+    const textarea = form.querySelector('#mensaje');
+    const fileInput = form.querySelector('#archivo_adjunto');
+
+    function getLastId() {
+        return parseInt(messagesContainer.dataset.lastId || '0', 10);
+    }
+
+    function setLastId(id) {
+        messagesContainer.dataset.lastId = String(id);
+    }
+
+    function buildAjaxUrl(params = {}) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('ajax', '1');
+        for (const [k, v] of Object.entries(params)) {
+            url.searchParams.set(k, v);
+        }
+        return url.toString();
+    }
+
+    // Enviar mensaje por AJAX
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const fd = new FormData(form);
+        // aseguramos accion=mensaje_nuevo por si acaso
+        fd.set('accion', 'mensaje_nuevo');
+
+        fetch(buildAjaxUrl(), {
+            method: 'POST',
+            body: fd,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data || !data.ok) {
+                alert(data && data.error ? data.error : 'Error al enviar el mensaje.');
+                return;
+            }
+
+            if (data.html) {
+                messagesContainer.insertAdjacentHTML('beforeend', data.html);
+            }
+            if (data.last_id) {
+                setLastId(data.last_id);
+            }
+
+            if (textarea) textarea.value = '';
+            if (fileInput) fileInput.value = '';
+
+            // hacer scroll hacia abajo
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error de conexión al enviar el mensaje.');
+        });
+    });
+
+    // Polling para nuevos mensajes del otro lado
+    function pollNewMessages() {
+        const lastId = getLastId();
+        fetch(buildAjaxUrl({action: 'list', last_id: String(lastId)}), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data || !data.ok) return;
+            if (data.html) {
+                messagesContainer.insertAdjacentHTML('beforeend', data.html);
+            }
+            if (data.last_id && data.last_id > lastId) {
+                setLastId(data.last_id);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        })
+        .catch(err => {
+            console.error('Error al consultar nuevos mensajes', err);
+        });
+    }
+
+    // Lanzar polling cada 10 segundos (ajusta si quieres)
+    setInterval(pollNewMessages, 1000);
+});
+
+
+/* ============================
+*  Ajax para mensajes
+* ============================*/
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form      = document.querySelector('.ticket-thread__form');
+    if (!form) return;
+
+    const textarea  = document.getElementById('mensaje');
+    const fileInput = document.getElementById('archivo_adjunto');
+
+    if (!textarea || !fileInput) return;
+
+    // 1) ALERTA si el usuario intenta adjuntar archivo sin mensaje
+    fileInput.addEventListener('change', function () {
+        const hasMessage = textarea.value.trim().length > 0;
+
+        if (fileInput.files.length > 0 && !hasMessage) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Mensaje requerido',
+                text: 'Para adjuntar evidencia, primero escribe un mensaje.',
+                confirmButtonColor: '#3085d6',
+            });
+
+            // Limpiar archivo seleccionado
+            fileInput.value = '';
+            textarea.focus();
+        }
+    });
+
+    // 2) Validación completa al enviar
+    form.addEventListener('submit', function (e) {
+        const hasMessage = textarea.value.trim().length > 0;
+
+        if (!hasMessage) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Mensaje vacío',
+                text: 'El mensaje no puede estar vacío.',
+                confirmButtonColor: '#3085d6',
+            });
+            textarea.focus();
+        }
+    });
+});
+
