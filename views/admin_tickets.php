@@ -216,6 +216,7 @@ incluirTemplate('header');
 ?>
 
 <main class="admin-tickets-page">
+    <a href="panel_tecnico.php" class="btn-1 btn-volver ticket-detail__back">← Volver</a>
     <section class="admin-tickets__inner">
         <header class="admin-tickets__header">
             <div class="admin-tickets__title-group">
