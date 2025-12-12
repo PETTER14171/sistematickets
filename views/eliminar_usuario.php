@@ -2,46 +2,57 @@
 include __DIR__ . '/../includes/config/verificar_sesion.php';
 include __DIR__ . '/../includes/config/conexion.php';
 
-// Verificar que sea un administrador
-if ($_SESSION['rol'] !== 'tecnico') {
+if (!isset($_SESSION['usuario_id']) || ($_SESSION['rol'] ?? '') !== 'tecnico') {
     header("Location: index.php?error=Acceso denegado");
     exit;
 }
 
-// Verificar si viene el ID
-$id_usuario = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-if ($id_usuario === 0) {
-    header("Location: usuarios.php?error=ID inválido");
+if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
+    header("Location: usuarios.php?msg=invalid");
     exit;
 }
 
-// Prevenir que un admin se elimine a sí mismo
-if ($id_usuario === $_SESSION['usuario_id']) {
-    header("Location: usuarios.php?error=No puedes eliminar tu propio usuario");
+$id_usuario = (int)$_GET['id'];
+
+// (Opcional) Evitar que el técnico se “elimine” a sí mismo
+if ((int)$_SESSION['usuario_id'] === $id_usuario) {
+    header("Location: usuarios.php?msg=self_delete_block");
     exit;
 }
 
-// Verificar si el usuario existe
-$stmt = $conn->prepare("SELECT id FROM usuarios WHERE id = ?");
-$stmt->bind_param("i", $id_usuario);
-$stmt->execute();
-$stmt->store_result();
+$conn->begin_transaction();
 
-if ($stmt->num_rows === 0) {
+try {
+    // 1) Insertar en usuarios_eliminados si no existe ya
+    // (evita duplicados aunque hagan clic varias veces)
+    $sqlCheck = "SELECT 1 FROM usuarios_eliminados WHERE id_usuario = ? LIMIT 1";
+    $stmt = $conn->prepare($sqlCheck);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $exists = $stmt->get_result()->fetch_row();
     $stmt->close();
-    header("Location: usuarios.php?error=Usuario no encontrado");
+
+    if (!$exists) {
+        $sqlIns = "INSERT INTO usuarios_eliminados (id_usuario) VALUES (?)";
+        $stmt = $conn->prepare($sqlIns);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    // 2) Desactivar usuario
+    $sqlUpd = "UPDATE usuarios SET activo = 0 WHERE id = ? LIMIT 1";
+    $stmt = $conn->prepare($sqlUpd);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $stmt->close();
+
+    $conn->commit();
+    header("Location: usuarios.php?msg=deleted_ok");
+    exit;
+
+} catch (Throwable $e) {
+    $conn->rollback();
+    header("Location: usuarios.php?msg=deleted_error");
     exit;
 }
-$stmt->close();
-
-// Eliminar el usuario
-$stmt = $conn->prepare("DELETE FROM usuarios WHERE id = ?");
-$stmt->bind_param("i", $id_usuario);
-
-if ($stmt->execute()) {
-    header("Location: usuarios.php?success=Usuario eliminado correctamente");
-} else {
-    header("Location: usuarios.php?error=Error al eliminar el usuario");
-}
-?>

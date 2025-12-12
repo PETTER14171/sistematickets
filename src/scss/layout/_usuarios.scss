@@ -1,0 +1,75 @@
+@use '../base/variables' as var;
+@use 'sass:color';
+
+.users-page {
+  .users-filter__input,
+  .users-filter__select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    font-size: 0.85rem;
+    color: var.$text-main;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus {
+      border-color: var.$primary;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.18);
+    }
+  }
+
+  .users-filter__select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #9ca3af 50%),
+      linear-gradient(135deg, #9ca3af 50%, transparent 50%);
+    background-position: calc(100% - 16px) calc(50% - 2px), calc(100% - 11px) calc(50% - 2px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+  }
+
+  .users-filter__btn {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .users-table__filters th {
+    vertical-align: middle;
+  }
+
+  .users-table__th-id {
+    width: 72px;
+    white-space: nowrap;
+  }
+
+  .users-table__th-actions {
+    width: 120px;
+  }
+
+  // Evita que se haga enorme la tabla en pantallas pequeñas
+  .admin-tickets-table__wrapper {
+    overflow-x: auto;
+  }
+
+  // Opcional: reduce el alto del header de filtros
+  .users-table thead tr.users-table__filters th {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+
+.btn-ghost-small--danger {
+  border-color: #fecaca;
+  color: #b91c1c;
+
+  &:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.18);
+  }
+}

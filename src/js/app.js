@@ -417,6 +417,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* ============================
+*  Alerta eliminar Usuario
+* ============================*/
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.js-eliminar-usuario').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      const url = this.getAttribute('href');
+
+      Swal.fire({
+        title: '¿Eliminar usuario?',
+        text: 'El usuario será desactivado y ya no aparecerá en la lista.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        confirmButtonColor: '#dc2626', // rojo elegante
+        cancelButtonColor: '#6b7280'   // gris
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = url;
+        }
+      });
+    });
+  });
+});
+
+
+
+/* ============================
 *  Ajax para mensajes
 * ============================*/
 
