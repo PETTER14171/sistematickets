@@ -162,100 +162,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     incluirTemplate('header');
 
 ?>
-<main class="biblioteca-admin">
-    <div class="centrat-titulo_boton">
-        <h3>📚 Panel de Biblioteca — Subir libros (PDF)</h3>
-        <a href="panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
-    </div>
+<main class="admin-tickets-page falla-edit-page">
+  <a href="panel_tecnico.php" class="btn-1 btn-volver ticket-detail__back">
+    ← Volver
+  </a>
+    <section class="admin-tickets__inner">
+        <!-- Header -->
+        <header class="admin-tickets__header">
+            <div class="admin-tickets__title-group">
+                <h1 class="admin-tickets__title">Sube un libro</h1>
+                <p class="admin-tickets__subtitle">
+                    Añade un libro a la  a la biblioteca
+                </p>
+            </div>
+        </header>
+      <section class="admin-tickets-card">
+            <?php if (!empty($errores)): ?>
+              <section class="contenido-bloque">
+                <h2 class="section-title">Problemas al subir</h2>
+                <ul>
+                  <?php foreach ($errores as $e): ?>
+                    <li style="color:#ffb9b9;"><?= htmlspecialchars($e) ?></li>
+                  <?php endforeach; ?>
+                </ul>
+              </section>
+            <?php endif; ?>
 
-  <?php if (!empty($errores)): ?>
-    <section class="contenido-bloque">
-      <h2 class="section-title">Problemas al subir</h2>
-      <ul>
-        <?php foreach ($errores as $e): ?>
-          <li style="color:#ffb9b9;"><?= htmlspecialchars($e) ?></li>
-        <?php endforeach; ?>
-      </ul>
-    </section>
-  <?php endif; ?>
+        <!-- Formulario -->
+        <form id="form-biblio" class="form-falla" method="POST" enctype="multipart/form-data">
+        
 
-  <!-- Formulario -->
-  <form id="form-biblio" class="form-falla" method="POST" enctype="multipart/form-data">
-    <!-- Selector de modo -->
-    <section class="contenido-bloque modo-falla">
-      <div class="field">
-        <select id="modo" name="modo" class="field__input field__select">
-          <option value="nuevo"     <?= (($_POST['modo'] ?? 'nuevo') === 'nuevo') ? 'selected' : '' ?>>Crear libro nuevo</option>
-          <option value="existente" <?= (($_POST['modo'] ?? '') === 'existente') ? 'selected' : '' ?>>Subir nueva versión a un libro existente</option>
-        </select>
-        <label for="modo" class="field__label">Modo de subida</label>
-      </div>
-    </section>
+          <!-- Datos del libro nuevo -->
+          <section class="contenido-bloque solucion-falla form-falla__block" id="bloque-libro-nuevo">
+            <div class="field">
+              <input id="titulo" class="field__input" type="text" name="titulo" placeholder=" "
+                    value="<?= htmlspecialchars($_POST['titulo'] ?? '') ?>">
+              <label for="titulo" class="field__label">Título</label>
+            </div>
+          </section>
+            <section class="form-falla__grid-2">
+              <section class="contenido-bloque solucion-falla form-falla__block" id="bloque-autor">
+                <div class="field">
+                  <input id="autor" class="field__input" type="text" name="autor" placeholder=" "
+                        value="<?= htmlspecialchars($_POST['autor'] ?? '') ?>">
+                  <label for="autor" class="field__label">Autor (opcional)</label>
+                </div>
+              </section>
 
-    <!-- Libro existente -->
-    <section class="contenido-bloque libroexistente-falla" id="bloque-libro-existente" style="display:none;">
-      <div class="field">
-        <select id="libro_id" name="libro_id" class="field__input field__select">
-          <option value="">Selecciona un libro</option>
-          <?php foreach ($libros_existentes as $lx): ?>
-            <option value="<?= (int)$lx['id'] ?>" <?= (isset($_POST['libro_id']) && (int)$_POST['libro_id']===(int)$lx['id']) ? 'selected' : '' ?>>
-              <?= htmlspecialchars($lx['titulo']) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-        <label for="libro_id" class="field__label">Libro existente</label>
-      </div>
-    </section>
+              <section class="contenido-bloque solucion-falla form-falla__block" id="bloque-categoria">
+                <div class="field">
+                  <input id="categoria" class="field__input" type="text" name="categoria" placeholder=" "
+                        value="<?= htmlspecialchars($_POST['categoria'] ?? '') ?>">
+                  <label for="categoria" class="field__label">Categoría (opcional)</label>
+                </div>
+              </section>
+            </section>
 
-    <!-- Datos del libro nuevo -->
-    <section class="contenido-bloque titulo-falla" id="bloque-libro-nuevo">
-      <div class="field">
-        <input id="titulo" class="field__input" type="text" name="titulo" placeholder=" "
-               value="<?= htmlspecialchars($_POST['titulo'] ?? '') ?>">
-        <label for="titulo" class="field__label">Título</label>
-      </div>
-    </section>
+          <section class="contenido-bloque solucion-falla form-falla__block" id="bloque-descripcion">
+            <div class="field">
+              <textarea id="descripcion" class="field__input field__textarea" name="descripcion" rows="4" placeholder=" "><?= htmlspecialchars($_POST['descripcion'] ?? '') ?></textarea>
+              <label for="descripcion" class="field__label">Descripción</label>
+            </div>
+          </section>
 
-    <section class="contenido-bloque autor-falla" id="bloque-autor">
-      <div class="field">
-        <input id="autor" class="field__input" type="text" name="autor" placeholder=" "
-               value="<?= htmlspecialchars($_POST['autor'] ?? '') ?>">
-        <label for="autor" class="field__label">Autor (opcional)</label>
-      </div>
-    </section>
+          <!-- Uploader -->
+          <section class="ccontenido-bloque multimedia-falla form-falla__block">
+            <div class="uploader">
+              <input id="pdf" class="uploader__input" type="file" name="pdf" accept="application/pdf">
+              <label for="pdf" class="uploader__label">
+                <span class="uploader__title">Archivo PDF</span>
+                <span class="uploader__hint">Selecciona un archivo .pdf (máx 50 MB)</span>
+              </label>
+            </div>
+            <p id="pdf-info" class="muted" style="margin-top:6px;"></p>
+          </section>
 
-    <section class="contenido-bloque categoria-falla" id="bloque-categoria">
-      <div class="field">
-        <input id="categoria" class="field__input" type="text" name="categoria" placeholder=" "
-               value="<?= htmlspecialchars($_POST['categoria'] ?? '') ?>">
-        <label for="categoria" class="field__label">Categoría (opcional)</label>
-      </div>
-    </section>
-
-    <section class="contenido-bloque descripcion-falla" id="bloque-descripcion">
-      <div class="field">
-        <textarea id="descripcion" class="field__input field__textarea" name="descripcion" rows="4" placeholder=" "><?= htmlspecialchars($_POST['descripcion'] ?? '') ?></textarea>
-        <label for="descripcion" class="field__label">Descripción</label>
-      </div>
-    </section>
-
-    <!-- Uploader -->
-    <section class="contenido-bloque pdf-falla">
-      <div class="uploader">
-        <input id="pdf" class="uploader__input" type="file" name="pdf" accept="application/pdf">
-        <label for="pdf" class="uploader__label">
-          <span class="uploader__title">Archivo PDF</span>
-          <span class="uploader__hint">Selecciona un archivo .pdf (máx 50 MB)</span>
-        </label>
-      </div>
-      <p id="pdf-info" class="muted" style="margin-top:6px;"></p>
-    </section>
-
-    <div class="form-biblio__actions">
-        <button class="btn-secondary-2" type="submit">Subir</button>
-        <button class="btn-secondary-2" type="button" onclick="window.history.back()">Cancelar</button>
-    </div>
-  </form>
+          <div class="form-biblio__actions">
+              <button class="btn-secondary-2" type="submit">Subir</button>
+              <button class="btn-secondary-2" type="button" onclick="window.history.back()">Cancelar</button>
+          </div>
+        </form>
+      </section>
+   </section>
 </main>
 
 <!-- Alerta al subir libro -->
@@ -313,15 +301,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 })();
 </script>
 
-<style>
-/* Botones del SweetAlert acordes a tu tema (oscuro/verde) */
-.swal2-confirm-custom{
-  background: rgba(76,217,100,.92) !important; 
-  color:#08140c !important; 
-  font-weight:800 !important; 
-  border-radius:12px !important;
-}
-
-</style>
 
 <?php incluirTemplate('footer'); ?>

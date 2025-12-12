@@ -6,3 +6,89 @@
 .btn-primary{
     text-decoration: none;
 }
+
+
+/* =========================
+   CONTENEDOR DE ACCIONES
+========================= */
+.form-biblio__actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var.$border-subtle;
+}
+
+/* =========================
+   BOTÓN SECUNDARIO MODERNO
+========================= */
+.btn-secondary-2 {
+  appearance: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var.$border-subtle;
+  background-color: #ffffff;
+  color: var.$text-main;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background-color: #f9fafb;
+    border-color: color.scale(var.$border-subtle, $lightness: -8%);
+    box-shadow: 0 6px 18px rgba(148, 163, 184, 0.35);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+}
+
+/* =========================
+   VARIANTE PRINCIPAL (SUBIR)
+========================= */
+.btn-secondary-2[type="submit"] {
+  background-color: var.$primary;
+  color: #ffffff;
+  border-color: color.scale(var.$primary, $lightness: -6%);
+
+}
+
+/* =========================
+   VARIANTE CANCELAR
+========================= */
+.btn-secondary-2[type="button"] {
+  color: var.$text-soft;
+
+  &:hover {
+    color: var.$text-main;
+  }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 640px) {
+  .form-biblio__actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    .btn-secondary-2 {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

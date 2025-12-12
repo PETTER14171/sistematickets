@@ -127,7 +127,7 @@ if ($res) {
                 <span>Crear Usuario</span>
             </a>
 
-            <a href="admin_biblioteca_subir.php" class="admin-nav__item">
+            <a href="biblioteca.php" class="admin-nav__item">
                 <span class="admin-nav__icon">📚</span>
                 <span>Biblioteca</span>
             </a>
@@ -217,7 +217,7 @@ if ($res) {
                     <span class="admin-row-link__icon">›</span>
                 </a>
                 <a href="admin_biblioteca_subir.php" class="admin-row-link">
-                    <span>Administrar Biblioteca</span>
+                    <span>Subir libro Biblioteca</span>
                     <span class="admin-row-link__icon">›</span>
                 </a>
                 <a href="resetear_contraseña.php" class="admin-row-link">
