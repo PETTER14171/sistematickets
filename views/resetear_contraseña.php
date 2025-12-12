@@ -42,11 +42,8 @@ $usuarios = $conn->query("SELECT id, nombre, correo, rol, activo FROM usuarios O
     ]);
     incluirTemplate('header');
 ?>
-<main>
-    <div class="centrat-titulo_boton">
-        <h3>🔐 Resetear contraseña de usuario</h3>
-        <a href="panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
-    </div>
+<main class="admin-tickets-page">
+    <a href="panel_tecnico.php" class="btn-1 btn-volver ticket-detail__back">← Volver</a>
     <?php if ($mensaje): ?>
         <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>

@@ -39,6 +39,18 @@ if ($res) {
     $ticketsEnProgreso = (int)($row['c'] ?? 0);
 }
 
+// Tickets en resueltos
+$ticketResueltos = 0;
+$res = $conn->query("
+    SELECT COUNT(*) AS c
+    FROM tickets
+    WHERE estado IN ('Resolved', 'resuelto')
+");
+if ($res) {
+    $row = $res->fetch_assoc();
+    $ticketResueltos = (int)($row['c'] ?? 0);
+}
+
 // Tickets abiertos (pendientes)
 $pendingTickets = 0;
 $res = $conn->query("
@@ -117,9 +129,9 @@ if ($res) {
                 <span>Tickets</span>
             </a>
 
-            <a href="fallas_comunes_admin.php" class="admin-nav__item">
+            <a href="crear_falla.php" class="admin-nav__item">
                 <span class="admin-nav__icon">📘</span>
-                <span>Soluciones</span>
+                <span>Nueva Solucion</span>
             </a>
 
             <a href="crear_usuario.php" class="admin-nav__item">
@@ -152,9 +164,15 @@ if ($res) {
                 </p>
             </div>
             <div class="admin-header__actions">
-                <button class="admin-icon-btn js-admin-bell" type="button" aria-label="Ver notificaciones">
+                    <button
+                    id="btnEnableNotifications"
+                    class="admin-icon-btn js-admin-bell"
+                    type="button"
+                    aria-label="Activar notificaciones del navegador"
+                    title="Activar notificaciones del navegador"
+                    >
                     🔔
-                </button>
+                    </button>
                 <div class="admin-avatar admin-avatar--small">
                     <span><?= strtoupper(mb_substr($_SESSION['nombre'] ?? 'U', 0, 1)) ?></span>
                 </div>
@@ -184,9 +202,16 @@ if ($res) {
                 <div class="admin-card__value"><?= $ticketsEnProgreso ?></div>
             </article>
 
-            <article class="admin-card admin-card--stat js-card-link" data-link="admin_notificaciones.php">
-                <div class="admin-card__label">Nuevas Notificaciones</div>
-                <div class="admin-card__value"><?= $newNotifications ?></div>
+            <article class="admin-card admin-card--stat js-card-link" data-link="admin_tickets.php?estado=resuelto">
+                <div class="admin-card__label">
+                    Tickets Resueltos
+                    <?php if ($latestAlert): ?>
+                        <span class="admin-card__icon-tip" title="<?= htmlspecialchars($latestAlert['mensaje']) ?>">
+                            
+                        </span>
+                    <?php endif; ?>
+                </div>
+                <div class="admin-card__value"><?= $ticketResueltos?></div>
             </article>
         </section>
 

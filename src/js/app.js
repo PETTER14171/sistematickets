@@ -2,87 +2,211 @@
   'use strict';
 
   // Cambia este marcador en cada despliegue para confirmar carga
-  console.log('APP BUILD: 2025-09-02-01');
+  console.log('APP BUILD: 2025-12-12');
 
   /* =========================
-   *  Notificaciones (modal)
+   *  Permiso notificacion
    * ========================= */
-  function abrirModalNotificaciones() {
-    const modal = document.getElementById('modalNotificaciones');
-    const contenido = document.getElementById('contenidoNotificaciones');
-    if (!modal || !contenido) return;
 
-    modal.style.display = 'flex';
+  (function () {
+  const btn = document.getElementById('btnEnableNotifications');
+  if (!btn) return;
 
-    fetch('notificaciones.php')
-      .then(response => response.text())
-      .then(html => { contenido.innerHTML = html; })
-      .catch(error => {
-        contenido.innerHTML = '<p>Error al cargar las notificaciones.</p>';
-        console.error(error);
+  const supports = ('Notification' in window);
+
+  function setBtnState(enabled) {
+    // enabled = true cuando ya hay permiso "granted"
+    if (enabled) {
+      btn.classList.add('is-enabled');
+      btn.setAttribute('aria-label', 'Notificaciones activadas');
+      btn.title = 'Notificaciones activadas';
+    } else {
+      btn.classList.remove('is-enabled');
+      btn.setAttribute('aria-label', 'Activar notificaciones del navegador');
+      btn.title = 'Activar notificaciones del navegador';
+    }
+  }
+
+  // Estado inicial
+  if (!supports) {
+    btn.disabled = true;
+    btn.title = 'Tu navegador no soporta notificaciones';
+    return;
+  }
+  setBtnState(Notification.permission === 'granted');
+
+  btn.addEventListener('click', async () => {
+    if (!supports) return;
+
+    // Si ya está permitido
+    if (Notification.permission === 'granted') {
+      Swal.fire({
+        icon: 'info',
+        title: 'Ya están activadas',
+        text: 'Las notificaciones del navegador ya están permitidas.',
+        confirmButtonText: 'OK'
       });
+      return;
+    }
+
+    // Si el usuario ya bloqueó
+    if (Notification.permission === 'denied') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Notificaciones bloqueadas',
+        html: `
+          Tu navegador tiene las notificaciones <b>bloqueadas</b>.<br><br>
+          Para habilitarlas: abre el candado 🔒 en la barra de direcciones → Notificaciones → Permitir.
+        `,
+        confirmButtonText: 'Entendido'
+      });
+      return;
+    }
+
+    // Preguntar permiso (prompt)
+    try {
+      const permission = await Notification.requestPermission();
+
+      if (permission === 'granted') {
+        setBtnState(true);
+
+        Swal.fire({
+          icon: 'success',
+          title: '¡Listo!',
+          text: 'Notificaciones activadas. Te avisaré cuando haya nuevos eventos.',
+          timer: 1800,
+          showConfirmButton: false
+        });
+
+        // Notificación de prueba opcional
+        new Notification('TalkHub', {
+          body: 'Notificaciones activadas correctamente ✅',
+        });
+
+      } else if (permission === 'denied') {
+        setBtnState(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Permiso rechazado',
+          text: 'No podré mostrar notificaciones del navegador a menos que las habilites.',
+          confirmButtonText: 'OK'
+        });
+      } else {
+        // "default" (cerró el prompt)
+        setBtnState(false);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Sin cambios',
+          text: 'No se otorgó el permiso. Puedes intentarlo de nuevo cuando quieras.',
+          confirmButtonText: 'OK'
+        });
+      }
+    } catch (e) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al solicitar permiso',
+        text: 'Ocurrió un problema al solicitar notificaciones.',
+        confirmButtonText: 'OK'
+      });
+    }
+  });
+})();
+
+
+/* =========================
+ *  Notificaciones (Resumen + Browser Notification)
+ * ========================= */
+function prioridadLabel(prio) {
+  const p = (prio || '').toLowerCase();
+  if (p === 'alta') return 'Alta';
+  if (p === 'media') return 'Media';
+  if (p === 'baja') return 'Baja';
+  return 'Info';
+}
+
+function prioridadIcon(prio) {
+  const p = (prio || '').toLowerCase();
+  if (p === 'alta') return '⚠️';
+  if (p === 'media') return '🔔';
+  if (p === 'baja') return 'ℹ️';
+  return '🔔';
+}
+
+// Render del bloque único
+function renderNotiResumen(unread, topPriority) {
+  const etiqueta = prioridadLabel(topPriority);
+  const icono = prioridadIcon(topPriority);
+
+  if (!unread || unread <= 0) {
+    return `<p class="admin-card__empty">Sin notificaciones pendientes.</p>`;
   }
 
-  function cerrarModal() {
-    const modal = document.getElementById('modalNotificaciones');
-    if (modal) modal.style.display = 'none';
-  }
-
-  function marcarNotificacionesLeidas() {
-    fetch('notificaciones.php?marcar=1')
-      .then(response => response.json())
-      .then(data => {
-        if (data && data.success) {
-          abrirModalNotificaciones(); // Recargar contenido del modal
-          location.reload();          // Refrescar alerta superior si aplica
-        }
-      })
-      .catch(err => console.error(err));
-  }
-
-  /* =========================
-   *  Alertas dinámicas
-   * ========================= */
-  function mostrarAlerta(mensaje, prioridad) {
-    const colorFondo = ({ alta:'#f8d7da', media:'#fff3cd', baja:'#d1ecf1' }[prioridad]) || '#e2e3e5';
-    const colorBorde = ({ alta:'#dc3545', media:'#ffc107', baja:'#17a2b8' }[prioridad]) || '#6c757d';
-    const duracion   = prioridad === 'alta' ? '2s' : (prioridad === 'media' ? '6s' : '10s');
-    const etiqueta   = prioridad ? prioridad.charAt(0).toUpperCase() + prioridad.slice(1) : 'Info';
-
-    return `
-      <div style="
-        background-color: ${colorFondo};
-        color: #000;
-        padding: 12px;
-        border-left: 5px solid ${colorBorde};
-        margin-bottom: 20px;
-        border-radius: 4px;
-        animation: parpadeo ${duracion} infinite;
-      ">
-        ⚠️ ${mensaje} (${etiqueta})
+  return `
+    <div class="admin-noti-summary__box admin-noti-summary__box--${(topPriority || 'media').toLowerCase()}">
+      <div class="admin-noti-summary__icon">${icono}</div>
+      <div class="admin-noti-summary__content">
+        <div class="admin-noti-summary__title">Tienes notificaciones pendientes</div>
+        <div class="admin-noti-summary__meta">
+          <span class="admin-noti-summary__count">${unread}</span>
+          <span class="admin-noti-summary__sep">•</span>
+          <span class="admin-noti-summary__prio">Con Prioridad: ${etiqueta}</span>
+        </div>
       </div>
-    `;
-  }
+    </div>
+  `;
+}
 
-  function verificarNuevaNotificacion() {
-    const contenedor = document.getElementById('alertaDinamica');
-    if (!contenedor) return; // si no existe en esta página, salimos
+function verificarNuevaNotificacionResumen() {
+  // Puedes usar #alertaDinamica o el nuevo #notiResumen (recomendado)
+  const contenedor = document.getElementById('notiResumen') || document.getElementById('alertaDinamica');
+  if (!contenedor) return;
 
-    fetch('notificaciones_alerta.php')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          contenedor.innerHTML = data.map(a => mostrarAlerta(a.mensaje, a.prioridad)).join('');
-        } else {
-          contenedor.innerHTML = '';
+  fetch('notificaciones_alerta.php')
+    .then(res => res.json())
+    .then(data => {
+      if (!data || !data.ok) return;
+
+      const unread = Number(data.unread || 0);
+      const topPriority = data.top_priority || null;
+      const latest = data.latest || null;
+
+      // 1) Pintar bloque único
+      contenedor.innerHTML = renderNotiResumen(unread, topPriority);
+
+      // 2) Notificación del navegador SOLO si llegó una nueva (por id)
+      if (!latest || !latest.id) return;
+
+      const lastIdKey = 'lastNotiId_seen';
+      const lastSeen = Number(localStorage.getItem(lastIdKey) || 0);
+
+      // Si hay una nueva con id mayor
+      if (latest.id > lastSeen) {
+        // Guardamos el último id visto para evitar spam
+        localStorage.setItem(lastIdKey, String(latest.id));
+
+        // Disparar Notification si está permitido
+        if ('Notification' in window && Notification.permission === 'granted') {
+          const title = `TalkHub: ${unread} pendiente(s)`;
+          const body = latest.mensaje ? latest.mensaje : 'Tienes una nueva notificación.';
+
+          const n = new Notification(title, { body });
+
+          // Si hay ticket_id, al hacer click te mando al ticket
+          if (latest.ticket_id) {
+            n.onclick = () => {
+              window.focus();
+              window.location.href = `responder_ticket.php?id=${latest.ticket_id}`;
+            };
+          }
         }
-      })
-      .catch(err => console.error('Error al consultar notificaciones:', err));
-  }
+      }
+    })
+    .catch(err => console.error('Error al consultar notificaciones:', err));
+}
 
-  // cada 2 segundos
-  setInterval(verificarNuevaNotificacion, 2000);
-  verificarNuevaNotificacion();
+  // Polling (recomendado 2s para no saturar)
+  setInterval(verificarNuevaNotificacionResumen, 2000);
+  verificarNuevaNotificacionResumen();
 
 
   /* =========================

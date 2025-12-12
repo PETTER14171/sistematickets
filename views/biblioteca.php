@@ -101,6 +101,7 @@ $libros = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <main class="biblioteca-page">
+  <a href="panel_tecnico.php" class="btn-1 btn-volver ticket-detail__back">← Volver</a>
   <header>
         <!-- Filtros -->
         <form class="margin-contenido biblioteca__filters" method="GET" action="">

@@ -50,11 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     incluirTemplate('header');
 ?>
 
-<main>
-    <div class="centrat-titulo_boton">
-        <h3>👤 Crear nuevo usuario</h3>
-        <a href="panel_tecnico.php" class="btn-1 btn-volver">← Volver</a>
-    </div>
+<main class="admin-tickets-page">
+    <a href="panel_tecnico.php" class="btn-1 btn-volver ticket-detail__back">← Volver</a>
         <?php if ($mensaje): ?>
             <p><?= htmlspecialchars($mensaje) ?></p>
         <?php endif; ?>

@@ -1,0 +1,69 @@
+@use '../base/variables' as var;
+@use 'sass:color';
+
+.admin-notifs-page {
+  .admin-notifs__bulk {
+    display: flex;
+    align-items: center;
+  }
+
+  .admin-notifs__bulk-btn {
+    white-space: nowrap;
+  }
+}
+
+.admin-notifs-table {
+  .admin-notifs-table__actions-col {
+    width: 140px;
+  }
+
+  .admin-notifs-table__ticket {
+    min-width: 180px;
+  }
+
+  .admin-notifs__ticket-link {
+    color: var.$primary;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
+  .admin-notifs__ticket-sub {
+    margin-top: 2px;
+    font-size: .78rem;
+    color: var.$text-soft;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+  }
+
+  .admin-notifs-table__msg {
+    max-width: 520px;
+    font-size: .86rem;
+    color: var.$text-main;
+    white-space: pre-line;
+  }
+
+  .admin-notifs__muted {
+    color: var.$text-soft;
+  }
+
+  // resalta no leídos
+  tr.is-unread {
+    background: #fff7ed; // suave
+    border-left: 3px solid #fb923c;
+
+    td:first-child {
+      position: relative;
+    }
+  }
+
+  .admin-notifs-table__actions {
+    text-align: right;
+  }
+}

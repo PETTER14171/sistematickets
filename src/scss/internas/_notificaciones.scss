@@ -1,0 +1,64 @@
+@use '../base/variables' as var;
+@use '../base/mixins' as mix;
+@use 'sass:color';
+
+.admin-noti-summary__box {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.admin-noti-summary__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  font-size: 1.1rem;
+}
+
+.admin-noti-summary__title {
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.admin-noti-summary__meta {
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: .9rem;
+}
+
+.admin-noti-summary__count {
+  font-weight: 800;
+  color: #111827;
+}
+
+.admin-noti-summary__sep {
+  opacity: .6;
+}
+
+.admin-noti-summary__box--alta {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.admin-noti-summary__box--media {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.admin-noti-summary__box--baja {
+  background: #ecfeff;
+  border-color: #a5f3fc;
+}
