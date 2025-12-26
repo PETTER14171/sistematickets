@@ -314,6 +314,7 @@ incluirTemplate('header');
                     </tr>
                     </thead>
                     <tbody>
+
                     <?php if (empty($notificaciones)): ?>
                         <tr>
                             <td colspan="7" class="admin-tickets-table__empty">
@@ -322,7 +323,9 @@ incluirTemplate('header');
                         </tr>
                     <?php else: ?>
                         <?php foreach ($notificaciones as $n): ?>
-                            <tr class="admin-tickets-table__row <?= $n['leido'] ? '' : 'is-unread' ?>">
+                            <tr class="admin-tickets-table__row <?= $n['leido'] ? '' : 'is-unread' ?> admin-tickets-table__row--clickable"
+                            onclick="window.location='responder_ticket.php?id=<?= (int)$n['id'] ?>';"
+                            >
                                 <td class="admin-notifs-table__ticket">
                                     <?php if ($n['ticket_id'] > 0): ?>
                                         <a class="admin-notifs__ticket-link"
