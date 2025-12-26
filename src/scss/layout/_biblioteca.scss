@@ -232,6 +232,9 @@
   background-color: #eef2ff;
   color: #3730a3;
   border-color: #e0e7ff;
+  white-space: nowrap;   // no permite salto de línea
+  overflow: hidden;      // oculta el exceso
+  max-width: 75px;      // obligatorio
 }
 
 // ============================

@@ -194,6 +194,10 @@
 }
 
 .admin-tickets-table__title-main {
+  white-space: nowrap;   
+  overflow: hidden;   
+  text-overflow: ellipsis; 
+  max-width: 250px;      
   font-weight: 500;
   color: #111827;
 }
